@@ -18,7 +18,13 @@
  * Basic setup
  */
 // Set time one time for all
-define('NOW', time()); 
+define('NOW', time());
+// PHP 5.3+ requires an explicit default timezone or every date() call warns.
+// Honour an existing php.ini date.timezone; otherwise fall back to UTC.
+if (function_exists('date_default_timezone_set')) {
+	$tz = @date_default_timezone_get();
+	date_default_timezone_set($tz ? $tz : 'UTC');
+}
 // Disable register_globals
 ini_set('register_globals', 0); 
 // Turn OFF/ON public error display
@@ -42,7 +48,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.2.10-alpha';
+	public static $lunaVersion = '0.2.11-alpha';
 	/**
 	 * instance
 	 * @var object

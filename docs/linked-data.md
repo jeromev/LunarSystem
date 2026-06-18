@@ -112,14 +112,62 @@ the parent, and `/id/{slug}` resource URIs from Decision 1. It is deliberately a
 }
 ```
 
+## Phase A — a real SPARQL endpoint (running)
+
+The existing MySQL is now queryable as RDF with **SPARQL**, with **no schema
+change and no data migration**, via [Ontop](https://ontop-vkg.org/) +
+an R2RML mapping. RDF stops being an output veneer and becomes a query surface.
+
+Files (all under [`semantic/ontop/`](../semantic/ontop/)):
+
+| File | Role |
+|---|---|
+| `mapping.ttl` | R2RML: `luna_nodes`/`luna_nodes_map`/`luna_texts`/`luna_users` → schema.org/FOAF, using the **same `/id/{lid}` URIs** as the JSON-LD |
+| `ontop.properties` | JDBC connection to the `db` service |
+| `Dockerfile` | `ontop/ontop` + the MySQL JDBC driver |
+
+Run it (the `db` service must be up):
+
+```bash
+docker-compose up --build -d ontop      # SPARQL endpoint on http://localhost:8081/sparql
+```
+
+Example — pages and their article headlines, straight out of the relational
+tables:
+
+```sparql
+PREFIX schema: <https://schema.org/>
+SELECT ?page ?title WHERE {
+  ?page a schema:WebPage ; schema:hasPart [ schema:headline ?title ] .
+}
+# → http://localhost:8080/id/root  "Welcome"
+```
+
+```bash
+curl -s http://localhost:8081/sparql -H 'Accept: application/sparql-results+json' \
+  --data-urlencode 'query=PREFIX schema: <https://schema.org/>
+    SELECT ?child ?parent WHERE { ?child schema:isPartOf ?parent }'
+# → the whole page tree as a graph (admin isPartOf root, …) — the fixed owl:isChildOf
+```
+
+**The proof that A → B will be clean:** the URI a SPARQL query returns
+(`http://localhost:8080/id/root`) is byte-for-byte the `@id` the JSON-LD emits.
+The virtual graph and the HTML/JSON-LD views describe the *same resources* — so
+when Phase B materialises this mapping into a triplestore, every URI (and every
+external `owl:sameAs` to it) keeps working.
+
+> Hard-coded `luna_types` ids (`user=1 text=4 page=5`) keep the mapping SQL simple
+> for Ontop's parser; `ontop.inferDefaultDatatype=true` defaults the string
+> columns. Ontop is read-only (SPARQL `SELECT`/`CONSTRUCT`/`DESCRIBE`); writes
+> stay relational until Phase B.
+
 ## Roadmap
 
-- **Phase A** — author the R2RML mapping for `luna_nodes`/`luna_nodes_map`/
-  `luna_types`/`luna_texts`/`luna_users`/`luna_actions` using the URIs and terms
-  above; stand up Ontop → a real SPARQL endpoint; move the read path off
-  hand-written SQL onto SPARQL `CONSTRUCT`/`SELECT`; expose the endpoint + an
-  LDP-style API. Writes stay relational, routed through one swappable DAO.
-- **Phase B** — materialise the same mapping into Oxigraph/Fuseki; point the
+- **Phase A (done — prototype):** R2RML + Ontop virtual SPARQL endpoint over the
+  existing MySQL (above). Next within A: move the app's *read* path off the
+  hand-written joins in `lunaModel` onto SPARQL `CONSTRUCT`; expand the mapping
+  to `luna_actions` (PROV-O) and access levels; add an LDP-style API.
+- **Phase B:** materialise the same `mapping.ttl` into Oxigraph/Fuseki; point the
   endpoint at it (app read code unchanged); move writes to SPARQL `UPDATE`; turn
   on RDFS/OWL inference, SHACL validation, and named graphs for drafts/versions.
 

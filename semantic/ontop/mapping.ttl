@@ -1,0 +1,92 @@
+@prefix rr:     <http://www.w3.org/ns/r2rml#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <https://schema.org/> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+
+# ---------------------------------------------------------------------------
+# R2RML mapping: the luna_* relational schema (MySQL) projected to schema.org /
+# FOAF, using the SAME http://localhost:8080/id/{lid} URIs as the JSON-LD
+# projection in lunaModel::to_jsonld() (see docs/linked-data.md). Because the
+# URIs match, the virtual SPARQL graph and the JSON-LD describe the very same
+# resources.
+#
+# luna_types ids are hard-coded (user=1, text=4, page=5) to keep the SQL simple
+# for Ontop's parser. This same mapping materialises into the Phase B
+# triplestore unchanged — it is the bridge between A and B.
+# ---------------------------------------------------------------------------
+
+# Pages -> schema:WebPage
+<#PageMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT n.lid AS lid, pn.lid AS parent_lid
+      FROM luna_nodes n
+      LEFT JOIN luna_nodes pn ON pn.nid = n.parent_nid
+      WHERE n.tid = 5
+  """ ] ;
+  rr:subjectMap [
+      rr:template "http://localhost:8080/id/{lid}" ;
+      rr:class schema:WebPage
+  ] ;
+  rr:predicateObjectMap [
+      rr:predicate schema:name ;
+      rr:objectMap [ rr:column "lid" ]
+  ] ;
+  rr:predicateObjectMap [
+      rr:predicate schema:isPartOf ;
+      rr:objectMap [ rr:template "http://localhost:8080/id/{parent_lid}" ]
+  ] .
+
+# Text blocks -> schema:Article, attached to their page
+<#TextMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT n.lid AS lid, t.title AS title, t.content_html AS body,
+             t.lang AS lang, p.lid AS page_lid
+      FROM luna_nodes n
+      JOIN luna_texts t     ON t.nid = n.nid
+      JOIN luna_nodes_map m ON m.nid1 = n.nid
+      JOIN luna_nodes p     ON p.nid = m.nid2 AND p.tid = 5
+      WHERE n.tid = 4
+  """ ] ;
+  rr:subjectMap [
+      rr:template "http://localhost:8080/id/{lid}" ;
+      rr:class schema:Article
+  ] ;
+  rr:predicateObjectMap [ rr:predicate schema:headline ;    rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate schema:articleBody ; rr:objectMap [ rr:column "body" ] ] ;
+  rr:predicateObjectMap [ rr:predicate schema:inLanguage ;  rr:objectMap [ rr:column "lang" ] ] ;
+  rr:predicateObjectMap [
+      rr:predicate schema:isPartOf ;
+      rr:objectMap [ rr:template "http://localhost:8080/id/{page_lid}" ]
+  ] .
+
+# Reciprocal: page schema:hasPart text
+<#PageHasPartMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT p.lid AS page_lid, n.lid AS text_lid
+      FROM luna_nodes n
+      JOIN luna_nodes_map m ON m.nid1 = n.nid
+      JOIN luna_nodes p     ON p.nid = m.nid2 AND p.tid = 5
+      WHERE n.tid = 4
+  """ ] ;
+  rr:subjectMap [ rr:template "http://localhost:8080/id/{page_lid}" ] ;
+  rr:predicateObjectMap [
+      rr:predicate schema:hasPart ;
+      rr:objectMap [ rr:template "http://localhost:8080/id/{text_lid}" ]
+  ] .
+
+# Users -> foaf:Person
+<#UserMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT n.lid AS email, u.firstname AS fn, u.lastname AS ln
+      FROM luna_nodes n
+      JOIN luna_users u ON u.nid = n.nid
+      WHERE n.tid = 1
+  """ ] ;
+  rr:subjectMap [
+      rr:template "http://localhost:8080/id/{email}" ;
+      rr:class foaf:Person
+  ] ;
+  rr:predicateObjectMap [
+      rr:predicate foaf:name ;
+      rr:objectMap [ rr:template "{fn} {ln}" ; rr:termType rr:Literal ]
+  ] .

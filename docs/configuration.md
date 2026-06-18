@@ -8,7 +8,7 @@ INI files per domain (`luna.ini`, `db.ini`) and the runtime `luna_config` table.
 ## Domain resolution
 
 At bootstrap, `luna::set_site_path()`
-([luna.php:303](../luna/luna.php#L303)) — logic adapted from **Drupal 5.1's
+([luna.php:314](../luna/luna.php#L314)) — logic adapted from **Drupal 5.1's
 `conf_path()`** — walks `$_SERVER['HTTP_HOST']` from most- to least-specific,
 looking for a directory under `luna.domains/` that contains `ini/luna.ini`. The
 first match wins; if none matches it falls back to
@@ -43,7 +43,7 @@ Two domains ship in the repo:
 
 ## `luna.ini`
 
-Parsed by `luna::load_ini()` ([luna.php:614](../luna/luna.php#L614)). Every
+Parsed by `luna::load_ini()` ([luna.php:625](../luna/luna.php#L625)). Every
 `[Paths]` value becomes a constant prefixed with the luna root path; every
 `[Constantes]` value becomes a bare constant. Example
 (`luna.default/ini/luna.ini`):
@@ -103,9 +103,11 @@ database = "database"
 The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 (`host = db`, user/pass/db = `luna`/`luna`/`lunadb`).
 
-> ⚠️ `lunarsystem.org/ini/db.ini` historically contained **real production
-> credentials**. It should be untracked (`git rm --cached`) and rotated. See
-> [security.md](security.md).
+> ⚠️ `lunarsystem.org/ini/db.ini` contains **real-looking production
+> credentials** in the working tree. It is **gitignored and was never committed**
+> (`.gitignore` covers `luna/luna.domains/*/ini/db.ini`), so the repo is not
+> leaking it — but rotate the credentials anyway; there is nothing to untrack.
+> See [security.md](security.md).
 
 ## `luna_config` (runtime config)
 

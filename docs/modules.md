@@ -77,8 +77,13 @@ All hooks are optional except `singleton()`. `load_mods()` checks for each with
 | `submit_delete()` | `mode == 'delete'`, or `modify` + submit == "Delete" | Remove a record |
 | `load()` | Every render (after any submit) | Merge this mod's nodes into the model |
 
-After a successful submit (non-AJAX), `load_mods()` runs `OPTIMIZE TABLE` on the
-nodes/map/actions tables.
+On a submit the dispatcher calls the generic `submit()` **first** (if defined),
+*then* the mode-specific hook selected by the `$_POST['mode']` switch — they are
+not alternatives, both fire ([luna.php:458-476](../luna/luna.php#L458)).
+
+After **any** submit (when the request is not AJAX), `load_mods()` runs
+`OPTIMIZE TABLE` on the nodes/map/actions tables — regardless of whether the
+submit actually succeeded ([luna.php:477](../luna/luna.php#L477)).
 
 ### Injecting data into the model
 
@@ -103,14 +108,14 @@ The XSLT stylesheet for the page then reads these nodes out of the RDF/XML — s
 | Mod | Purpose |
 |---|---|
 | [`mod_example`](../luna/luna.mods/luna.mod_example.php) | Reference/template mod; does nothing useful |
-| [`mod_admin`](../luna/luna.mods/luna.mod_admin.php) | Site config editor (sitename, timezone, session length, keywords, cache); also surfaces groups/levels/online-users |
+| [`mod_admin`](../luna/luna.mods/luna.mod_admin.php) | Site config editor (sitename, timezone, session length, keywords, cache). Its `load()` only merges the `luna_config` values into the model; the groups/levels/online-users widgets on the admin page come from *other* mods linked to that page, not from `mod_admin` itself |
 | [`mod_admin_groups`](../luna/luna.mods/luna.mod_admin_groups.php) | CRUD for user groups |
 | [`mod_admin_levels`](../luna/luna.mods/luna.mod_admin_levels.php) | CRUD for access levels |
 | [`mod_admin_users`](../luna/luna.mods/luna.mod_admin_users.php) | CRUD for users (add/modify/delete) |
 | [`mod_admin_pages`](../luna/luna.mods/luna.mod_admin_pages.php) | CRUD for pages; links mods + a level to each page |
 | [`mod_admin_mods`](../luna/luna.mods/luna.mod_admin_mods.php) | Register/enable/disable available modules |
 | [`mod_edit_texts`](../luna/luna.mods/luna.mod_edit_texts.php) | Edit page text blocks per language (CKEditor) |
-| [`mod_journal`](../luna/luna.mods/luna.mod_journal.php) | Blog/journal view over the actions/log |
+| [`mod_journal`](../luna/luna.mods/luna.mod_journal.php) | Journal/activity view over the `luna_logs` table (it queries `LOGS`, **not** `luna_actions`); also handles the `purgelogs` action that wipes the log |
 | [`mod_log`](../luna/luna.mods/luna.mod_log.php) | Login/logout + authentication handling |
 | [`mod_node`](../luna/luna.mods/luna.mod_node.php) | Emits a requested node as raw RDF |
 | [`mod_online_users`](../luna/luna.mods/luna.mod_online_users.php) | Lists currently active sessions (IP, lang, last URL) |

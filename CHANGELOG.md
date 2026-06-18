@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.12-alpha] - 2026-06-18
+- Docs: refreshed the `docs/` set after a full code read-through.
+  - Fixed stale `luna.php` line-number anchors across `architecture.md`, `configuration.md`, `templating.md`, and `security.md` (they had drifted ~+8 to +11 lines after the timezone commit): `__construct` 190, `set_site_path` 314, `set_requested_path` 303, `load_mods` 381, `transform` 506, `load_ini` 625, `use_trans_sid` 33, stylesheet cascade 575-607.
+  - Corrected behavioural descriptions: bootstrap's early steps `die()`/`trigger_error()` directly rather than throwing; `lunaLog::log()` screen-dumps **or** DB-writes (mutually exclusive); `OPTIMIZE TABLE` runs after *any* non-AJAX submit (not only successful ones) and `submit()` always runs before the mode switch; the AJAX short-circuit lives in `transform()`; `mod_journal` reads `luna_logs` (not `luna_actions`); `mod_admin::load()` only merges config; the model mutator list now includes `delete()`/`exists()`; documented the built-in (`luna.`-prefixed) vs domain-override (un-prefixed) stylesheet naming; noted `langs` is a single comma-separated string and `luna_logs.id` is the lone non-`unsigned` PK.
+  - Security: corrected the `db.ini` guidance (it is gitignored and was never committed — rotate the on-disk credentials, nothing to untrack) and removed the inaccurate "cache files tracked" note. Added a verified "Additional findings (2026 code-review pass)" section (no CSRF, `mod_journal` `LIMIT` SQLi, session fixation, missing per-action authz, no login throttling, `unserialize()` object injection, reflected XSS in the error page, unescaped stored content, GET-triggered `purgelogs`, `$_SERVER` written to `luna_logs`, bypassable session guard).
+
 ## [0.2.11-alpha] - 2026-06-18
 - Fixed: `date()` warning "It is not safe to rely on the system's timezone settings" on PHP 5.3+ when `date.timezone` is unset. The bootstrap now calls `date_default_timezone_set()` early, honouring an existing `php.ini` value and falling back to UTC.
 

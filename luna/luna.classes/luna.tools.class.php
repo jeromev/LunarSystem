@@ -306,7 +306,7 @@ class lunaTools {
 	 * @access public
 	 * @return string
 	 */
-	static public static function parse_bbcode($txt) {
+	public static function parse_bbcode($txt) {
 		$bbcode_rules = array(
 			# [b]Bold text[/b]
 			'/\[(b)\](.*?)\[\/\\1\]/is' => '<strong>$2</strong>',

@@ -9,7 +9,7 @@ CREATE TABLE `luna_actions` (
   KEY `nid` (`nid`),
   KEY `ntime` (`ntime`),
   KEY `unid` (`unid`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_config`;
 CREATE TABLE `luna_config` (
@@ -18,7 +18,7 @@ CREATE TABLE `luna_config` (
   `value` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_logs`;
 CREATE TABLE `luna_logs` (
@@ -28,7 +28,7 @@ CREATE TABLE `luna_logs` (
   `priority` int(11) NOT NULL default '0',
   `message` text,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_nodes`;
 CREATE TABLE `luna_nodes` (
@@ -43,7 +43,7 @@ CREATE TABLE `luna_nodes` (
   KEY `parent_nid` (`parent_nid`),
   KEY `tid` (`tid`),
   FULLTEXT KEY `lid` (`lid`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_nodes_map`;
 CREATE TABLE `luna_nodes_map` (
@@ -53,7 +53,7 @@ CREATE TABLE `luna_nodes_map` (
   PRIMARY KEY  (`id`),
   KEY `nid1` (`nid1`),
   KEY `nid2` (`nid2`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_sessions`;
 CREATE TABLE `luna_sessions` (
@@ -70,7 +70,7 @@ CREATE TABLE `luna_sessions` (
   KEY `session_user_nid` (`session_user_nid`),
   KEY `session_time` (`session_time`),
   KEY `session_start` (`session_start`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_texts`;
 CREATE TABLE `luna_texts` (
@@ -82,7 +82,7 @@ CREATE TABLE `luna_texts` (
   PRIMARY KEY  (`id`),
   KEY `nid` (`nid`),
   FULLTEXT KEY `content` (`content_html`,`title`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_types`;
 CREATE TABLE `luna_types` (
@@ -92,7 +92,7 @@ CREATE TABLE `luna_types` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `lid` (`lid`),
   KEY `page_nid` (`page_nid`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_users`;
 CREATE TABLE `luna_users` (
@@ -111,13 +111,13 @@ CREATE TABLE `luna_users` (
   KEY `last_time` (`last_time`),
   KEY `nid` (`nid`),
   FULLTEXT KEY `firstname` (`firstname`,`lastname`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_nodes_seq`;
 CREATE TABLE `luna_nodes_seq` (
   `sequence` int(10) unsigned NOT NULL auto_increment,
   PRIMARY KEY  (`sequence`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 INSERT INTO `luna_config` (`name`, `value`) VALUES 
 ('disable', '0'),

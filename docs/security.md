@@ -10,7 +10,7 @@ public internet without significant hardening.
 | Issue | Impact | Detail |
 |---|---|---|
 | **PHP 5.3–5.6 only** | Blocking | Uses the `mysql_*` extension (removed in PHP 7) via PEAR MDB2, which has no PDO path here. Will not run on PHP 7+. |
-| **MyISAM `TYPE=` syntax** | Blocking on MySQL 8 | The schema uses `TYPE=MyISAM`; MySQL 8 requires `ENGINE=MyISAM`. MySQL 5.7 works with `sql_mode=""`. |
+| **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 5.7 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
 | **PEAR dependencies** | Maintenance | Relies on vendored PEAR MDB2 / Log / Cache_Lite and ARC2 — all unmaintained. |
 
 ## Security weaknesses

@@ -6,8 +6,9 @@ not hard-coded — they are mapped through the `[DBtables]` section of
 `luna.ini` (see [configuration.md](configuration.md)), but the defaults are the
 `luna_*` names below.
 
-> All tables use `TYPE=MyISAM`. On MySQL 8+ this must be rewritten to
-> `ENGINE=MyISAM`. See [security.md](security.md).
+> All tables use `ENGINE=MyISAM`. The original 2010 dump used the long-obsolete
+> `TYPE=MyISAM` syntax (removed in MySQL 5.5); it has been updated so the schema
+> imports cleanly on modern MySQL.
 
 ## The graph core
 

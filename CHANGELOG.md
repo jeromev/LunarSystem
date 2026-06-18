@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9-alpha] - 2026-06-18
+- Fixed: schema failed to import on modern MySQL — `TYPE=MyISAM` → `ENGINE=MyISAM` (removed in MySQL 5.5)
+- Fixed: fatal parse error on PHP 5.6 — duplicate `static` modifier on `lunaTools::parse_bbcode()`
+- Changed: mask `E_DEPRECATED`/`E_STRICT` so the PHP 5.2/5.3-era idioms don't spam output on PHP 5.6
+- Docker: repoint apt at `archive.debian.org` (Debian 9 "stretch" is off the main mirrors) and pin the `mysql:5.7` service to `linux/amd64`; drop the obsolete Compose `version` key
+- Verified the full Docker stack boots, renders pages, serves the `xml`/`json`/`n3` RDF outputs, and authenticates the seed admin
+
 ## [0.2.8-alpha] - 2026-06-18
 - Added a full technical documentation set under `docs/` (overview, architecture, RDF model, database schema, modules, templating, configuration, installation, security)
 - Linked the documentation from `README.md`

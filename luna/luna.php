@@ -26,8 +26,10 @@ ini_set('display_errors', 0);
 // ENABLE trans_sid
 ini_set('session.use_trans_sid', 1);
 ini_set('arg_separator.output','&amp;');
-// Set error reporting
-error_reporting(E_ALL ^ E_NOTICE);
+// Set error reporting. E_DEPRECATED/E_STRICT are masked because this 2010-era
+// code targets PHP 5.2/5.3 idioms (`=& new`, static-call style) that PHP 5.6
+// flags but which are harmless here.
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 // Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
 if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); } 
 /**
@@ -40,7 +42,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.2.8-alpha';
+	public static $lunaVersion = '0.2.9-alpha';
 	/**
 	 * instance
 	 * @var object

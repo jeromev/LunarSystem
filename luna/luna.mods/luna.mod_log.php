@@ -123,7 +123,8 @@ class mod_log {
 					nu.lid as email,
 					u.password,
 					u.firstname,
-					u.lastname
+					u.lastname,
+					u.login_attempts
 				FROM
 					'.luna::get_ini('DBtables', 'NODES').' nu,
 					'.luna::get_ini('DBtables', 'USERS').' u
@@ -133,6 +134,9 @@ class mod_log {
 			');
 			$user = $res->fetchRow();
 			$res->free();
+			// Throttle: back off on accounts with prior failed attempts. Capped, and a
+			// correct password resets login_attempts below, so this never locks an account.
+			if (!empty($user) && !empty($user->login_attempts)) { sleep(min(intval($user->login_attempts), 5)); }
 			if (empty($user)) { 
 				$inerror++; 
 				$message = sprintf(_("Unknown user %1\$s."), $_POST['email']);

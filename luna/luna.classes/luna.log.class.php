@@ -36,19 +36,35 @@ class lunaLog {
 			$logger = &Log::singleton('mdb2', luna::get_ini('DBtables', 'LOGS'), 'ident', array('db' => $db)); 
 			if (is_object($e) && get_class($e) == 'lunaException') {
 				$e->session = luna::$session;
-				$e->server = $_SERVER;
+				$e->server = self::server_whitelist();
 				$logger->log(serialize($e), $e->getCode());
 			} else if (is_string($e)) {
 				$message = $e;
 				$e = new stdClass();
 				$e->message = $message;
 				$e->session = luna::$session;
-				$e->server = $_SERVER;
+				$e->server = self::server_whitelist();
 				$logger->log(serialize($e), $code);
 			}
 			return true;
 		}
 		return false;
+	}
+	// }}}
+	// {{{ server_whitelist()
+	/**
+	 * A trimmed copy of $_SERVER for logging. The full $_SERVER carries the
+	 * cookie header (incl. the session id), auth headers and env, which should
+	 * not be persisted into luna_logs on every error.
+	 *
+	 * @access private
+	 * @return array
+	 */
+	private static function server_whitelist() {
+		$keep = array('REMOTE_ADDR', 'REQUEST_METHOD', 'REQUEST_URI', 'SERVER_NAME', 'HTTP_HOST', 'HTTP_USER_AGENT', 'HTTP_REFERER', 'REQUEST_TIME');
+		$server = array();
+		foreach ($keep as $k) { if (isset($_SERVER[$k])) { $server[$k] = $_SERVER[$k]; } }
+		return $server;
 	}
 	// }}}
 }

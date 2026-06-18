@@ -48,7 +48,7 @@ class lunaTools {
 	public static function set_cookie($label = false, $data = false, $time = false) {
 		if (empty($label)) { return false; }
 		if (empty($time)) { $time = NOW + lunaSession::$time_out; }
-		if (!setcookie("$label", serialize($data), $time, luna::$site_relative_url)) { return false; }
+		if (!setcookie("$label", json_encode($data), $time, luna::$site_relative_url)) { return false; }
 		return true;
 	}
 	// }}}
@@ -293,7 +293,7 @@ class lunaTools {
 		);
 		$errormsg = $http[$error].' "'.$path.'"';
 		// lunaLog::log($errormsg, PEAR_LOG_NOTICE);
-		$message = sprintf(_($http[$error].": %1\$s."), $path);
+		$message = sprintf(_($http[$error].": %1\$s."), htmlspecialchars($path, ENT_QUOTES));
 		luna::$messages['warning'][] = $message;
 		lunaLog::log($message, PEAR_LOG_NOTICE);
 		header($http[$error]); 
@@ -649,16 +649,13 @@ class lunaTools {
 	 * @return string
 	 */
 	public static function encode_ip() {
+		// Use REMOTE_ADDR only. HTTP_X_FORWARDED_FOR is fully client-controlled,
+		// and trusting it here let an attacker spoof the IP the session is bound
+		// to (see get_user_data()'s session_ip check). If this CMS is ever put
+		// behind a trusted reverse proxy, resolve the real client IP there.
 		$ip = (!empty($_SERVER['REMOTE_ADDR']))? $_SERVER['REMOTE_ADDR'] : getenv('REMOTE_ADDR');
-		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			$private_ip = array('#^0\.#', '#^127\.0\.0\.1#', '#^192\.168\.#', '#^172\.16\.#', '#^10\.#', '#^224\.#', '#^240\.#');
-			foreach (explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']) as $x_ip) {
-				if (preg_match('#([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)#', $x_ip, $ip_list)) {
-					if (($ip = trim(preg_replace($private_ip, $ip, $ip_list[1]))) == trim($ip_list[1])) { break; }
-				}
-			}
-		}
 		$ip_sep = explode('.', $ip);
+		if (count($ip_sep) != 4) { return '00000000'; }
 		return sprintf('%02x%02x%02x%02x', $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
 	}
 	// }}}
@@ -797,9 +794,12 @@ class lunaTools {
 	 * @return boolean
 	 */
 	public static function parse_sort_cookie($lid = '') {
-		if (isset($_COOKIE["$lid".'_sort'])) { 
-			$cookie = self::sanitize(unserialize($_COOKIE["$lid".'_sort'])); 
-			if (!is_array($cookie)) { $cookie = unserialize($cookie); }
+		if (isset($_COOKIE["$lid".'_sort'])) {
+			// json_decode (not unserialize) so a crafted cookie cannot inject a PHP object.
+			$cookie = json_decode($_COOKIE["$lid".'_sort'], true);
+			if (!is_array($cookie)) { return false; }
+			$cookie = self::sanitize($cookie);
+			if (!is_array($cookie)) { return false; }
 			foreach ($cookie as $k => $v) { $_COOKIE[$k] = $v; }
 			return true;
 		}

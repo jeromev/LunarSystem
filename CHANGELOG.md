@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.13-alpha] - 2026-06-18
+- Fixed: `lunaModel::singleton()` guarded on `$this->$instance` (a variable-variable on an undefined name) in a method that is called statically, so the guard never saw the cached instance. Made it `static` and switched to `self::$instance`, matching `luna::singleton()` and `lunaSession::singleton()`.
+- Fixed: `lunaModel::load_node()` array-relationship branch read `is_active` from the literal key `$node['is_activex']` instead of the computed key `$node[$is_active.($i+1)]` (`$is_activex`), so secondary related nodes never got their real `is_active` value.
+- Fixed: `lunaTools::go()` redirect built its URL from an undefined `$alias` in the default branch, so the unauthorised-user redirect (`go('login')`) resolved to an empty alias instead of the login page. It now resolves `$where`, and `exit`s after sending the `Location` header so execution actually stops at the auth gate.
+- Fixed: seed `luna_nodes_map` had a broken guest→group edge `(2, 3), (2, 3)` (forward duplicated, reverse missing); corrected to the symmetric pair `(2, 3), (3, 2)` used by every other edge. Affects fresh database imports only.
+
 ## [0.2.12-alpha] - 2026-06-18
 - Docs: refreshed the `docs/` set after a full code read-through.
   - Fixed stale `luna.php` line-number anchors across `architecture.md`, `configuration.md`, `templating.md`, and `security.md` (they had drifted ~+8 to +11 lines after the timezone commit): `__construct` 190, `set_site_path` 314, `set_requested_path` 303, `load_mods` 381, `transform` 506, `load_ini` 625, `use_trans_sid` 33, stylesheet cascade 575-607.

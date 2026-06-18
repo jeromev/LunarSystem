@@ -358,13 +358,10 @@ class lunaTools {
 	 * @return void
 	 */
 	public static function go($where = 'root', $is_alias = false) {
-		if ($is_alias) {
-			$url = self::link("$where");
-		} else {
-			$url = self::link("$alias");
-		}
+		$url = self::link("$where");
 		if ($sid = self::request('PHPSESSID', array($_GET, $_POST))) { $url = self::append_to_link('PHPSESSID', $sid, $url); }
 		header("location: ".$url);
+		exit;
 	}
 	// }}}
 	// {{{ link()

@@ -42,7 +42,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.2.9-alpha';
+	public static $lunaVersion = '0.2.10-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -183,8 +183,11 @@ class luna {
 	 */
 	private function __construct() { 
 		try { 
-			// First things first: 
-			ini_set('include_path', ini_get('include_path').':'.DIRNAME(__FILE__).'/luna.lib'.':');
+			// First things first: prepend luna.lib so the bundled PEAR/MDB2/Log/etc.
+			// take precedence over any system-installed PEAR in the PHP image. (If the
+			// system PEAR.php wins, MDB2's PEAR::raiseError() resolves to a class
+			// without that method and fatals via __call on the first DB error.)
+			ini_set('include_path', DIRNAME(__FILE__).'/luna.lib'.':'.ini_get('include_path'));
 			// start the timer
 			self::$start = self::set_microtime();
 			// Set the luna Path

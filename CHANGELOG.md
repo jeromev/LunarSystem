@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.2.10-alpha] - 2026-06-18
+- Fixed: fatal `Call to undefined function: MDB2_Driver_mysql::raiseError()` on any database error path. The PHP image ships a newer system PEAR under `/usr/local/lib/php`, and `luna.lib` was *appended* to `include_path`, so MDB2 loaded the system `PEAR.php` (whose `raiseError` the bundled MDB2 cannot reach) instead of the bundled one. Now `luna.lib` is *prepended* so the bundled PEAR/MDB2/Log set always wins. This previously broke every insert/update (MDB2's id-sequence logic deliberately triggers and catches errors).
+
 ## [0.2.9-alpha] - 2026-06-18
 - Fixed: schema failed to import on modern MySQL — `TYPE=MyISAM` → `ENGINE=MyISAM` (removed in MySQL 5.5)
 - Fixed: fatal parse error on PHP 5.6 — duplicate `static` modifier on `lunaTools::parse_bbcode()`

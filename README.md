@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.2.11-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.2.12-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 ## Quick start (Docker)
 
@@ -68,9 +68,9 @@ js/                            jQuery + CKEditor (rich-text editing)
 |---|---|---|
 | **PHP 5.3–5.6 only** | Hard limit | `mysql_*` removed in PHP 7; PEAR MDB2 does not support PDO |
 | **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
-| **Credentials in repo** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` contains real credentials. Untrack with `git rm --cached luna/luna.domains/lunarsystem.org/ini/db.ini` |
-| **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs |
-| **Cache files tracked** | Repo noise | `luna/luna.domains/lunarsystem.org/cache/` contains cached data committed to git |
+| **DB credentials on disk** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` holds real credentials in the working tree. It's **gitignored and was never committed** — rotate the credentials; there's nothing to untrack |
+| **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs; no `session_regenerate_id()` on login (fixation) |
+| **No CSRF / SQLi in `mod_journal`** | Security | No anti-CSRF tokens on admin actions; `$_GET['start']` is interpolated into a `LIMIT` clause. See [docs/security.md](docs/security.md) |
 
 The Docker stack now boots cleanly: the schema was updated from the obsolete `TYPE=MyISAM` to `ENGINE=MyISAM`, a duplicate-modifier parse error was fixed, and the build repoints apt at `archive.debian.org`. See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 

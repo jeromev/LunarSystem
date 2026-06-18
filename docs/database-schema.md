@@ -122,7 +122,8 @@ Read at bootstrap by `lunaTools::load_config()` and editable from the admin UI.
 | `value` | `varchar(255)` | Value |
 
 Seeded keys include: `sitename`, `site_desc`, `author`, `general_email`,
-`version`, `keywords`, `timezone`, `langs` (e.g. `en`, `fr`), `session_length`
+`version`, `keywords`, `timezone`, `langs` (a single comma-separated string,
+seeded as `en, fr` — split on `,` by `lunaTools::set_language`), `session_length`
 (`604800` = 7 days), `cache_timeout` (`3600`), `startdate`, `root_module`,
 `disable` / `disable_txt`.
 
@@ -131,7 +132,7 @@ Written by `lunaLog` through PEAR Log's mdb2 handler.
 
 | Column | Type | Meaning |
 |---|---|---|
-| `id` | `int` PK | — |
+| `id` | `int(11)` PK, auto-inc | The only id PK declared **without** `unsigned` (every other table uses `int unsigned`) |
 | `logtime` | timestamp | When |
 | `ident` | `varchar(16)` | Source identifier |
 | `priority` | `int` | PEAR_LOG_* level |

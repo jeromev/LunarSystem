@@ -12,14 +12,21 @@ templates and no template engine — the entire presentation layer is XSL.
 | `luna.domains/<domain>/xsl/html.xsl/` | Per-domain overrides (e.g. lunarsystem.org ships a full set) |
 | `luna.domains/luna.default/xsl/` | Empty — the default domain falls back to the built-ins |
 
+> **Naming:** built-in stylesheets carry a `luna.` prefix (e.g.
+> `luna.admin.html.xsl`); per-domain override stylesheets **drop** it (e.g.
+> `admin.html.xsl`). This matches the cascade below — the `SITEPATH` (domain)
+> branches look for the un-prefixed name, the `XSL_PATH` (built-in) branches for
+> the `luna.`-prefixed one.
+
 Each output format has its own directory convention: `<format>.xsl/` (so
 `html.xsl/`, and by extension the XML/JSON/N3 paths, though non-HTML formats are
 serialised directly by ARC2 rather than via XSLT — see below).
 
 ## Stylesheet selection (the cascade)
 
-`luna::transform()` ([luna.php:562-596](../luna/luna.php#L562)) picks a stylesheet
-by trying paths in order, first hit wins. Roughly, for output format `html` and a
+`luna::transform()` ([luna.php:506](../luna/luna.php#L506)) picks a stylesheet by
+trying paths in order, first hit wins (the cascade itself is
+[luna.php:575-607](../luna/luna.php#L575)). Roughly, for output format `html` and a
 page whose `lid` is `$lid`:
 
 1. `SITEPATH/xsl/html.xsl/<lid>.html.xsl` — domain, page-specific

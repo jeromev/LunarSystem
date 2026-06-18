@@ -40,19 +40,26 @@ triggers a fatal error).
 
 ## Phase 1 — Bootstrap
 
-The `luna::__construct()` method ([luna.php:182](../luna/luna.php#L182)) runs a
-fixed sequence. Each step throws a `lunaException` (logged, then `die()`) on
-failure:
+The `luna::__construct()` method ([luna.php:190](../luna/luna.php#L190)) runs a
+fixed sequence wrapped in a `try`/`catch (lunaException)`. Most steps throw a
+`lunaException` on failure (caught, logged, then `die()`); the earliest steps
+(site path, ini load, core-class includes) `die()` or `trigger_error()` directly
+with a message instead ([luna.php:203-213](../luna/luna.php#L203)):
 
-1. **Environment setup** ([luna.php:20-32](../luna/luna.php#L20)) — `define('NOW', time())`,
-   disable `register_globals`/`display_errors`, enable `session.use_trans_sid`,
-   set `error_reporting(E_ALL ^ E_NOTICE)`, and a `magic_quotes` compatibility guard.
-2. **Resolve the site path** (`set_site_path()`, [luna.php:303](../luna/luna.php#L303)) —
+1. **Environment setup** ([luna.php:20-40](../luna/luna.php#L20)) — `define('NOW', time())`,
+   set a default timezone (honour an existing `php.ini` `date.timezone`, else UTC),
+   disable `register_globals`/`display_errors`, enable `session.use_trans_sid`, set
+   `error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT)`, and a
+   `magic_quotes` compatibility guard. (`display_errors` is turned back **on** for
+   admins later when `DEBUG` is set — [luna.php:217](../luna/luna.php#L217).)
+2. **Resolve the site path** (`set_site_path()`, [luna.php:314](../luna/luna.php#L314)) —
    walks `HTTP_HOST` segment by segment looking for a matching directory under
    `luna/luna.domains/`, falling back to `luna.default/`. This logic is adapted
-   verbatim from **Drupal 5.1's `conf_path()`**. Defines `SITEPATH`, `site_uri`,
-   `site_relative_url`.
-3. **Load the ini** (`load_ini()`, [luna.php:614](../luna/luna.php#L614)) —
+   verbatim from **Drupal 5.1's `conf_path()`**. Defines the `SITEPATH` constant
+   and sets the `site_uri` / `site_relative_url` static properties.
+   (`set_requested_path()` at [luna.php:303](../luna/luna.php#L303) is a *different*
+   method — it normalises the requested URL path; see step 9.)
+3. **Load the ini** (`load_ini()`, [luna.php:625](../luna/luna.php#L625)) —
    parses `<domain>/ini/luna.ini` and turns `[Paths]` and `[Constantes]` entries
    into PHP constants. See [configuration.md](configuration.md).
 4. **Require the core classes** — log, tools, db, session, model.
@@ -82,7 +89,7 @@ user, and site metadata.
 
 ## Phase 2 — Load mods
 
-`load_mods()` ([luna.php:370](../luna/luna.php#L370)) is where a page gets its
+`load_mods()` ([luna.php:381](../luna/luna.php#L381)) is where a page gets its
 content. A single SQL query joins the triple tables to find every mod that is
 **(a)** linked to the current page **and (b)** linked to an access level the
 current user holds:
@@ -95,7 +102,7 @@ AND tl.lid = 'level' AND l.tid = tl.id
 AND m.is_active = 1 AND l.is_active = 1
 ```
 
-For each matching mod ([luna.php:410-477](../luna/luna.php#L410)):
+For each matching mod ([luna.php:421-486](../luna/luna.php#L421)):
 
 1. Skip it unless the user actually holds the mod's level
    (`$session->user->levels[$level_nid]`).
@@ -111,12 +118,15 @@ For each matching mod ([luna.php:410-477](../luna/luna.php#L410)):
 Finally it merges any flash messages into the model. The mod system is detailed
 in [modules.md](modules.md).
 
-> **AJAX short-circuit:** during `load_mods`/`transform`, if `AJAX` is true the
-> request `die()`s early after the model is populated — XSLT is skipped.
+> **AJAX short-circuit:** at the start of `transform()`
+> ([luna.php:568](../luna/luna.php#L568)), if `AJAX` is true the request `die()`s
+> — XSLT is skipped and only the model-population side effects of `load_mods()`
+> persist. `load_mods()` itself only special-cases AJAX to skip the post-submit
+> `OPTIMIZE TABLE` ([luna.php:477](../luna/luna.php#L477)).
 
 ## Phase 3 — Transform
 
-`transform()` ([luna.php:495](../luna/luna.php#L495)) assembles the remaining
+`transform()` ([luna.php:506](../luna/luna.php#L506)) assembles the remaining
 view data and renders:
 
 1. Merge in the current user, available languages, available output formats, the
@@ -124,7 +134,7 @@ view data and renders:
 2. If `output_format != html`, call `lunaModel::dump($format)` which serialises
    the model with **ARC2** and exits (RDF/XML, JSON, or N-Triples).
 3. Otherwise pick an XSLT stylesheet by a **cascading file lookup** keyed on the
-   page `lid` and output format ([luna.php:562-596](../luna/luna.php#L562)):
+   page `lid` and output format ([luna.php:575-607](../luna/luna.php#L575)):
    domain override → built-in, page-specific → `default`.
 4. Call `lunaModel::transform($XSLfile)`, which serialises the model to RDF/XML
    via ARC2 and runs PHP's `XSLTProcessor`. The result is cached (Cache_Lite)
@@ -166,7 +176,11 @@ HTTP response  ◄────────────────────�
 ## Error handling
 
 Errors are exceptions of type `lunaException`. They are caught at the top of
-each phase, passed to `lunaLog::log()` (which writes to the `luna_logs` table
-via PEAR Log, and dumps to screen when `DEBUG`/`IS_ADMIN`), then the request
-`die()`s. HTTP error pages (404, etc.) are produced by
-`lunaTools::raise_error_page()`.
+each phase and passed to `lunaLog::log()`
+([luna.log.class.php:31](../luna/luna.classes/luna.log.class.php#L31)). The two
+output paths are **mutually exclusive**: when `DEBUG` *and* `IS_ADMIN` are set,
+`log()` dumps the exception to screen via `lunaTools::debug()` (which `die()`s),
+so the DB write is skipped; otherwise it writes a serialised record (including
+`$_SERVER` and the session — see [security.md](security.md)) to the `luna_logs`
+table via PEAR Log's `mdb2` handler. HTTP error pages (404, etc.) are produced
+by `lunaTools::raise_error_page()`.

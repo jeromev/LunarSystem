@@ -93,8 +93,9 @@ The trick that makes a single edge table work as RDF: `load_nodes()` reconstruct
 
 ### Mutators (write the graph + DB)
 - `set_property($node, $lid, $value, $ns)` — add/update a property on a node.
-- `insert()`, `link()`, `update()`, `unlink()` — node and edge CRUD that writes
-  through to `luna_nodes` / `luna_nodes_map` (used by the admin mods).
+- `insert()`, `update()`, `delete()`, `link()`, `unlink()` — node and edge CRUD
+  that writes through to `luna_nodes` / `luna_nodes_map` (used by the admin mods);
+  `exists()` tests whether a node is present.
 
 ### Loaders (project SQL/PHP data into the model)
 - `load_node()` / `load_nodes()` — DB rows → typed nodes + relationships.

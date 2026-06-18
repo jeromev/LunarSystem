@@ -174,7 +174,7 @@ class luna {
 	 * @access	public
 	 * @var		array
 	 */
-	public static $output_formats = array('html', 'xml', 'json', 'n3'); // 'html', 'xml', 'json', 'n3', 'turtle'
+	public static $output_formats = array('html', 'xml', 'json', 'n3', 'jsonld'); // 'html', 'xml', 'json', 'n3', 'turtle', 'jsonld'
 	/**
 	 * mods
 	 * @access	public
@@ -606,8 +606,12 @@ class luna {
 				}
 			}
 			if (!$xslok) { throw new lunaException(_('Error: cannot load XSL.'), PEAR_LOG_CRIT); } 
-			if (!$output = self::$model->transform($XSLfile)) { throw new lunaException(_('Error: cannot transform XSL.'), PEAR_LOG_CRIT); } 
+			if (!$output = self::$model->transform($XSLfile)) { throw new lunaException(_('Error: cannot transform XSL.'), PEAR_LOG_CRIT); }
 			// $output = str_replace('{LOADINGTIME}', (round(self::set_microtime() - luna::$start, 4).'s. '), $output);
+			// Embed schema.org JSON-LD structured data in the <head> (Linked Data, Phase 0 — see docs/linked-data.md).
+			if (stripos($output, '</head>') !== false && ($ld = self::$model->to_jsonld(true))) {
+				$output = preg_replace('#</head>#i', "<script type=\"application/ld+json\">\n".$ld."\n</script>\n</head>", $output, 1);
+			}
 			return $output;
 		} catch (lunaException $e) {
 			lunaLog::log($e);

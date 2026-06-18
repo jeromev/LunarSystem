@@ -458,14 +458,87 @@ class lunaModel {
 				header('Content-Type: application/rdf+turtle');
 				if ($return) { return $doc; }
 				die($doc);
+			case 'jsonld':
+				return $this->to_jsonld($return);
 			case 'xml':
 			default:
-				$ser = ARC2::getRDFXMLSerializer($this->conf); 
-				$doc = $ser->getSerializedIndex($index); 
+				$ser = ARC2::getRDFXMLSerializer($this->conf);
+				$doc = $ser->getSerializedIndex($index);
 				if ($return) { return $doc; }
 				header('Content-Type: application/rdf+xml');
 				die($doc);
 		}
+	}
+	// }}}
+	// {{{ to_jsonld()
+	/**
+	 * Project the current page (and its text blocks) into compact schema.org
+	 * JSON-LD, built from the same in-memory model that drives the HTML view.
+	 * Phase-0 prototype of the Linked Data direction — see docs/linked-data.md.
+	 * In Phase A this same shape comes from a SPARQL CONSTRUCT instead.
+	 *
+	 * @access public
+	 * @param boolean $return return the JSON string instead of emitting it
+	 * @return string|void
+	 */
+	public function to_jsonld($return = false) {
+		$base    = rtrim(luna::$site_uri, '/');
+		$rdf     = $this->conf['ns']['rdf'];
+		$rdfs    = $this->conf['ns']['rdfs'];
+		$luna    = $this->conf['ns']['luna'];
+		$owl     = $this->conf['ns']['owl'];
+		$pagenid = defined('PAGENID')? PAGENID : false;
+		$pageuri = $this->node_path.'/'.$pagenid;
+		// first value of a predicate on an ARC2-style node, or null
+		$first = function($node, $pred) { return isset($node[$pred][0]['value'])? $node[$pred][0]['value'] : null; };
+
+		$doc = array('@context' => 'https://schema.org/');
+		if ($pagenid !== false && isset($this->index[$pageuri])) {
+			$page = $this->index[$pageuri];
+			$slug = $first($page, $luna.'lid');
+			$name = $first($page, $rdfs.'label');
+			$doc['@type'] = 'WebPage';
+			$doc['@id']   = $base.'/id/'.rawurlencode($slug);
+			if ($name !== null) { $doc['name'] = $name; }
+			$doc['url'] = $base.'/'.ltrim(luna::$path, '/');
+			if (defined('LANG')) { $doc['inLanguage'] = LANG; }
+			// parent -> schema:isPartOf (skip the root self-link)
+			$parent = $first($page, $owl.'isChildOf');
+			if ($parent && $parent != $pageuri && isset($this->index[$parent])) {
+				$pslug = $first($this->index[$parent], $luna.'lid');
+				if ($pslug !== null) { $doc['isPartOf'] = array('@id' => $base.'/id/'.rawurlencode($pslug)); }
+			}
+			// text blocks attached to this page -> schema:hasPart Articles
+			$parts = array();
+			foreach ($this->index as $node) {
+				if ($first($node, $rdf.'type') !== $luna.'text' || !isset($node[$luna.'page'])) { continue; }
+				$belongs = false;
+				foreach ($node[$luna.'page'] as $p) { if ($p['value'] == $pageuri) { $belongs = true; break; } }
+				if (!$belongs) { continue; }
+				$part = array('@type' => 'Article');
+				$headline = $first($node, $rdfs.'label');
+				if ($headline !== null) { $part['headline'] = $headline; }
+				if (isset($node[$luna.'content'][0]['value'])) {
+					$part['articleBody'] = trim(strip_tags($node[$luna.'content'][0]['value']));
+					if (isset($node[$luna.'content'][0]['lang'])) { $part['inLanguage'] = $node[$luna.'content'][0]['lang']; }
+				}
+				$parts[] = $part;
+			}
+			if (count($parts)) { $doc['hasPart'] = $parts; }
+		} else {
+			// no content page (e.g. an admin screen) -> a minimal WebSite node
+			$doc['@type'] = 'WebSite';
+			$doc['@id']   = $base.'/id/site';
+			$doc['url']   = $base.'/';
+			if (isset(luna::$data['sitename'])) { $doc['name'] = luna::$data['sitename']; }
+		}
+		// JSON_HEX_TAG/AMP keep the block safe inside <script> in the HTML <head>.
+		$flags = 0;
+		foreach (array('JSON_PRETTY_PRINT', 'JSON_UNESCAPED_UNICODE', 'JSON_UNESCAPED_SLASHES', 'JSON_HEX_TAG', 'JSON_HEX_AMP') as $f) { if (defined($f)) { $flags |= constant($f); } }
+		$json = json_encode($doc, $flags);
+		if ($return) { return $json; }
+		header('Content-Type: application/ld+json');
+		die($json);
 	}
 	// }}}
 	// {{{ load_messages()

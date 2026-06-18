@@ -1,0 +1,82 @@
+# LunarSystem
+
+A PHP/MySQL CMS (v0.2.7-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+
+## Quick start (Docker)
+
+```bash
+docker-compose up --build -d
+```
+
+Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
+
+Log in as **`admin@lunarsystem.local`** with password **`luna`**.
+
+> MySQL is exposed on host port `3307` to avoid conflicts with a local MySQL on `3306`.
+
+## Manual setup
+
+Requirements: Apache 2 + `mod_rewrite`, **PHP 5.3–5.6**, MySQL 5.x, PHP extensions: `mysql`, `xsl`, `mbstring`, `gettext`.
+
+> PHP 7+ is **not supported** — the `mysql_*` extension was removed in PHP 7 and the bundled PEAR MDB2 library depends on it.
+
+1. Copy `luna/luna.domains/luna.default/ini/db.example.ini` → `db.ini` and fill in your credentials.  
+   *(The file at `luna/luna.domains/luna.default/ini/db.ini` already contains Docker defaults.)*
+2. Import `luna/luna.sql/luna.mysql.sql` into your MySQL database.
+3. Ensure the `luna/luna.domains/<your-domain>/cache/` directory is writable by the web server.
+4. The root `.htaccess` handles clean URL rewriting — confirm `AllowOverride All` is set in Apache.
+5. Open the site in a browser.
+
+### Domain configuration
+
+The CMS detects the active domain by walking `$_SERVER['HTTP_HOST']` and looking for a matching directory under `luna/luna.domains/`. If none is found it falls back to `luna/luna.domains/luna.default/`.
+
+To add a site-specific config: create `luna/luna.domains/<hostname>/ini/luna.ini` and `db.ini`.
+
+## Output formats
+
+Append `?output=xml`, `?output=json`, or `?output=n3` to any page URL to receive the raw RDF model instead of HTML.
+
+## Project structure
+
+```
+index.php                      Entry point
+.htaccess                      Clean URL rewrite rules
+luna/
+  luna.php                     Main luna class (bootstrap, routing, XSLT rendering)
+  luna.classes/
+    luna.model.class.php       RDF model (in-memory triple store, ARC2, XSLT)
+    luna.db.class.php          Database wrapper (PEAR MDB2)
+    luna.session.class.php     DB-backed session handler
+    luna.tools.class.php       Utilities (sanitisation, URL building, i18n, ACL)
+    luna.log.class.php         Error logging (PEAR Log)
+  luna.mods/                   Pluggable page modules (admin, journal, node, …)
+  luna.xsl/luna.html.xsl/      Built-in XSLT templates (HTML output)
+  luna.lib/                    Vendored libraries: PEAR MDB2, PEAR Log, Cache_Lite, ARC2
+  luna.domains/
+    luna.default/              Fallback site configuration (used for local/Docker)
+    lunarsystem.org/           Original production configuration
+  luna.sql/luna.mysql.sql      Database schema + seed data
+  luna.locale/                 gettext translations (en_EN, en_US, fr_FR)
+css/                           Stylesheets
+js/                            jQuery + CKEditor (rich-text editing)
+```
+
+## Known issues
+
+| Issue | Impact | Notes |
+|---|---|---|
+| **PHP 5.3–5.6 only** | Hard limit | `mysql_*` removed in PHP 7; PEAR MDB2 does not support PDO |
+| **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
+| **Credentials in repo** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` contains real credentials. Untrack with `git rm --cached luna/luna.domains/lunarsystem.org/ini/db.ini` |
+| **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs |
+| **Legacy SQL syntax** | Compatibility | Schema uses `TYPE=MyISAM`; MySQL 8+ requires `ENGINE=MyISAM` |
+| **Cache files tracked** | Repo noise | `luna/luna.domains/lunarsystem.org/cache/` contains cached data committed to git |
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+GPL v2 — see [luna/LICENSE.txt](luna/LICENSE.txt).

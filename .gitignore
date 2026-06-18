@@ -1,0 +1,13 @@
+# Database credentials — copy db.example.ini and fill in your values
+luna/luna.domains/*/ini/db.ini
+
+# Cache files (writable dir kept, contents ignored)
+luna/luna.domains/*/cache/*
+!luna/luna.domains/*/cache/.gitkeep
+
+# Subversion metadata (old VCS artifacts)
+**/.svn/
+
+# macOS
+.DS_Store
+Thumbs.db

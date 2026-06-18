@@ -1,0 +1,672 @@
+<?php 
+/**
+ * Welcome to the lunarSystem. This is the main class.
+ *
+ * PHP versions 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * For more details, see <http://www.gnu.org/copyleft/gpl.html>
+ *
+ * @author		Odradek <odradek@lunarsystem.org>
+ * @license		http://www.gnu.org/copyleft/gpl.html  GPL
+ * @link		http://lunarsystem.org
+ * @package		lunarSystem
+ * @since		2006-07-03
+ */
+/**
+ * Basic setup
+ */
+// Set time one time for all
+define('NOW', time()); 
+// Disable register_globals
+ini_set('register_globals', 0); 
+// Turn OFF/ON public error display
+ini_set('display_errors', 0);
+// ENABLE trans_sid
+ini_set('session.use_trans_sid', 1);
+ini_set('arg_separator.output','&amp;');
+// Set error reporting
+error_reporting(E_ALL ^ E_NOTICE);
+// Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
+if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); } 
+/**
+ * luna Class
+ */
+// {{{ 
+class luna {	
+	/**
+	 * lunaVersion
+	 * @access	public
+	 * @var		string
+	 */
+	public static $lunaVersion = '0.2.7-alpha';
+	/**
+	 * instance
+	 * @var object
+	 * @access	private
+	 */
+	private static $instance;
+	/**
+	 * messages
+	 * @var		array
+	 * @access	public
+	 */
+	public static $messages = array();
+	/**
+	 * protected_lids
+	 * @var		array
+	 * @access	private
+	 */
+	private static $protected_lids = array('admin', 'admin_groups', 'admin_levels', 'admin_users', 'admin_mods', 'admin_pages', 'login', 'logout');
+	/**
+	 * requested_nid
+	 * @var		integer
+	 * @access	public
+	 */
+	public static $requested_nid = 0;
+	/**
+	 * SitePath
+	 * @access	public
+	 * @var		string
+	 */
+	public static $site_path = '';
+	/**
+	 * lunaSession
+	 * @access	public
+	 * @var		string
+	 */
+	public static $session = null;
+	/**
+	 * language
+	 * @access	public
+	 * @var		string
+	 */
+	public static $lang = 'en-US';
+	/**
+	 * data model
+	 * @access	public
+	 * @var		object
+	 */
+	public static $model = NULL;
+	/**
+	 * ini vars
+	 * @access	public
+	 * @var		array
+	 */
+	public static $ini = array();
+	/**
+	 * page_node
+	 * @access	public
+	 * @var		object
+	 */
+	public static $page_node = null;
+	/**
+	 * Data
+	 * @access	public
+	 * @var		array
+	 */
+	public static $data = array();
+	/**
+	 * vocabulary
+	 * @access	public
+	 * @var		array
+	 */
+	public static $vocabulary = array();
+	/**
+	 * site_uri
+	 * @access	public
+	 * @var		string
+	 */
+	public static $site_uri = '';
+	/**
+	 * site_relative_url
+	 * @access	public
+	 * @var		string
+	 */
+	public static $site_relative_url = '';
+	/**
+	 * cache
+	 * @access	public
+	 * @var		boolean
+	 */
+	public static $cache = false;
+	/**
+	 * start
+	 * @access	public
+	 * @var		array
+	 */
+	public static $start = 0;
+	/**
+	 * lunaPath
+	 * @access	public
+	 * @var		string
+	 */
+	public static $lunaPath = false;
+	/**
+	 * cache_timeout. 
+	 * @access	public
+	 * @var		integer
+	 */
+	public static $cache_timeout = 604800; // 604800 = 7 days
+	/**
+	 * URL Path: where we are
+	 * @access	public
+	 * @var		string
+	 */
+	public static $path = '';
+	/**
+	 * outPutFormat
+	 * @access	public
+	 * @var		string
+	 */
+	public static $output_format = 'html';
+	/**
+	 * output_formats
+	 * @access	public
+	 * @var		array
+	 */
+	public static $output_formats = array('html', 'xml', 'json', 'n3'); // 'html', 'xml', 'json', 'n3', 'turtle'
+	/**
+	 * mods
+	 * @access	public
+	 * @var		array
+	 */
+	public static $mods = array();
+	// {{{ constructor
+	/**
+	 * Constructor.
+	 * @access	private
+	 * @return void
+	 */
+	private function __construct() { 
+		try { 
+			// First things first: 
+			ini_set('include_path', ini_get('include_path').':'.DIRNAME(__FILE__).'/luna.lib'.':');
+			// start the timer
+			self::$start = self::set_microtime();
+			// Set the luna Path
+			self::$lunaPath = preg_replace('@^\/+(.*?)\/+$@', '/$1/', '/'.DIRNAME(__FILE__).'/');
+			define('LUNAPATH', self::$lunaPath);
+			// Define Site Paths
+			if (!$this->set_site_path()) { die(_('Error: cannot set site path.')); } 
+			// load basic prefs
+			if (!self::$ini = $this->load_ini()) { die(_('Error: cannot load ini.')); } 
+			// add the include path if needed.
+			if (self::get_ini('Constantes', 'INCLUDEPATH')) { ini_set('include_path', ini_get('include_path').':'.self::get_ini('Constantes', 'INCLUDEPATH').':'); } 
+			// require lunar Classes
+			if (!require_once 'luna.classes/luna.log.class.php') { trigger_error(_('Error: cannot find lib: ').'luna.exception.class', E_USER_ERROR); } 
+			if (!require_once 'luna.classes/luna.tools.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.tools.class', PEAR_LOG_CRIT); } 
+			if (!require_once 'luna.classes/luna.db.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.db.class', PEAR_LOG_CRIT); } 
+			if (!require_once 'luna.classes/luna.session.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.session.class', PEAR_LOG_CRIT); } 
+			if (!require_once 'luna.classes/luna.model.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.model.class', PEAR_LOG_CRIT); } 
+			// clean $_GET, $_POST, $_COOKIE, $_SESSION & $_REQUEST
+			lunaTools::sanitize_inputs(); //lunaTools::debug();
+			// display errors if the DEBUG constant is set to 1.
+			if (self::get_ini('Constantes', 'DEBUG')) { ini_set('display_errors', 1); } 
+			// check cache
+			if (!lunaTools::check_cache()) { throw new lunaException(_('Error: cannot set cache.'), PEAR_LOG_CRIT); } 
+			// turn on/off Ajax
+			define('AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')? true : false);
+			// connect to the database
+			if (!lunaDB::prepare()) { throw new lunaException(_('Error: cannot prepare the database.'), PEAR_LOG_CRIT); } 
+			if (!lunaDB::connect()) { throw new lunaException(_('Error: cannot connect to the database.'), PEAR_LOG_CRIT); } 
+			// load config
+			if (!self::$ini['config'] = lunaTools::load_config()) { throw new lunaException(_('Error: cannot connect load config.'), PEAR_LOG_CRIT); } 
+			// set requested path
+			if (!$this->set_requested_path()) { throw new lunaException(_('Error: cannot set requested path.'), PEAR_LOG_CRIT); } 
+			// Create a session object
+			if (!self::$session = lunaSession::singleton()) { throw new lunaException(_('Error: cannot create a lunaSession object.'), PEAR_LOG_CRIT); } 
+			// Start the session
+			if (!self::$session->start()) { throw new lunaException(_('Error: cannot start the lunaSession.'), PEAR_LOG_CRIT); } 
+			// set language
+			if (!self::$lang = lunaTools::set_language()) { throw new lunaException(_('Error: cannot set language.'), PEAR_LOG_CRIT); } 
+			// set output format
+			if (!self::$output_format = lunaTools::set_output_format()) { throw new lunaException(_('Error: cannot set output format.'), PEAR_LOG_CRIT); }
+			// build RDF model
+			if (!self::$model = lunaModel::singleton()) { throw new lunaException(_('Error: cannot create RDF object.'), PEAR_LOG_CRIT); } //lunaTools::debug(self::$model);
+			// if user is admin, disable cache
+			if (lunaTools::user_can_access_level(self::$session->user, 'level_admin')) { 
+				self::$cache = false; 
+				define('IS_ADMIN', true); 
+			} else {
+				define('IS_ADMIN', false); 
+			}
+			// load Page data. If the page does not exist, output a 404.
+			if (!self::$page_node = self::$model->get_page_node_from_alias(self::$path, 'page')) { lunaTools::raise_error_page('404', self::$path); } 
+			// Define current page NID
+			if (!$page_nid = self::$model->get_nid(self::$page_node)) { throw new lunaException(_('Error: cannot find page nid.'), PEAR_LOG_CRIT); }
+			define('PAGENID', $page_nid); 
+			// Define current page LID
+			if (!$page_lid = self::$model->get_lid(self::$page_node)) { throw new lunaException(_('Error: cannot find page lid.'), PEAR_LOG_CRIT); }
+			define('PAGELID', $page_lid); 
+			// Check privileges. If user is unauthorized, send him to login
+			if (!lunaTools::check_privileges()) { lunaTools::go('login'); } 
+			if (!in_array(self::$output_format, self::$output_formats)) { self::$output_format = isset(self::$output_formats[0])? self::$output_formats[0] : 'html'; } 
+			// Load texts associated with the page
+			self::$model->merge_index(self::$model->load_texts(0, PAGENID));
+			// Collect Data
+			if (!self::$data['lid'] = self::$model->get_lid(self::$page_node)) { throw new lunaException(_('Error: cannot find page lid.'), PEAR_LOG_CRIT); } 
+			self::$data['lunaversion'] = self::$lunaVersion;
+			self::$data['site_uri'] = self::$site_uri;
+			self::$data['site_relative_url'] = self::$site_relative_url;
+			self::$data['sitename'] = _(self::get_ini('config', 'sitename'));
+			self::$data['site_desc'] = self::get_ini('config', 'site_desc');
+			self::$data['site_version'] = self::get_ini('config', 'version');
+			self::$data['clean_urls'] = CLEAN_URLS;
+			self::$data['author'] = self::get_ini('config', 'author');
+			self::$data['general_email'] = self::get_ini('config', 'general_email');
+			self::$data['lang'] = self::$lang;
+			return true; 
+		} catch (lunaException $e) {
+			lunaLog::log($e);
+			die();
+		}
+	}
+	// }}}
+	// {{{ singleton()
+	/**
+	 * @access public
+	 * @return object
+	 */
+	public static function singleton() {
+		if (!isset(self::$instance)) {
+			$c = __CLASS__;
+			self::$instance = new $c;
+		}
+		return self::$instance;
+	}
+	// }}}
+	// {{{ __clone()
+	/**
+	 * @access public
+	 * @return void
+	 */
+	public function __clone() { trigger_error('Lunar clones are not allowed.', E_USER_ERROR); }
+	// }}}
+	// {{{ set_site_paths()
+	/**
+	 * @access private
+	 * @return boolean
+	 */
+	private function set_requested_path() { 
+		// set requested path
+		self::$path = preg_replace('@^\/*(.*?)\/*$@', '$1', lunaTools::request('path')); 
+		return true;
+	}
+	// }}}
+	// {{{ set_site_path()
+	/**
+	 * @access private
+	 * @return boolean
+	 */
+	private function set_site_path() { 
+		$site_path = LUNAPATH.'luna.domains';
+		$sitefound = false;
+		// {{{ Copied from Drupal 5.1 function conf_path() (file: bootstrap.inc, line: 195, license: GPL 2)
+			/**
+			 * Find the appropriate configuration directory.
+			 *
+			 * Try finding a matching configuration directory by stripping the website's
+			 * hostname from left to right and pathname from right to left. The first
+			 * configuration file found will be used; the remaining will ignored. If no
+			 * configuration file is found, return a default value '$site_path/luna.Default/'.
+			 *
+			 * Example for a fictitious site installed at
+			 * http://www.mywebsite.org:8080/mysite/test/ the 'luna.ini' is searched in
+			 * the following directories:
+			 *
+			 *  1. $site_path/8080.www.mywebsite.org.mysite.test/
+			 *  2. $site_path/www.mywebsite.org.mysite.test/
+			 *  3. $site_path/mywebsite.org.mysite.test/
+			 *  4. $site_path/org.mysite.test/
+			 *  5. $site_path/8080.www.mywebsite.org.mysite/
+			 *  6. $site_path/www.mywebsite.org.mysite/
+			 *  7. $site_path/mywebsite.org.mysite/
+			 *  8. $site_path/org.mysite/
+			 *  9. $site_path/8080.www.mywebsite.org/
+			 * 10. $site_path/www.mywebsite.org/
+			 * 11. $site_path/mywebsite.org/
+			 * 12. $site_path/org/
+			 * 13. $site_path/luna.Default/
+			 */
+			$uri = explode('/', $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_FILENAME']);
+			$server = explode('.', implode('.', array_reverse(explode(':', rtrim($_SERVER['HTTP_HOST'], '.')))));
+			for ($i = count($uri) - 1; $i > 0; $i--) {
+				for ($j = count($server); $j > 0; $j--) {
+					$dir = implode('.', array_slice($server, -$j)).implode('.', array_slice($uri, 0, $i));
+					if (file_exists("$site_path/$dir/ini/luna.ini")) { 
+						$site_path = "$site_path/$dir/";
+						$sitefound = true;
+						break;
+					}
+				}
+			}
+		// }}} end drupal
+		if ($sitefound == false) { $site_path = "$site_path/luna.default/"; }
+		self::$site_path = $site_path; 
+		//  {{{ Copied from Drupal 5.1 function conf_init() (file: bootstrap.inc, line: 235, license: GPL 2)
+			$base_root = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http'; 
+			$base_url = $base_root .= '://'. $_SERVER['HTTP_HOST']; 
+			if ($dir = trim(dirname($_SERVER['PHP_SELF']), '\,/')) { 
+				$base_path = "/$dir"; 
+			} else {
+				$base_path = '';
+			}
+		// }}} end drupal
+		self::$site_uri = $base_url.$base_path; 
+		self::$site_relative_url = $base_path.'/';
+		if (!defined('SITEPATH')) { define('SITEPATH', self::$site_path); }
+		return true;
+	}
+	// }}}
+	// {{{ load_mods()
+	/**
+	 * Load all the modules from the database into the xml
+	 *
+	 * @access	public
+	 * @return	boolean
+	 */
+	public function load_mods() {
+		try {
+			if (self::$cache) { $cache_obj =& new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
+			if (self::$cache && ($cache_str = $cache_obj->get('node-'.PAGENID.'.mods'))) {
+				$nodes = unserialize($cache_str);
+			} else {
+				// load mods from db
+				$res = lunaDB::query('
+					SELECT
+						DISTINCT m.nid,
+						m.lid,
+						m.is_active,
+						l.nid as nid2,
+						l.lid as lid2,
+						l.is_active as is_active2
+					FROM
+						'.self::get_ini('DBtables', 'NODES').' m,
+						'.self::get_ini('DBtables', 'NODES').' l,
+						'.self::get_ini('DBtables', 'NODES_MAP').' pm,
+						'.self::get_ini('DBtables', 'NODES_MAP').' ml,
+						'.self::get_ini('DBtables', 'CLASSES').' tm,
+						'.self::get_ini('DBtables', 'CLASSES').' tl
+					WHERE
+						pm.nid1 = '.lunaDB::quote(PAGENID).' AND pm.nid2 = m.nid
+						AND ml.nid1 = m.nid AND ml.nid2 = l.nid
+						AND tm.lid = '.lunaDB::quote('mod').' AND m.tid = tm.id
+						AND tl.lid = '.lunaDB::quote('level').' AND l.tid = tl.id
+						AND m.is_active = 1
+						AND l.is_active = 1
+						AND m.lid != ""
+					ORDER BY 
+						m.lid
+				'); 
+				$nodes = array();
+				while ($row = $res->fetchRow()) { $nodes = array_merge($nodes, self::$model->load_node($row, 'mod', 'level')); }
+				$res->free();
+				if (self::$cache) { $cache_obj->save(serialize($nodes)); }
+			}
+			// lunaTools::debug($nodes);
+			// self::$model->merge_index($nodes);
+			foreach ($nodes as $mod_uri => $mod_node) {
+				$file = '';
+				$ok = false;
+				$type = self::$model->get_type($mod_node);
+				if ($type != self::$model->lunaNameSpace.'mod') { continue; }
+				$nid = self::$model->get_nid($mod_node);
+				$lid = self::$model->get_lid($mod_node);
+				$level_nid = self::$model->get_nid(self::$model->get_level_node($mod_node));
+				if (isset(self::$session->user->levels[$level_nid])) { 
+					$file = SITEPATH.'mods/'.$lid.'/'.$lid.'.php'; 
+					if (file_exists($file)) { 
+						$ok = true;
+					} else { 
+						$file = SITEPATH.'mods/'.$lid.'.php';
+						if (file_exists($file)) {
+							$ok = true;
+						} else {
+							$file = MODS_PATH.'luna.'.$lid.'/'.$lid.'.php'; 
+							if (file_exists($file)) {
+								$ok = true;
+							} else {
+								$file = MODS_PATH.'luna.'.$lid.'.php';
+								if (file_exists($file)) {
+									$ok = true;
+								}
+							}
+						}
+					}
+				}
+				if (!$ok) { throw new lunaException(_('Error: cannot find mod file ').$lid, PEAR_LOG_CRIT); } 
+				require_once $file; 
+				if (method_exists($lid, 'singleton')) { 
+					if (!self::$mods[$nid] = call_user_func($lid.'::singleton')) { throw new lunaException(_('Error: cannot create mod object: ').$lid, PEAR_LOG_CRIT); }
+				} else {
+					throw new lunaException(_('Error: cannot find singleton method in class ').$lid, PEAR_LOG_CRIT);
+					return false;
+				}
+				if ((lunaTools::request('submit') || lunaTools::request('batch_submit'))) {
+					if (method_exists($lid, 'submit')) { self::$mods[$nid]->submit(); }
+					if (isset($_POST['mode'])) {
+						switch($_POST['mode']) {
+							case 'add': 
+								if (method_exists($lid, 'submit_add')) { self::$mods[$nid]->submit_add(); }
+								break;
+							case 'modify': 
+								if (lunaTools::request('submit') == _('Delete')) { 
+									if (method_exists($lid, 'submit_delete')) { self::$mods[$nid]->submit_delete(); }
+								} else { 
+									if (method_exists($lid, 'submit_modify')) { self::$mods[$nid]->submit_modify(); }
+								}
+								break;
+							case 'delete': 
+								if (method_exists($lid, 'submit_delete')) { self::$mods[$nid]->submit_delete(); }
+								break;
+						}
+					}
+					if (!defined('AJAX') || !AJAX) {
+						lunaDB::optimise(array(
+							self::get_ini('DBtables', 'NODES'), 
+							self::get_ini('DBtables', 'NODES_MAP'), 
+							self::get_ini('DBtables', 'ACTIONS')
+						));
+					}
+				}
+				if (method_exists($lid, 'load')) { self::$mods[$nid]->load(); }
+				$mod_node = self::$model->set_property($mod_node, 'is_loaded', '1');
+				self::$model->merge_index(array($mod_uri => $mod_node));
+			}
+			// load messages
+			self::$model->merge_index(self::$model->load_messages(self::$messages));
+			// self::$model->dump();
+			return true;
+		} catch (lunaException $e) {
+			lunaLog::log($e);
+			die();
+		}
+	}
+	// }}}
+	// {{{ transform()
+	/**
+	 * Transform the page.
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	public function transform() { 
+		try {
+			lunaTools::add_vocabulary(array(
+				'You are here: ',
+				'Sitemap',
+				'Jump to page',
+				'Creation date',
+				'Modification date',
+				'Page loaded in',
+				'Elements per page: ',
+				'Previous page',
+				'Next page',
+				'First page',
+				'Last page',
+				'Page: ',
+				'Site powered by',
+				'Language',
+				'langs',
+				'Navigation',
+				'Output formats',
+				'You are logged in as',
+				ANONYMOUS,
+				'node'
+			));
+			// Insert user
+			if (!self::$model->merge_index(self::$model->load_user(self::$session->user, 1))) { throw new lunaException(_('Error: cannot load user.'), PEAR_LOG_CRIT); }
+			// Insert langs
+			$langs = array();
+			foreach(self::get_ini('config', 'site_langs') as $lang) { 
+				$var_node = self::$model->load_var(array(
+					'type' => 'lang',
+					'lid' => $lang,
+					'lang' => $lang,
+					'value' => array(
+						'value' => _($lang),
+						'link' => lunaTools::append_to_link('lang', $lang),
+						'selected' => ($lang == self::$lang)? 1 : 0
+					)
+				));
+				$langs = self::$model->merge_nodes($langs, $var_node);
+			}
+			self::$model->merge_index($langs);
+			// Insert output formats
+			$output_formats = array();
+			foreach(self::$output_formats as $output_format) { 
+				$var_node = self::$model->load_var(array(
+					'type' => 'output-format',
+					'lid' => $output_format,
+					'value' => array(
+						'value' => _($output_format),
+						'link' => lunaTools::append_to_link('output', $output_format),
+						'selected' => ($output_format == self::$output_format)? 1 : 0
+					)
+				));
+				$output_formats = self::$model->merge_nodes($output_formats, $var_node);
+			}
+			self::$model->merge_index($output_formats);
+			// Insert Data
+			self::$model->merge_index(self::$model->load_data(self::$data));
+			self::$model->merge_index(self::$model->load_vocabulary(self::$vocabulary));
+			self::$model->merge_index(self::$model->load_request($_REQUEST, 'request'));
+			// If ajax is on, no need to go further
+			if (defined('AJAX') && AJAX) { die(); }
+			if (self::$output_format != 'html') { self::$model->dump(self::$output_format); }
+			// if (lunaTools::request('submit')) { self::$model->dump(); }
+			$output = false;
+			$xslok = false;
+			$XSLpath = XSL_PATH.self::$output_format.'.xsl/';
+			$XSLfile = SITEPATH.'xsl/'.self::$output_format.'.xsl/'.self::$data['lid'].'.'.self::$output_format.'.xsl';
+			if (file_exists($XSLfile)) {
+				$xslok = true;
+			} else {
+				$XSLfile = SITEPATH.'xsl/'.self::$output_format.'.xsl/'.'default'.'.'.self::$output_format.'.xsl';
+				if (file_exists($XSLfile)) {
+					$xslok = true;
+				} else {
+					$XSLfile = SITEPATH.'xsl/'.self::$data['lid'].'.xsl';
+					if (file_exists($XSLfile)) {
+						$xslok = true;
+					} else {
+						$XSLfile = SITEPATH.'xsl/'.'default'.'.xsl';
+						if (file_exists($XSLfile)) {
+							$xslok = true;
+						} else {
+							$XSLfile = XSL_PATH.'luna.'.self::$output_format.'.xsl/'.'luna.'.self::$data['lid'].'.'.self::$output_format.'.xsl';
+							if (file_exists($XSLfile)) {
+								$xslok = true;
+							} else {
+								$XSLfile = XSL_PATH.'luna.'.self::$data['lid'].'.xsl';
+								if (file_exists($XSLfile)) {
+									$xslok = true;
+								} else {
+									$XSLfile = XSL_PATH.'luna.'.self::$output_format.'.xsl/'.'luna.'.'default'.'.'.self::$output_format.'.xsl'; 
+									if (file_exists($XSLfile)) {
+										$xslok = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if (!$xslok) { throw new lunaException(_('Error: cannot load XSL.'), PEAR_LOG_CRIT); } 
+			if (!$output = self::$model->transform($XSLfile)) { throw new lunaException(_('Error: cannot transform XSL.'), PEAR_LOG_CRIT); } 
+			// $output = str_replace('{LOADINGTIME}', (round(self::set_microtime() - luna::$start, 4).'s. '), $output);
+			return $output;
+		} catch (lunaException $e) {
+			lunaLog::log($e);
+			die();
+		}
+	}
+	// }}}
+	// {{{ load_ini()
+	/**
+	 * Parse luna ini file
+	 *
+	 * @access private
+	 * @return array
+	 */
+	private function load_ini() { 
+		// load ini file
+		if (!file_exists(SITEPATH.'ini/luna.ini')) { return false; }
+		define('INI_PATH', SITEPATH.'ini/');
+		if (!$ini = parse_ini_file(INI_PATH.'luna.ini', true)) { return false; }
+		if (empty($ini) || empty($ini['Paths']) || empty($ini['DBtables']) || empty($ini['Constantes'])) { return false; }
+		foreach ($ini['Paths'] as $k => $v) { define($k, LUNAPATH.$v); }
+		foreach ($ini['Constantes'] as $k => $v) { define($k, $v); } 
+		if (!defined('ANONYMOUS')) { define('ANONYMOUS', 'guest'); }
+		return $ini;
+	}
+	// }}}
+	// {{{ set_microtime()
+	/**
+	 * @param int set_microtime
+	 * @access public
+	 * @return float
+	 */
+	public static function set_microtime($microtime = false) {
+		$microtime = intval($microtime);
+		if (empty($microtime)) { $microtime = microtime(); }
+		list($usec, $sec) = explode(' ', $microtime); 
+		return((float)$usec + (float)$sec);
+	}
+	// }}}
+	// {{{ lid_is_protected()
+	/**
+	 * @param string lid_is_protected
+	 * @access public
+	 * @return float
+	 */
+	public static function lid_is_protected($lid = false) {
+		if (empty($lid)) { return false; }
+		if (in_array("$lid", self::$protected_lids)) { return true; }
+		return false;
+	}
+	// }}}
+	// {{{ get_ini()
+	/**
+	 * @access	public
+	 * @param	string $domain
+	 * @param	string $var
+	 * @param	string $subvar
+	 * @return	bolean
+	 */
+	public static function get_ini($domain = false, $var = false, $subvar = false) {
+		if (empty($domain) || empty($var)) { return false; }
+		if (is_array($var)) {
+			if (!isset(luna::$ini["$domain"]["$var"][$subvar])) { return false; }
+			return self::$ini["$domain"]["$var"][$subvar];
+		} else {
+			if (!isset(luna::$ini["$domain"]["$var"])) { return false; }
+			return self::$ini["$domain"]["$var"];
+		}
+	}
+	// }}}
+}
+// }}}
+?>

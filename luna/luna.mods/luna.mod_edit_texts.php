@@ -1,0 +1,254 @@
+<?php
+/**
+ * lunar mod_edit_texts module
+ *
+ * PHP versions 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * For more details, see <http://www.gnu.org/copyleft/gpl.html>
+ *
+ * @author		Odradek <odradek@lunarsystem.org>
+ * @license		http://www.gnu.org/copyleft/gpl.html  GPL
+ * @link		http://lunarsystem.org
+ * @package		lunarSystem
+ */
+// {{{
+class mod_edit_texts {
+	/**
+	 * instance
+	 * @var object
+	 * @access	private
+	 */
+	private static $instance;
+	// {{{ singleton()
+	/**
+	 * @access public
+	 * @return object
+	 */
+	public static function singleton() {
+		if (!isset(self::$instance)) {
+			$c = __CLASS__;
+			self::$instance = new $c;
+		}
+		return self::$instance;
+	}
+	// }}}
+	// {{{ __clone()
+	/**
+	 * @access public
+	 * @return void
+	 */
+	public function __clone() { trigger_error('Lunar clones are not allowed.', E_USER_ERROR); }
+	// }}}
+	// {{{ constructor
+	/**
+	 * Constructor.
+	 * @access	private
+	 * @return boolean
+	 */
+	private function __construct() {
+		luna::$model->merge_index(luna::$model->load_var(array(
+			'type' => 'data',
+			'lid' => 'wysiwyg',
+			'value' => '1'
+		)));
+		lunaTools::add_vocabulary(array(
+			'Add a text',
+			'Modify the text',
+			'Add',
+			'Modify',
+			'Delete',
+			'List of the texts',
+			'Delete a text',
+			'identifier',
+			'title',
+			'content',
+			'lang',
+			'id',
+			'Are you sure you want to delete this text?',
+			'modified',
+			'When',
+			'Who',
+			'Language',
+			'Literal identifier',
+			'Literal id',
+			'Pages using the text',
+			'Filter',
+			'Modules using the text',
+			'Deactivate',
+			'Texts'
+		));
+		return true;
+	}
+	// }}}
+	// {{{ submit_add()
+	/**
+	 * @access public
+	 * @return void
+	 */
+	public function submit_add() {
+		// initialise the errors counter
+		$inerror = 0;
+		// clean things
+		$_POST['add_text_lid'] = lunaTools::prepare_lid($_POST['add_text_lid']);
+		// check emptyness
+		if (!lunaTools::check_emptyness('add_text_lid', 'Literal identifier')) { $inerror++; }
+		if (!lunaTools::check_emptyness('add_text_content', 'content')) { $inerror++; }
+		if ($inerror) { return false; }
+		$_POST['add_text_is_inactive'] = isset($_POST['add_text_is_inactive'])? ($_POST['add_text_is_inactive'] == 1? 1 : 0) : 0;
+		// set default values
+		$langs = luna::get_ini('config','site_langs');
+		if (!isset($_POST['add_text_lang']) || empty($_POST['add_text_lang']) || !in_array($_POST['add_text_lang'], $langs)) { $_POST['add_text_lang'] = isset($langs[0])? $langs[0] : 'en'; }
+		if (!isset($_POST['add_text_pages'])) { $_POST['add_text_pages'] = array(); }
+		if (!isset($_POST['add_text_title']) || empty($_POST['add_text_title'])) { $_POST['add_text_title'] = ''; }
+		// lunaTools::debug($_POST);
+		// check if identifier is already used
+		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['add_text_lid'])) { return false; }
+		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) { 
+			foreach ($_POST['add_text_pages'] as $postpage_nid) {
+				if (!$postpage_node = luna::$model->get_node($postpage_nid, 'page')) {
+					$inerror++; 
+					$message = _('Unknown page '.intval($postpage_nid)); 
+					luna::$messages['warning'][] = $message; 
+					lunaLog::log($message, PEAR_LOG_WARNING);
+				}
+			}
+		} 
+		if ($inerror) { return false; }
+		if ($node = luna::$model->insert('text', $_POST['add_text_lid'], ($_POST['add_text_is_inactive']? 0 : 1))) { 
+			luna::$model->link($node, $_POST['add_text_pages']);
+			$res = lunaDB::query('
+				INSERT INTO
+					'.luna::get_ini('DBtables', 'TEXTS').'
+					(nid, title, lang, content_html)
+				VALUES
+					(
+						'.lunaDB::quote($node).',
+						'.lunaDB::quote($_POST['add_text_title']).',
+						'.lunaDB::quote($_POST['add_text_lang']).',
+						'.lunaDB::quote($_POST['add_text_content']).'
+					)
+			');
+			lunaTools::purge_cache();
+			luna::$model->purge_index();
+			$message = sprintf(_("The text “%1\$s” has been created."), $_POST['add_text_lid']);
+			luna::$messages['okay'][] = $message;
+			lunaLog::log($message, PEAR_LOG_INFO);
+			lunaTools::unrequest(array('text_nid', 'modify_item_nid'));
+		} else {
+			$message = sprintf(_("The modification of the item “%1\$s” has failed."), _($_POST['add_text_lid']));
+			luna::$messages['warning'][] = $message;
+			lunaLog::log($message, PEAR_LOG_WARNING);
+		}
+		return true;
+	}
+	// }}}
+	// {{{ submit_modify()
+	/**
+	 * @access public
+	 * @return void
+	 */
+	public function submit_modify() { 
+		$inerror = 0;
+		// clean things
+		$_POST['modify_text_lid'] = lunaTools::prepare_lid($_POST['modify_text_lid']);
+		// check emptyness
+		if (!lunaTools::check_emptyness('modify_item_nid', 'Text to modify')) { $inerror++; }
+		if (!lunaTools::check_emptyness('modify_text_lid', 'Literal identifier')) { $inerror++; }
+		if (!lunaTools::check_emptyness('modify_text_content', 'content')) { $inerror++; }
+		if ($inerror) { return false; }
+		// set default values
+		$langs = luna::get_ini('config','site_langs');
+		if (!isset($_POST['modify_text_lang']) || empty($_POST['modify_text_lang']) || !in_array($_POST['modify_text_lang'], $langs)) { $_POST['modify_text_lang'] = isset($langs[0])? $langs[0] : 'en'; }
+		$_POST['modify_text_is_inactive'] = isset($_POST['modify_text_is_inactive'])? ($_POST['modify_text_is_inactive'] == 1? 1 : 0) : 0;
+		// load stuff
+		luna::$model->merge_index(luna::$model->load_texts($_POST['modify_item_nid']));
+		// check if node exists
+		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'text')) { return false; }
+		// check if identifier is already used by antoher item
+		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_text_lid'], $_POST['modify_item_nid'])) { return false; }
+		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) { 
+			foreach ($_POST['add_text_pages'] as $postpage_nid) {
+				if (!$postpage_node = luna::$model->get_node($postpage_nid, 'page')) {
+					$inerror++; 
+					$message = _('Unknown page '.intval($postpage_nid)); 
+					luna::$messages['warning'][] = $message; 
+					lunaLog::log($message, PEAR_LOG_WARNING);
+				}
+			}
+		} 
+		if ($inerror) { return false; }
+		if ($node = luna::$model->update($_POST['modify_item_nid'], $_POST['modify_text_lid'], ($_POST['modify_text_is_inactive']? 0 : 1))) {
+			luna::$model->unlink($node, 'page');
+			if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { luna::$model->link($node, $_POST['modify_text_pages']); }
+			$res = lunaDB::query('
+				UPDATE
+					'.luna::get_ini('DBtables', 'TEXTS').'
+				SET
+					title = '.lunaDB::quote($_POST['modify_text_title']).',
+					lang = '.lunaDB::quote($_POST['modify_text_lang']).', 
+					content_html = '.lunaDB::quote($_POST['modify_text_content']).'
+				WHERE
+					nid = '.lunaDB::quote($node).'
+			');
+			lunaTools::purge_cache();
+			luna::$model->purge_index();
+			$message = sprintf(_("The text “%1\$s” has been modified."), _($_POST['modify_text_lid']));
+			lunaTools::unrequest(array('text_nid', 'modify_item_nid'));
+			luna::$messages['okay'][] = $message;
+			lunaLog::log($message, PEAR_LOG_INFO);
+		} else {
+			$message = sprintf(_("The modification of the item “%1\$s” has failed."), _($_POST['modify_text_lid']));
+			luna::$messages['warning'][] = $message;
+			lunaLog::log($message, PEAR_LOG_WARNING);
+		}
+	}
+	// }}}
+	// {{{ submit_delete()
+	/**
+	 * @access private
+	 * @return void
+	 */
+	function submit_delete() { 
+		$inerror = 0;
+		// check emptyness
+		if (!lunaTools::check_emptyness('modify_item_nid', 'Text to modify')) { $inerror++; }
+		if ($inerror) { return false; } 
+		// load stuff
+		luna::$model->merge_index(luna::$model->load_texts($_POST['modify_item_nid']));
+		// check if node exists
+		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'text')) { return false; }
+		if ($inerror) { return false; }
+		if (luna::$model->delete($_POST['modify_item_nid'])) {
+			lunaTools::purge_cache();
+			luna::$model->purge_index();
+			$message = sprintf(_("The text “%1\$s” has been deleted."), $_POST['modify_item_nid']);
+			luna::$messages['okay'][] = $message;
+			lunaLog::log($message, PEAR_LOG_INFO);
+			lunaTools::unrequest(array('text_nid', 'modify_item_nid'));
+		} else {
+			$message = sprintf(_("The modification of the item “%1\$s” has failed."), _($_POST['modify_item_nid']));
+			luna::$messages['warning'][] = $message;
+			lunaLog::log($message, PEAR_LOG_WARNING);
+		}
+		return true;
+	}
+	// }}}
+	// {{{ load()
+	/**
+	 * @access public
+	 * @return void
+	 */
+	public function load() { 
+		$inerror = 0;
+		// if (!luna::$model->merge_index(luna::$model->load_nodes('text'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
+		$text_nid = lunaTools::request('text_nid');
+		luna::$model->merge_index(luna::$model->load_texts($text_nid));
+		$text_nid = luna::$model->check_requested_node('text_nid', 'text');
+		return true;
+	}
+	// }}}
+}
+// }}}
+?>

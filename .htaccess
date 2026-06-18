@@ -1,0 +1,11 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+# Skip rewriting for existing files and directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route everything through index.php as ?path=<alias>
+RewriteRule ^(.*)$ index.php?path=$1 [L,QSA]

@@ -1,0 +1,12 @@
+@import url("luna.css");
+html,body{background:url("../images/background/black05.png") repeat scroll 0 0 #ffb8cd;}
+body, input, textarea, button, select, optgroup, table { font: 14px/17px "ff-tisa-web-pro-1","ff-tisa-web-pro-2","Lucida Grande", Verdana, sans-serif; }
+table{font-size:90%;}
+body div#Page div#Content div#Content-main div.box.text h2 {color:#f5348a;font-family:"bello-pro-1","bello-pro-2", Tahoma, sans-serif;font-size:372%;line-height:85%;}
+h3 {font-size:150%;}
+a.downloadnow{background:url("../images/downloadNOW.png") no-repeat scroll 0 0 transparent;display:block;float:left;height:100px;left:-2.65em;margin-right:-2em;position:relative;top:0.3em;width:100px;}
+a.downloadnow span{display:none;}
+body div#Page div#Nav div#Options ul li a:hover { background: #f5348a; }
+body div#Page div#Top .box:first-child h1 a{font-family:"bello-pro-1","bello-pro-2";font-size:150%;color:#ffb8cd;text-shadow:none;}
+body div#Page div#Content div#Content-main div.box.text .box-content ul {list-style:none outside none;margin:0;padding:10px 0 0;position:relative;top:-2px;}
+body div#Page div#Content div#Content-main div.box.text .box-content h3 {padding:11px 0 0;color:#9A5D74;left:-2px;position:relative;}

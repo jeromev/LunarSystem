@@ -1,0 +1,876 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2006-01-13 14:11-0005\n"
+"Last-Translator: Odradek <odradek@lunarsystem.org>\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Hello"
+msgstr "Hello!"
+
+msgid "Site powered by"
+msgstr "Site powered by"
+
+msgid "My Website"
+msgstr "My Website"
+
+msgid "Last modification"
+msgstr "Last modification"
+
+msgid "Error: cannot start a new session."
+msgstr "Error: cannot start a new session."
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "root"
+msgstr "Home"
+
+msgid "code"
+msgstr "code"
+
+msgid "rootMod"
+msgstr "Root module"
+
+msgid "Page loaded in"
+msgstr "Page loaded in"
+
+msgid "login"
+msgstr "Login"
+
+msgid "logout"
+msgstr "Logout"
+
+msgid "Connection form"
+msgstr "Connection form"
+
+msgid "Identifier"
+msgstr "Identifier"
+
+msgid "user"
+msgstr "User"
+
+msgid "username"
+msgstr "Username"
+
+msgid "firstname"
+msgstr "Firstname"
+
+msgid "lastname"
+msgstr "Lastname"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "name"
+msgstr "name"
+
+msgid "guest"
+msgstr "guest"
+
+msgid "Elements per page: "
+msgstr "Elements per page: "
+
+msgid "Page: "
+msgstr "Page: "
+
+msgid "Field 'identifier' cannot be empty."
+msgstr "Field 'identifier' cannot be empty."
+
+msgid "Field 'password' cannot be empty."
+msgstr "Field 'password' cannot be empty."
+
+msgid "Unknown user %1$s."
+msgstr "Unknown user %1$s."
+
+msgid "Wrong password for user '%1$s'."
+msgstr "Wrong password for user '%1$s'."
+
+msgid "User '%1$s' is deactivated."
+msgstr "User '%1$s' is deactivated."
+
+msgid "You are now disconnected."
+msgstr "You are now disconnected."
+
+msgid "admin_root"
+msgstr "Website administration"
+
+msgid "subdir"
+msgstr "Subdirectory"
+
+msgid "author"
+msgstr "author"
+
+msgid "lang"
+msgstr "language"
+
+msgid "time"
+msgstr "time"
+
+msgid "date"
+msgstr "date"
+
+msgid "last_url"
+msgstr "Last URL"
+
+msgid "sitename"
+msgstr "Website name"
+
+msgid "mod_online_users"
+msgstr "Online users"
+
+msgid "session_url"
+msgstr "URL"
+
+msgid "session_ip"
+msgstr "IP"
+
+msgid "session_length"
+msgstr "session length"
+
+msgid "session_lang"
+msgstr "session language"
+
+msgid "days"
+msgstr "days"
+
+msgid "day"
+msgstr "days"
+
+msgid "hours"
+msgstr "hours"
+
+msgid "hour"
+msgstr "hour"
+
+msgid "Configuration form"
+msgstr "Configuration form"
+
+msgid "disable"
+msgstr "Disable the website"
+
+msgid "disable_txt"
+msgstr "Deactivation text"
+
+msgid "site_desc"
+msgstr "Website description"
+
+msgid "start_date"
+msgstr "Launch date"
+
+msgid "general_email"
+msgstr "General email"
+
+msgid "default_dateformat"
+msgstr "Date format"
+
+msgid "timezone"
+msgstr "Time zone"
+
+msgid "version"
+msgstr "Version"
+
+msgid "site_classification"
+msgstr "[méta] website classification"
+
+msgid "doc_rights"
+msgstr "[méta] rights"
+
+msgid "doc_type"
+msgstr "[méta] content type"
+
+msgid "rating"
+msgstr "[méta] rating"
+
+msgid "revisit_after"
+msgstr "[méta] revisit after"
+
+msgid "keywords"
+msgstr "[méta] Keywords"
+
+msgid "root_module"
+msgstr "Root module"
+
+msgid "The website configuration has been updated."
+msgstr "The website configuration has been updated."
+
+msgid "Nothing changed."
+msgstr "Nothing changed."
+
+msgid "admin_pages"
+msgstr "Pages administration"
+
+msgid "Modules using the text"
+msgstr "Modules using the text"
+
+msgid "You are here: "
+msgstr "You are here: "
+
+msgid "Sitemap"
+msgstr "Site map"
+
+msgid "Add a page"
+msgstr "Add a page"
+
+msgid "Parent page"
+msgstr "Parent page"
+
+msgid "Page to delete"
+msgstr "Page to delete"
+
+msgid "Delete a page"
+msgstr "Delete a page"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Be aware that this identifier will be used in the url."
+msgstr "Be aware that this identifier will be used in the url."
+
+msgid "Static page"
+msgstr "Static page"
+
+msgid "Lock"
+msgstr "Lock"
+
+msgid "Page identifier"
+msgstr "Page identifier"
+
+msgid "Level"
+msgstr "Level"
+
+msgid "level"
+msgstr "level"
+
+msgid "Levels"
+msgstr "Levels"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "Texts"
+msgstr "Texts"
+
+msgid "Groups"
+msgstr "Groupes"
+
+msgid "level_public"
+msgstr "Public level"
+
+msgid "level_admin"
+msgstr "Administration level"
+
+msgid "level_edition"
+msgstr "Edition level"
+
+msgid "Page access level"
+msgstr "Page access level"
+
+msgid "Field '%1$s' cannot be empty."
+msgstr "Field '%1$s' cannot be empty."
+
+msgid "Unknown parent page."
+msgstr "Unknown parent page."
+
+msgid "The identifier '%1$s' is already taken."
+msgstr "The identifier '%1$s' is already taken."
+
+msgid "It must be unique."
+msgstr "It must be unique."
+
+msgid "Unknown access level."
+msgstr "Unknown access level."
+
+msgid "Unknown page."
+msgstr "Unknown page."
+
+msgid "The page has been deleted. Reload to see the changes."
+msgstr "The page has been deleted. Reload to see the changes."
+
+msgid "This page is locked."
+msgstr "This page is locked."
+
+msgid "Modify"
+msgstr "Modify"
+
+msgid "Page to modify"
+msgstr "Page to modify"
+
+msgid "Modify the page"
+msgstr "Modify the page"
+
+msgid "Output formats"
+msgstr "Output formats"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "admin_mods"
+msgstr "Modules administration"
+
+msgid "admin_users"
+msgstr "Users administration"
+
+msgid "Add a module"
+msgstr "Add a module"
+
+msgid "Parent module"
+msgstr "Parent module"
+
+msgid "Module to delete"
+msgstr "Module to delete"
+
+msgid "Delete a module"
+msgstr "Delete a module"
+
+msgid "Module identifier"
+msgstr "Module identifier"
+
+msgid "Access level"
+msgstr "Access level"
+
+msgid "Access levels"
+msgstr "Access levels"
+
+msgid "Accessible levels"
+msgstr "Accessible levels"
+
+msgid "Modify the module"
+msgstr "Modify the module"
+
+msgid "Module to modify"
+msgstr "Module to modify"
+
+msgid "Select one"
+msgstr "Select one"
+
+msgid "Activate"
+msgstr "Activate"
+
+msgid "log"
+msgstr "Log in/out"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Module path"
+msgstr "Module path"
+
+msgid "The page #%1$s you requested does not exist."
+msgstr "The page #%1$s you requested does not exist."
+
+msgid "The module #%1$s you requested does not exist."
+msgstr "The module #%1$s you requested does not exist."
+
+msgid "Are you sure you want to delete this page?"
+msgstr "Are you sure you want to delete this page?"
+
+msgid "Are you sure you want to delete this module?"
+msgstr "Are you sure you want to delete this module?"
+
+msgid "The module '%1$s' has been created."
+msgstr "The module '%1$s' has been created."
+
+msgid "Unknown module."
+msgstr "Unknown module."
+
+msgid "Unknown module #%1$s."
+msgstr "Unknown module #%1$s."
+
+msgid "The module '%1$s' is locked."
+msgstr "The module '%1$s' is locked."
+
+msgid "The module '%1$s' has been modified."
+msgstr "The module '%1$s' has been modified."
+
+msgid "The module '%1$s' has been deleted."
+msgstr "The module '%1$s' has been deleted."
+
+msgid "List of the modules"
+msgstr "List of the modules"
+
+msgid "active"
+msgstr "active"
+
+msgid "default"
+msgstr "default"
+
+msgid "locked"
+msgstr "locked"
+
+msgid "path"
+msgstr "path"
+
+msgid "Modules to use with this page"
+msgstr "Modules to use with this page"
+
+msgid "Pages using the module"
+msgstr "Pages using the module"
+
+msgid "List of the pages"
+msgstr "List of the pages"
+
+msgid "static"
+msgstr "static"
+
+msgid "Jump to page"
+msgstr "Jump to page…"
+
+msgid "langs"
+msgstr "Languages"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "Unknown item #%1$s."
+msgstr "Unknown item #%1$s."
+
+msgid "admin"
+msgstr "Administration"
+
+msgid "edit_texts"
+msgstr "Texts edition"
+
+msgid "regis_time"
+msgstr "Registration"
+
+msgid "You cannot modify the item labeled '%1$s'."
+msgstr "You cannot modify the item labeled '%1$s'."
+
+msgid "You cannot modify the literal identifier of the item labeled '%1$s'."
+msgstr "You cannot modify the literal identifier of the item labeled '%1$s'."
+
+msgid "You cannot delete the item labeled '%1$s'."
+msgstr "You cannot delete the item labeled '%1$s'."
+
+msgid "last_time"
+msgstr "Last visit"
+
+msgid "Add a user"
+msgstr "Add a user"
+
+msgid "Modify the user"
+msgstr "Modify the user"
+
+msgid "List of the users"
+msgstr "List of the users"
+
+msgid "The user #%1$s you requested does not exist."
+msgstr "The user #%1$s you requested does not exist."
+
+msgid "The group #%1$s you requested does not exist."
+msgstr "The group #%1$s you requested does not exist."
+
+msgid "Are you sure you want to delete this user?"
+msgstr "Are you sure you want to delete this user?"
+
+msgid "groups"
+msgstr "groups"
+
+msgid "group_default"
+msgstr "Anonymous"
+
+msgid "group_admin"
+msgstr "Administrators"
+
+msgid "group_user"
+msgstr "Subscribed users"
+
+msgid "group_edition"
+msgstr "Editors"
+
+msgid "This email address is invalid."
+msgstr "This email address is invalid."
+
+msgid "email"
+msgstr "email"
+
+msgid "Email"
+msgstr "Courriel"
+
+msgid "A user with the same email (%1$s) already exists."
+msgstr "A user with the same email (%1$s) already exists."
+
+msgid "password"
+msgstr "password"
+
+msgid "startdate"
+msgstr "Start date"
+
+msgid "User '%1$s' has been created."
+msgstr "User '%1$s' has been created."
+
+msgid "User '%1$s' has been modified."
+msgstr "User '%1$s' has been modified."
+
+msgid "User '%1$s' has been deleted."
+msgstr "User '%1$s' has been deleted."
+ 
+msgid "The user has been modified." 
+msgstr "The user has been modified." 
+ 
+msgid "The user has been deleted." 
+msgstr "The user has been deleted." 
+ 
+msgid "admin_groups" 
+msgstr "Groups administration"
+ 
+msgid "mod_admin_groups" 
+msgstr "Groups administration module"
+ 
+msgid "You cannot delete yourself." 
+msgstr "You cannot delete yourself."
+ 
+msgid "You cannot deactivate yourself." 
+msgstr "You cannot deactivate yourself."
+ 
+msgid "You cannot delete the guest user." 
+msgstr "You cannot delete the guest user."
+ 
+msgid "You cannot modify the guest user." 
+msgstr "You cannot modify the guest user."
+ 
+msgid "Deactivate" 
+msgstr "Deactivate"
+ 
+msgid "The hierarchy is incorrect." 
+msgstr "The hierarchy is incorrect."
+ 
+msgid "This user does not exsts." 
+msgstr "This user does not exsts."
+ 
+msgid "Creation date" 
+msgstr "Creation date"
+ 
+msgid "Modification date" 
+msgstr "Modification date"
+ 
+msgid "You cannot delete the root page." 
+msgstr "You cannot delete the home page."
+ 
+msgid "Add a group" 
+msgstr "Add a group"
+ 
+msgid "Add a level" 
+msgstr "Add a level"
+ 
+msgid "Group identifier" 
+msgstr "Group identifier"
+ 
+msgid "Group to delete" 
+msgstr "Group to delete"
+ 
+msgid "Delete a group" 
+msgstr "Delete a group"
+ 
+msgid "Are you sure you want to delete this group?" 
+msgstr "Are you sure you want to delete this group?"
+ 
+msgid "Modify the group" 
+msgstr "Modify the group"
+ 
+msgid "Group to modify" 
+msgstr "Group to modify"
+ 
+msgid "List of the groups" 
+msgstr "List of the groups"
+ 
+msgid "Groups admitted to this level" 
+msgstr "Groups admitted to this level"
+ 
+msgid "Unknown group." 
+msgstr "Unknown group."
+ 
+msgid "Level identifier" 
+msgstr "Level identifier"
+ 
+msgid "Level to delete" 
+msgstr "Level to delete"
+ 
+msgid "Delete a level" 
+msgstr "Delete a level"
+ 
+msgid "Are you sure you want to delete this level?" 
+msgstr "Are you sure you want to delete this level?"
+ 
+msgid "Modify the level" 
+msgstr "Modify the level"
+
+msgid "The modification of the item '%1$s' has failed."
+msgstr "The modification of the item '%1$s' has failed."
+ 
+msgid "Level to modify" 
+msgstr "Level to modify"
+ 
+msgid "List of the levels" 
+msgstr "List of the levels"
+ 
+msgid "You are now connected as %1$s." 
+msgstr "You are now connected as %1$s."
+ 
+msgid "Group '%1$s' has been added." 
+msgstr "Group '%1$s' has been added."
+ 
+msgid "Level '%1$s' has been added." 
+msgstr "Level '%1$s' has been added." 
+ 
+msgid "Pages on this level" 
+msgstr "Pages on this level"
+ 
+msgid "logviewer" 
+msgstr "Log viewer"
+
+msgid "List of the log entries"
+msgstr "List of the log entries"
+
+msgid "The page '%1$s' has been added."
+msgstr "The page '%1$s' has been added."
+
+msgid "The page '%1$s' is locked."
+msgstr "The page '%1$s' is locked."
+
+msgid "The page '%1$s' has been modified."
+msgstr "The page '%1$s' has been modified."
+
+msgid "The page '%1$s' has been deleted."
+msgstr "The page '%1$s' has been deleted."
+
+msgid "The email address '%1$s' is invalid."
+msgstr "The email address '%1$s' is invalid."
+
+msgid "User #%1$s does not exist."
+msgstr "User #%1$s does not exist."
+
+msgid "Unknown group #%1$s."
+msgstr "Unknown group #%1$s."
+
+msgid "The group '%1$s' has been modified."
+msgstr "The group '%1$s' has been modified."
+
+msgid "The group '%1$s' has been deleted."
+msgstr "The group '%1$s' has been deleted."
+
+msgid "Unknown level #%1$s."
+msgstr "Unknown level #%1$s."
+
+msgid "The level '%1$s' has been modified."
+msgstr "The level '%1$s' has been modified."
+
+msgid "The level '%1$s' has been deleted."
+msgstr "The level '%1$s' has been deleted."
+
+msgid "Users who belong to this group"
+msgstr "Users who belong to this group"
+
+msgid "For the selection"
+msgstr "For the selection"
+
+msgid "Choose an action"
+msgstr "Choose an action"
+
+msgid "Delete from the group"
+msgstr "Delete from the group"
+
+msgid "The following users have been deleted from the group '%1$s': "
+msgstr "The following users have been deleted from the group '%1$s': "
+
+msgid "admin_levels"
+msgstr "Levels administration"
+
+msgid "Groups which belong to this level"
+msgstr "Groups which belong to this level"
+
+msgid "admin_texts"
+msgstr "Texts administration"
+
+msgid "edit_staticpages"
+msgstr "Static pages edition"
+
+msgid "List of the texts"
+msgstr "List of the texts"
+
+msgid "Add a text"
+msgstr "Add a text"
+
+msgid "Modify the text"
+msgstr "Modify the text"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "search"
+msgstr "Search"
+
+msgid "Delete a text"
+msgstr "Delete a text"
+
+msgid "title"
+msgstr "title"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "content"
+msgstr "content"
+
+msgid "Are you sure you want to delete this text?"
+msgstr "Are you sure you want to delete this text?"
+
+msgid "modified"
+msgstr "modified"
+
+msgid "When"
+msgstr "When"
+
+msgid "Who"
+msgstr "Who"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "en"
+msgstr "English"
+
+msgid "en-EN"
+msgstr "English"
+
+msgid "en-US"
+msgstr "English"
+
+msgid "fr"
+msgstr "Français"
+
+msgid "fr-FR"
+msgstr "Français"
+
+msgid "You are logged in as"
+msgstr "You are logged in as"
+
+msgid "Literal identifier"
+msgstr "Literal identifier"
+
+msgid "Literal id"
+msgstr "Literal id"
+
+msgid "Pages using the text"
+msgstr "Pages using the text"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "A text (#%1$s) with the same literal identifier (%2$s) already exists in this language (%3$s)."
+msgstr "A text (#%1$s) with the same literal identifier (%2$s) already exists in this language (%3$s)."
+
+msgid "The text '%1$s' has been created."
+msgstr "The text '%1$s' has been created."
+
+msgid "The text '%1$s' has been modified."
+msgstr "The text '%1$s' has been modified."
+
+msgid "The text '%1$s' has been deleted."
+msgstr "The text '%1$s' has been deleted."
+
+msgid "Previous page"
+msgstr "Previous page"
+
+msgid "Next page"
+msgstr "Next page"
+
+msgid "First page"
+msgstr "First page"
+
+msgid "Last page"
+msgstr "Last page"
+
+msgid "The text #%1$s does not exist."
+msgstr "The text #%1$s does not exist."
+
+msgid "edition"
+msgstr "Edition"
+
+msgid "List of the static pages"
+msgstr "List of the static pages"
+
+msgid "Locked"
+msgstr "Locked"
+
+msgid "Modify a static page"
+msgstr "Modify a static page"
+
+msgid "Modified by %1$s on %2$s."
+msgstr "Modified by %1$s on %2$s."
+
+msgid "Created by %1$s on %2$s."
+msgstr "Created by %1$s on %2$s."
+
+msgid "Log entry analyse"
+msgstr "Log entry analyse"
+
+msgid "user-name"
+msgstr "User name"
+
+msgid "User"
+msgstr "User"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "journal"
+msgstr "Journal"
+
+msgid "map"
+msgstr "Nodes map"
+
+msgid "node"
+msgstr "Node"
+
+msgid "mod_node"
+msgstr "Node module"
+
+msgid "Text to modify"
+msgstr "Text to modify"
+
+msgid "mod_log"
+msgstr "Connection module"
+
+msgid "mod_admin"
+msgstr "Administration module"
+
+msgid "mod_admin_pages"
+msgstr "Pages administration module"
+
+msgid "mod_admin_levels"
+msgstr "Levels administration module"
+
+msgid "mod_admin_mods"
+msgstr "Modules administration module"
+
+msgid "mod_admin_users"
+msgstr "Users administration module"
+
+msgid "mod_edit_texts"
+msgstr "Texts edition module"
+
+msgid "mod_journal"
+msgstr "Journal module"
+
+msgid "year"
+msgstr "year"
+
+msgid "years"
+msgstr "years"
+
+msgid "Items list"
+msgstr "Items list"
+
+msgid "Texts to load with this page"
+msgstr "Texts to load with this page"

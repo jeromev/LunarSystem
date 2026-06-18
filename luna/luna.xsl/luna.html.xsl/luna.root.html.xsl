@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet 
+	version="1.0"
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:luna="http://lunarsystem.org/ontology#"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+	<xsl:variable name="mod_lid"/>
+
+	<xsl:include href="./luna.header.html.xsl"/>
+
+	<xsl:template name="page">
+		<xsl:for-each select="/rdf:RDF/luna:text[luna:page/@rdf:resource = /rdf:RDF/luna:page[luna:nid = $masternodenid]/@rdf:about]">
+			<div class="box text">
+				<h2>
+					<xsl:attribute name="xml:lang"><xsl:value-of select="rdfs:label/@xml:lang"/></xsl:attribute>
+					<xsl:value-of select="rdfs:label"/>
+				</h2>
+				<div class="box-content">
+					<xsl:attribute name="xml:lang"><xsl:value-of select="luna:content/@xml:lang"/></xsl:attribute>
+					<xsl:value-of select="luna:content" disable-output-escaping="yes"/>
+				</div>
+			</div>
+		</xsl:for-each>
+	</xsl:template>
+
+</xsl:stylesheet>

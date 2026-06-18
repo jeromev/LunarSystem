@@ -12,7 +12,7 @@
 | PHP | **5.3–5.6** |
 | PHP extensions | `mysql` (or `mysqli`), `xsl`, `mbstring`, `gettext` |
 | Web server | Apache 2 with `mod_rewrite` and `AllowOverride All` |
-| Database | MySQL 5.x (5.7 works with `sql_mode=""`; MySQL 8 needs schema edits) |
+| Database | MySQL 5.x (5.7 needs `sql_mode=""` for the legacy column defaults; the Docker stack sets this) |
 | Bundled libs | PEAR MDB2, PEAR Log, Cache_Lite, ARC2 — all vendored in `luna/luna.lib/`, no Composer/PEAR install needed |
 
 ## Option A — Docker (recommended)
@@ -33,9 +33,11 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
 
 - **app** — builds `php:5.6-apache`, installs the `mysql`, `mysqli`, `xsl`, and
   `gettext` extensions, enables `mod_rewrite`, and sets `AllowOverride All`.
-  Mounts the repo at `/var/www/html` and publishes port **8080 → 80**.
-- **db** — `mysql:5.7` started with `--sql_mode=""` (so the legacy
-  `TYPE=MyISAM` schema imports cleanly), seeded automatically by mounting
+  Mounts the repo at `/var/www/html` and publishes port **8080 → 80**. (The
+  Dockerfile repoints apt at `archive.debian.org` because the base image's
+  Debian 9 "stretch" repos are no longer on the main mirrors.)
+- **db** — `mysql:5.7` started with `--sql_mode=""` (so the legacy column
+  defaults import cleanly), seeded automatically by mounting
   [luna.mysql.sql](../luna/luna.sql/luna.mysql.sql) into
   `/docker-entrypoint-initdb.d/`. Database `lunadb`, user/pass `luna`/`luna`.
   Published on host port **3307** (to avoid clashing with a local MySQL on 3306).
@@ -61,7 +63,8 @@ docker-compose up --build -d
    ```bash
    mysql -u <user> -p <database> < luna/luna.sql/luna.mysql.sql
    ```
-   On MySQL 8, first rewrite `TYPE=MyISAM` → `ENGINE=MyISAM` in the dump.
+   On MySQL 5.7/8, run the server with `sql_mode=""` so the legacy zero-date /
+   column defaults in the dump import without strict-mode errors.
 3. Configure the database connection: copy
    `luna/luna.domains/luna.default/ini/db.example.ini` to `db.ini` and fill in
    `driver`, `username`, `password`, `host`, `database`. See

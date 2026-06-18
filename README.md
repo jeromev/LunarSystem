@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.2.8-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.2.9-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 ## Quick start (Docker)
 
@@ -70,8 +70,9 @@ js/                            jQuery + CKEditor (rich-text editing)
 | **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
 | **Credentials in repo** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` contains real credentials. Untrack with `git rm --cached luna/luna.domains/lunarsystem.org/ini/db.ini` |
 | **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs |
-| **Legacy SQL syntax** | Compatibility | Schema uses `TYPE=MyISAM`; MySQL 8+ requires `ENGINE=MyISAM` |
 | **Cache files tracked** | Repo noise | `luna/luna.domains/lunarsystem.org/cache/` contains cached data committed to git |
+
+The Docker stack now boots cleanly: the schema was updated from the obsolete `TYPE=MyISAM` to `ENGINE=MyISAM`, a duplicate-modifier parse error was fixed, and the build repoints apt at `archive.debian.org`. See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 
 ## Documentation
 

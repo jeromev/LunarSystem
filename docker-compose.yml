@@ -25,5 +25,23 @@ services:
       - ./luna/luna.sql/luna.mysql.sql:/docker-entrypoint-initdb.d/luna.mysql.sql
       - db_data:/var/lib/mysql
 
+  # Phase A (experiment/semantic-web): a real SPARQL endpoint over the existing
+  # MySQL via Ontop + an R2RML mapping. See docs/linked-data.md.
+  ontop:
+    build:
+      context: ./semantic/ontop
+      dockerfile: Dockerfile
+    environment:
+      ONTOP_MAPPING_FILE: /opt/ontop/input/mapping.ttl
+      ONTOP_PROPERTIES_FILE: /opt/ontop/input/ontop.properties
+      ONTOP_CORS_ALLOWED_ORIGINS: "*"
+      ONTOP_DEV_MODE: "true"
+    volumes:
+      - ./semantic/ontop:/opt/ontop/input
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
 volumes:
   db_data:

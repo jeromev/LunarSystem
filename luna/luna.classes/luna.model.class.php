@@ -81,8 +81,8 @@ class lunaModel {
 	 * @access public
 	 * @return object
 	 */
-	public function singleton() {
-		if (!isset($this->$instance)) {
+	public static function singleton() {
+		if (!isset(self::$instance)) {
 			$c = __CLASS__;
 			self::$instance = new $c;
 		}
@@ -1533,7 +1533,7 @@ class lunaModel {
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['value'] = _($node[$lidx]);
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
-					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_activex'];
+					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node[$is_activex];
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$typex;
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 					$needle = array(

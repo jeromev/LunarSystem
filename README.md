@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.2.13-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.2.14-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 ## Quick start (Docker)
 
@@ -70,7 +70,7 @@ js/                            jQuery + CKEditor (rich-text editing)
 | **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
 | **DB credentials on disk** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` holds real credentials in the working tree. It's **gitignored and was never committed** — rotate the credentials; there's nothing to untrack |
 | **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs; no `session_regenerate_id()` on login (fixation) |
-| **No CSRF / SQLi in `mod_journal`** | Security | No anti-CSRF tokens on admin actions; `$_GET['start']` is interpolated into a `LIMIT` clause. See [docs/security.md](docs/security.md) |
+| **No CSRF on admin actions** | Security | Admin forms still carry no anti-forgery token (the `mod_journal` SQLi, reflected XSS, login throttling, cookie object-injection and `$_SERVER` log leak were hardened in 0.2.14 — see [docs/security.md](docs/security.md)) |
 
 The Docker stack now boots cleanly: the schema was updated from the obsolete `TYPE=MyISAM` to `ENGINE=MyISAM`, a duplicate-modifier parse error was fixed, and the build repoints apt at `archive.debian.org`. See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 

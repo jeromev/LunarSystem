@@ -76,7 +76,9 @@ class mod_journal {
 	 */
 	public function load() {
 		$inerror = 0;
-		if (lunaTools::request('purgelogs')) {
+		// POST-only: request() also reads GET, so a forged link/img could wipe the
+		// whole log with a single request. Require a real form POST.
+		if (isset($_POST['purgelogs'])) {
 			$res = lunaDB::query('
 				DELETE FROM
 					'.luna::get_ini('DBtables', 'LOGS').'
@@ -111,39 +113,35 @@ class mod_journal {
 			$res->free();
 		} else { //lunaTools::debug();
 			$cookie = array();
-			if (isset($_COOKIE[luna::$data['lid'].'_sort'])) { 
-				$cookie = lunaTools::sanitize(unserialize($_COOKIE[luna::$data['lid'].'_sort']));
+			if (isset($_COOKIE[luna::$data['lid'].'_sort'])) {
+				// json_decode (not unserialize) to avoid PHP object injection from a crafted cookie.
+				$cookie = json_decode($_COOKIE[luna::$data['lid'].'_sort'], true);
+				$cookie = is_array($cookie)? lunaTools::sanitize($cookie) : array();
+				if (!is_array($cookie)) { $cookie = array(); }
 				foreach ($cookie as $k => $v) { $_COOKIE[$k] = $v; }
 			}
-			luna::$data['order_by'] = lunaTools::request('order_by', 0, 'logtime');
+			// Whitelist the sort column: it is interpolated as a SQL identifier into
+			// COUNT()/ORDER BY below, so it must never come straight from request input.
+			$order_by = lunaTools::request('order_by', 0, 'logtime');
+			$allowed_order_by = array('logtime', 'id', 'priority', 'ident');
+			if (!in_array($order_by, $allowed_order_by, true)) { $order_by = 'logtime'; }
+			luna::$data['order_by'] = $order_by;
 			$cookie['order_by'] = luna::$data['order_by'];
-			$order_dir = lunaTools::request('order_dir', 0, 'DESC');
-			$alphastyle = 0;
-			switch($order_by) {
-				case 'id':
-					$order_by_ok = 'l.'.luna::$data['order_by'];
-					$alphastyle = false;
-					if (empty($order_dir)) { $order_dir = 'ASC'; }
-					break;
-				case 'logtime':
-				default:
-					$order_by_ok = 'l.'.luna::$data['order_by'];
-					$alphastyle = false;
-					if (empty($order_dir)) { $order_dir = 'DESC'; }
-					break;
-			}
-			$order_dir = ($order_dir == 'DESC' || empty($order_dir))? 'DESC' : 'ASC';
+			$order_by_ok = 'l.'.$order_by;
+			$order_dir = (lunaTools::request('order_dir', 0, 'DESC') == 'ASC')? 'ASC' : 'DESC';
 			luna::$data['order_dir'] = $order_dir;
 			$cookie['order_dir'] = luna::$data['order_dir'];
-			if (!defined('PERPAGE')) { define('PERPAGE', 20); } 
-			luna::$data['limit'] = lunaTools::request('limit', 0, PERPAGE);
+			if (!defined('PERPAGE')) { define('PERPAGE', 20); }
+			luna::$data['limit'] = intval(lunaTools::request('limit', 0, PERPAGE));
+			if (luna::$data['limit'] < 1) { luna::$data['limit'] = PERPAGE; }
 			$cookie['limit'] = luna::$data['limit'];
-			if (isset($_GET['start'])) { 
-				$start = $_GET['start']; 
+			if (isset($_GET['start'])) {
+				$start = $_GET['start'];
 			} else {
 				$start = lunaTools::request('start', $_GET);
 			}
-			if (empty($start)) { $start = 0; }
+			$start = intval($start);
+			if ($start < 0) { $start = 0; }
 			luna::$data['start'] = $start;
 			$cookie['start'] = luna::$data['start'];
 			if (!lunaTools::set_cookie(luna::$data['lid'].'_sort', $cookie)) { throw new lunaException(_('Error: cannot set cookie.'), PEAR_LOG_CRIT); }

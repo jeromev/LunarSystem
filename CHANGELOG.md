@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.14-alpha] - 2026-06-18
+- Security: hardened the self-contained issues from the 0.2.12 code-review pass (verified against the Docker stack). See [docs/security.md](docs/security.md).
+  - SQL injection in `mod_journal`: `start` is now `intval()`'d before the `LIMIT` clause and `order_by` is whitelisted before being interpolated as a SQL identifier into `COUNT()`/`ORDER BY` (this also fixes the dead `switch($order_by)` on an undefined variable).
+  - Reflected XSS: `lunaTools::raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the response.
+  - PHP object injection: cookies now use `json_encode`/`json_decode` instead of `serialize`/`unserialize`, and `lunaModel::load_request()` guards `unserialize()` against `O:`/`C:` object payloads.
+  - `purgelogs` now requires `$_POST` (was triggerable by any GET, e.g. a forged `<img>`), so it can no longer wipe `luna_logs` via a forged link.
+  - Log hygiene: `lunaLog::log()` stores only a small `$_SERVER` whitelist (remote addr, method, URI, host, UA, referer) instead of the whole array (which carried the cookie header and session id).
+  - Session IP guard: `lunaTools::encode_ip()` no longer trusts the client-supplied `X-Forwarded-For`; it uses `REMOTE_ADDR`, closing the IP-spoof bypass of the session hijack check.
+  - Login throttling: `mod_log::login()` now reads `login_attempts` and applies a capped per-account back-off (`sleep(min(attempts, 5))`); a correct password still resets the counter, so accounts are never permanently locked.
+  - Deferred (more invasive, see security.md): CSRF tokens on every form, per-action authorisation re-checks, and session-ID rotation on login.
+
 ## [0.2.13-alpha] - 2026-06-18
 - Fixed: `lunaModel::singleton()` guarded on `$this->$instance` (a variable-variable on an undefined name) in a method that is called statically, so the guard never saw the cached instance. Made it `static` and switched to `self::$instance`, matching `luna::singleton()` and `lunaSession::singleton()`.
 - Fixed: `lunaModel::load_node()` array-relationship branch read `is_active` from the literal key `$node['is_activex']` instead of the computed key `$node[$is_active.($i+1)]` (`$is_activex`), so secondary related nodes never got their real `is_active` value.

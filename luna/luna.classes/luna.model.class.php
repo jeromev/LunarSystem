@@ -1307,7 +1307,9 @@ class lunaModel {
 					if ($k != 'PHPSESSID') { 
 						$klabel = ($label == 'request')? "$k" : $label.'.'."$k"; 
 						$serv = $v;
-						$unserv = unserialize($v); 
+						// Guard against PHP object injection: only expand serialized
+						// arrays/scalars from request input, never objects (O:/C:).
+						$unserv = (is_string($v) && !preg_match('/(?:^|;)[OC]:[0-9]+:/', $v))? @unserialize($v) : false;
 						if (empty($unserv)) {
 							$nodes = $this->merge_nodes($nodes, $this->load_request($serv, $klabel));
 						} else {

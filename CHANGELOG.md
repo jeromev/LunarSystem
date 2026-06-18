@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.8-alpha] - 2026-06-18
+- Added a full technical documentation set under `docs/` (overview, architecture, RDF model, database schema, modules, templating, configuration, installation, security)
+- Linked the documentation from `README.md`
+
 ## [0.2.7-alpha] - 2010-03-30
 - Updated installation instructions
 

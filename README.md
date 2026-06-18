@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.2.7-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.2.8-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 ## Quick start (Docker)
 
@@ -72,6 +72,20 @@ js/                            jQuery + CKEditor (rich-text editing)
 | **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs |
 | **Legacy SQL syntax** | Compatibility | Schema uses `TYPE=MyISAM`; MySQL 8+ requires `ENGINE=MyISAM` |
 | **Cache files tracked** | Repo noise | `luna/luna.domains/lunarsystem.org/cache/` contains cached data committed to git |
+
+## Documentation
+
+Full technical documentation lives in [docs/](docs/):
+
+- [Overview](docs/overview.md) — the big idea and glossary
+- [Architecture](docs/architecture.md) — request lifecycle and core classes
+- [RDF model](docs/rdf-model.md) — the in-memory triple store and SQL→RDF projection
+- [Database schema](docs/database-schema.md) — every table and the seed data
+- [Modules](docs/modules.md) — the mod system and a mod-authoring guide
+- [Templating](docs/templating.md) — XSLT rendering and output formats
+- [Configuration](docs/configuration.md) — domains, `luna.ini`, `db.ini`
+- [Installation](docs/installation.md) — Docker and manual setup
+- [Security](docs/security.md) — known issues and hardening
 
 ## Changelog
 

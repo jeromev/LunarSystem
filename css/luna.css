@@ -21,7 +21,7 @@
 	--warn:         #a60045;         /* warning button / message */
 	--field-border: #ccc;
 	--field-focus:  #938379;
-	--font: 11px/0.9375rem Verdana, sans-serif;
+	--font: 16px/1.5rem Verdana, sans-serif;
 }
 
 /* ////////////////////////////////////////////////////////////////////  TAGS */
@@ -32,7 +32,7 @@ html, body {
 	color: var(--ink);
 }
 body { padding: 0 0.6875rem 0.6875rem; }
-body, input, textarea, button, select, optgroup, table { font: var(--font); }
+html, body, input, textarea, button, select, optgroup, table { font: var(--font); }
 
 table.zebra {
 	border: none;
@@ -344,7 +344,7 @@ h6 {
 /* ////////////////////////////////////////////////////////////////////  PAGE */
 body div#Page {
 	margin: 0 auto;
-	width: 52.0625rem;
+	width: 100%;
 	background: transparent;
 	position: relative;
 }
@@ -378,7 +378,7 @@ body div#Page div#Content {
 	position: relative;
 	float: right;
 	display: inline;
-	width: 38.875rem;
+	width: 66%;
 	padding: 0.6875rem 0;
 }
 body div#Page div#Content div#Content-header h1 {

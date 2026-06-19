@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1-alpha] - 2026-06-18
+- Fixed: **localisation did nothing.** The Docker image installed the `gettext` extension but never generated the OS locales, so `setlocale()` failed and every translation silently fell back to the source string. The image now generates `en_US.UTF-8`, `fr_FR.UTF-8` and an `en_EN.UTF-8` alias (the locales `lunaTools::format_language()` maps to). French (and any other catalog) now translates.
+- Fixed: the English message catalogs (`en_US`, `en_EN`) contained two stray **French** translations (`Email`→"Courriel", `Groups`→"Groupes"), so once the catalogs loaded the English UI showed French. Corrected to "Email"/"Groups" and recompiled the `.mo` files. (This was misdiagnosed at first as a gettext per-worker cache leak; it was purely bad catalog data.)
+- Fixed: **`?output=xml` downloaded a `download.rdf` file** instead of displaying. It was served as `application/rdf+xml`, which browsers have no inline viewer for. It now uses `application/xml; charset=utf-8`, so the RDF/XML renders inline; the body is unchanged and still valid RDF/XML. (`json`/`n3`/`jsonld` keep their semantic content-types.)
+
 ## [0.3.0-alpha] - 2026-06-18
 - Turn the archival CMS into a real Semantic Web CMS in phases, on top of the **unchanged** MySQL schema. This is now the `main` line; the original archival CMS is preserved on the **`legacy`** branch (tag **0.2.14-alpha**). See [docs/linked-data.md](docs/linked-data.md).
   - **Phase 0 — Linked Data foundations + JSON-LD.** Froze a URI policy (resource `/id/{slug}` distinct from its document) and a vocabulary mapping from the custom `luna:`/`owl:` terms to schema.org / Dublin Core / SIOC / FOAF / PROV-O — notably replacing the invalid `owl:isChildOf` with `schema:isPartOf`. Added a JSON-LD projection: `lunaModel::to_jsonld()`, an `?output=jsonld` format, and a `<script type="application/ld+json">` block embedded in every HTML `<head>`.

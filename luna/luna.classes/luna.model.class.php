@@ -468,7 +468,10 @@ class lunaModel {
 				$ser = ARC2::getRDFXMLSerializer($this->conf);
 				$doc = $ser->getSerializedIndex($index);
 				if ($return) { return $doc; }
-				header('Content-Type: application/rdf+xml');
+				// Serve as application/xml (not application/rdf+xml) so browsers render
+				// the RDF/XML inline instead of downloading it as a .rdf file. The body
+				// is still valid RDF/XML for any consumer that parses the content.
+				header('Content-Type: application/xml; charset=utf-8');
 				die($doc);
 		}
 	}

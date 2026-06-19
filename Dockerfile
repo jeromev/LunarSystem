@@ -16,6 +16,17 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
         gettext \
     && rm -rf /var/lib/apt/lists/*
 
+# gettext needs the OS locales generated; otherwise setlocale() fails and every
+# translation silently falls back to the source string (i.e. localisation does
+# nothing). Generate the locales lunaTools::format_language() maps to: fr_FR for
+# French, en_US, and the non-standard en_EN ('en' -> 'en_EN'), the latter aliased
+# to the en_US definition since glibc ships no en_EN source.
+RUN apt-get update && apt-get install -y --allow-unauthenticated locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 \
+    && { localedef -i en_US -f UTF-8 en_EN.UTF-8 || true; }
+
 # Install required PHP extensions
 RUN docker-php-ext-install mysql mysqli xsl gettext
 

@@ -5,7 +5,7 @@
 LunarSystem is a small, self-contained PHP 5 content-management system written
 between **2006 and 2010** by "Odradek" (lunarsystem.org). It was released on
 SourceForge as alpha software and reached version **0.2.7-alpha** in 2010; this
-archival revival carries the version forward to **0.2.14-alpha**.
+archival revival carries the version forward to **0.3.0-alpha**.
 
 Functionally it is a Drupal-like CMS: a tree of pages, a pluggable module
 system, users/groups/access-levels, editable text content, and i18n. What makes
@@ -19,6 +19,12 @@ it unusual for its era is its **data philosophy**:
 So the same model that drives the HTML page can be emitted verbatim as RDF/XML,
 JSON or N-Triples by appending `?output=xml|json|n3` to any URL. The CMS is, in
 effect, a semantic-web front end over a generic graph stored in MySQL.
+
+> **Where this is heading.** An active experiment on the `experiment/semantic-web`
+> branch turns this RDF-flavoured CMS into an RDF-native one — a JSON-LD
+> projection and a real SPARQL read path backed by Ontop and then Oxigraph. See
+> [linked-data.md](linked-data.md). The sections below describe the archival
+> baseline on `main`.
 
 ## The core ideas
 
@@ -62,8 +68,12 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
 
 ## What it is *not*
 
-- It is **not** a triplestore database. RDF lives only in memory during a
-  request; persistence is plain relational MySQL.
-- It does **not** use a SPARQL engine. Graph queries are hand-written SQL joins.
+- The archival CMS is **not** a triplestore database. RDF lives only in memory
+  during a request; persistence is plain relational MySQL. *(The
+  `experiment/semantic-web` branch adds an Oxigraph triplestore — see
+  [linked-data.md](linked-data.md).)*
+- The archival CMS does **not** use a SPARQL engine. Graph queries are
+  hand-written SQL joins. *(On the experiment branch the read path runs through
+  SPARQL via Ontop/Oxigraph under `?sparql=1` — see [linked-data.md](linked-data.md).)*
 - It is **not** compatible with PHP 7+. See [security.md](security.md) and
   [installation.md](installation.md).

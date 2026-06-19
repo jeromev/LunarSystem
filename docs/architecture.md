@@ -40,26 +40,26 @@ triggers a fatal error).
 
 ## Phase 1 — Bootstrap
 
-The `luna::__construct()` method ([luna.php:190](../luna/luna.php#L190)) runs a
+The `luna::__construct()` method ([luna.php:192](../luna/luna.php#L192)) runs a
 fixed sequence wrapped in a `try`/`catch (lunaException)`. Most steps throw a
 `lunaException` on failure (caught, logged, then `die()`); the earliest steps
 (site path, ini load, core-class includes) `die()` or `trigger_error()` directly
-with a message instead ([luna.php:203-213](../luna/luna.php#L203)):
+with a message instead ([luna.php:205-215](../luna/luna.php#L205)):
 
 1. **Environment setup** ([luna.php:20-40](../luna/luna.php#L20)) — `define('NOW', time())`,
    set a default timezone (honour an existing `php.ini` `date.timezone`, else UTC),
    disable `register_globals`/`display_errors`, enable `session.use_trans_sid`, set
    `error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT)`, and a
    `magic_quotes` compatibility guard. (`display_errors` is turned back **on** for
-   admins later when `DEBUG` is set — [luna.php:217](../luna/luna.php#L217).)
-2. **Resolve the site path** (`set_site_path()`, [luna.php:314](../luna/luna.php#L314)) —
+   admins later when `DEBUG` is set — [luna.php:219](../luna/luna.php#L219).)
+2. **Resolve the site path** (`set_site_path()`, [luna.php:320](../luna/luna.php#L320)) —
    walks `HTTP_HOST` segment by segment looking for a matching directory under
    `luna/luna.domains/`, falling back to `luna.default/`. This logic is adapted
    verbatim from **Drupal 5.1's `conf_path()`**. Defines the `SITEPATH` constant
    and sets the `site_uri` / `site_relative_url` static properties.
-   (`set_requested_path()` at [luna.php:303](../luna/luna.php#L303) is a *different*
+   (`set_requested_path()` at [luna.php:309](../luna/luna.php#L309) is a *different*
    method — it normalises the requested URL path; see step 9.)
-3. **Load the ini** (`load_ini()`, [luna.php:625](../luna/luna.php#L625)) —
+3. **Load the ini** (`load_ini()`, [luna.php:635](../luna/luna.php#L635)) —
    parses `<domain>/ini/luna.ini` and turns `[Paths]` and `[Constantes]` entries
    into PHP constants. See [configuration.md](configuration.md).
 4. **Require the core classes** — log, tools, db, session, model.
@@ -80,7 +80,9 @@ with a message instead ([luna.php:203-213](../luna/luna.php#L203)):
 16. **Authorise** — `check_privileges()`; unauthorised users are redirected to
     `login`.
 17. **Load page texts** — `load_texts(0, PAGENID)` merges the page's content
-    blocks into the model.
+    blocks into the model. (Under `?sparql=1` this instead calls
+    `load_texts_sparql(PAGENID)`, fetching the same content over SPARQL —
+    [luna.php:260-263](../luna/luna.php#L260); see [linked-data.md](linked-data.md).)
 18. **Collect page metadata** — site name, description, version, author, language,
     etc. into `luna::$data`.
 
@@ -89,7 +91,7 @@ user, and site metadata.
 
 ## Phase 2 — Load mods
 
-`load_mods()` ([luna.php:381](../luna/luna.php#L381)) is where a page gets its
+`load_mods()` ([luna.php:387](../luna/luna.php#L387)) is where a page gets its
 content. A single SQL query joins the triple tables to find every mod that is
 **(a)** linked to the current page **and (b)** linked to an access level the
 current user holds:
@@ -102,7 +104,7 @@ AND tl.lid = 'level' AND l.tid = tl.id
 AND m.is_active = 1 AND l.is_active = 1
 ```
 
-For each matching mod ([luna.php:421-486](../luna/luna.php#L421)):
+For each matching mod ([luna.php:427-494](../luna/luna.php#L427)):
 
 1. Skip it unless the user actually holds the mod's level
    (`$session->user->levels[$level_nid]`).
@@ -119,14 +121,14 @@ Finally it merges any flash messages into the model. The mod system is detailed
 in [modules.md](modules.md).
 
 > **AJAX short-circuit:** at the start of `transform()`
-> ([luna.php:568](../luna/luna.php#L568)), if `AJAX` is true the request `die()`s
+> ([luna.php:574](../luna/luna.php#L574)), if `AJAX` is true the request `die()`s
 > — XSLT is skipped and only the model-population side effects of `load_mods()`
 > persist. `load_mods()` itself only special-cases AJAX to skip the post-submit
-> `OPTIMIZE TABLE` ([luna.php:477](../luna/luna.php#L477)).
+> `OPTIMIZE TABLE` ([luna.php:483](../luna/luna.php#L483)).
 
 ## Phase 3 — Transform
 
-`transform()` ([luna.php:506](../luna/luna.php#L506)) assembles the remaining
+`transform()` ([luna.php:512](../luna/luna.php#L512)) assembles the remaining
 view data and renders:
 
 1. Merge in the current user, available languages, available output formats, the
@@ -134,7 +136,7 @@ view data and renders:
 2. If `output_format != html`, call `lunaModel::dump($format)` which serialises
    the model with **ARC2** and exits (RDF/XML, JSON, or N-Triples).
 3. Otherwise pick an XSLT stylesheet by a **cascading file lookup** keyed on the
-   page `lid` and output format ([luna.php:575-607](../luna/luna.php#L575)):
+   page `lid` and output format ([luna.php:580-613](../luna/luna.php#L580)):
    domain override → built-in, page-specific → `default`.
 4. Call `lunaModel::transform($XSLfile)`, which serialises the model to RDF/XML
    via ARC2 and runs PHP's `XSLTProcessor`. The result is cached (Cache_Lite)
@@ -142,6 +144,14 @@ view data and renders:
 
 The returned string is the HTTP response. See [templating.md](templating.md) for
 the stylesheet lookup order and the RDF/XML the templates expect.
+
+> **Semantic-web extension (experiment branch):** on this branch the model
+> additionally exposes a JSON-LD projection — `?output=jsonld` routes through
+> `lunaModel::to_jsonld()`, and the HTML `<head>` carries an embedded
+> `<script type="application/ld+json">` block. The read path can also flow
+> through a SPARQL endpoint under `?sparql=1` (routing, level-based ACL, and
+> page content), with no change to the archival path described above. See
+> [linked-data.md](linked-data.md).
 
 ## Request lifecycle diagram
 

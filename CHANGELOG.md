@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0-alpha] - 2026-06-18
+- Experiment (`experiment/semantic-web`, not merged to `main`): turn the archival CMS into a real Semantic Web CMS in phases, on top of the **unchanged** MySQL schema. See [docs/linked-data.md](docs/linked-data.md). The archival release stays **0.2.14-alpha** on `main`.
+  - **Phase 0 — Linked Data foundations + JSON-LD.** Froze a URI policy (resource `/id/{slug}` distinct from its document) and a vocabulary mapping from the custom `luna:`/`owl:` terms to schema.org / Dublin Core / SIOC / FOAF / PROV-O — notably replacing the invalid `owl:isChildOf` with `schema:isPartOf`. Added a JSON-LD projection: `lunaModel::to_jsonld()`, an `?output=jsonld` format, and a `<script type="application/ld+json">` block embedded in every HTML `<head>`.
+  - **Phase A — virtual SPARQL over MySQL (Ontop + R2RML).** Added `semantic/ontop/` (Dockerfile, `mapping.ttl`, `ontop.properties`) exposing the unchanged MySQL as a virtual SPARQL endpoint (Ontop, host port 8081). Under `?sparql=1` the app's READ path now flows through SPARQL: `lunaModel::load_texts_sparql()` (page content) and `lunaModel::load_nodes_sparql()` (routing + level-based ACL), both via `lunaModel::sparql_select()`. The endpoint is selected by a `SPARQL_ENDPOINT` constant / env var (default `http://ontop:8080/sparql`).
+  - **Phase B — materialise to Oxigraph, swap the engine.** Materialised the SAME `mapping.ttl` into a real triplestore (Oxigraph, host port 7879) via `semantic/ontop/dump.nt`, then flipped the app's `SPARQL_ENDPOINT` to point at it — an engine swap with NO application code change (verified by stopping Ontop and confirming `?sparql=1` still serves routing/ACL/content from the triplestore).
+  - **Docker:** `docker-compose.yml` now defines four services — `app`, `db` (`mysql:5.7`), `ontop`, `oxigraph`.
+
 ## [0.2.14-alpha] - 2026-06-18
 - Security: hardened the self-contained issues from the 0.2.12 code-review pass (verified against the Docker stack). See [docs/security.md](docs/security.md).
   - SQL injection in `mod_journal`: `start` is now `intval()`'d before the `LIMIT` clause and `order_by` is whitelisted before being interpolated as a SQL identifier into `COUNT()`/`ORDER BY` (this also fixes the dead `switch($order_by)` on an undefined variable).

@@ -109,6 +109,17 @@ The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 > leaking it — but rotate the credentials anyway; there is nothing to untrack.
 > See [security.md](security.md).
 
+## `SPARQL_ENDPOINT` (semantic-web experiment, optional)
+
+On the `experiment/semantic-web` branch the app reads one extra setting — the
+`SPARQL_ENDPOINT` environment variable — which selects the SPARQL endpoint used
+by the read-through-SPARQL path (`?sparql=1`). It is defined as a constant in
+[luna.php](../luna/luna.php) (`getenv('SPARQL_ENDPOINT')` falling back to
+`http://ontop:8080/sparql`) and wired through `docker-compose.yml`. It defaults
+to the Ontop virtual endpoint and can be flipped to the Oxigraph triplestore with
+no code change. This is **not** used by the archival CMS — see
+[linked-data.md](linked-data.md).
+
 ## `luna_config` (runtime config)
 
 Editable site settings live in the `luna_config` table (see

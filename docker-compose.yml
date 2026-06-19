@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     volumes:
       - .:/var/www/html
     # The read path is RDF-native by default: routing / ACL / texts are read from
@@ -28,7 +28,7 @@ services:
       MYSQL_USER: luna
       MYSQL_PASSWORD: luna
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - ./luna/luna.sql/luna.mysql.sql:/docker-entrypoint-initdb.d/luna.mysql.sql
       - db_data:/var/lib/mysql
@@ -48,7 +48,7 @@ services:
     volumes:
       - ./semantic/ontop:/opt/ontop/input
     ports:
-      - "8081:8080"
+      - "127.0.0.1:8081:8080"
     depends_on:
       - db
 
@@ -61,7 +61,7 @@ services:
     image: oxigraph/oxigraph
     command: ["serve", "--location", "/data", "--bind", "0.0.0.0:7878"]
     ports:
-      - "7879:7878"
+      - "127.0.0.1:7879:7878"
     volumes:
       - oxigraph_data:/data
 

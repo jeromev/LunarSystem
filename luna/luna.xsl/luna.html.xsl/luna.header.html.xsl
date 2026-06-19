@@ -95,18 +95,9 @@
 <xsl:text>
 var basehref='</xsl:text><xsl:value-of select="$site_uri"/><xsl:text>'; var pagenid='</xsl:text><xsl:value-of select="$masternodenid"/> <xsl:text>'; var pagelid='</xsl:text><xsl:value-of select="$masternodelid"/> <xsl:text>'; var lang='</xsl:text><xsl:value-of select="$lang"/><xsl:text>';
 </xsl:text> 
-						<xsl:choose>
-							<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'wysiwyg']/luna:value = '1'">
-<xsl:text>
-var ckeditorconfig = { toolbar: [['Source'],['Maximize','ShowBlocks','RemoveFormat','-','Cut','Copy','Paste','PasteText','PasteFromWord'],['Undo','Redo'],['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],['Link','Unlink','Anchor'],['Image','Flash','Table','HorizontalRule'],['Styles','Format']]};
-</xsl:text>
-							</xsl:when>
-							<xsl:otherwise>
 <xsl:text>
 var ckeditorconfig = 0;
 </xsl:text>
-							</xsl:otherwise>
-						</xsl:choose>
 					</xsl:comment>
 				</script>
 				<script type="text/javascript"> 
@@ -114,18 +105,6 @@ var ckeditorconfig = 0;
 						<xsl:value-of select="$site_relative_url"/><xsl:text>js/jquery/jquery.js</xsl:text> 
 					</xsl:attribute> 
 				</script>
-				<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'wysiwyg']/luna:value = '1'"> 
-					<script type="text/javascript">  
-						<xsl:attribute name="src">  
-							<xsl:value-of select="$site_relative_url"/><xsl:text>js/ckeditor/ckeditor.js</xsl:text> 
-						</xsl:attribute>  
-					</script> 
-					<script type="text/javascript">  
-						<xsl:attribute name="src">  
-							<xsl:value-of select="$site_relative_url"/><xsl:text>js/ckeditor/adapters/jquery.js</xsl:text>  
-						</xsl:attribute>  
-					</script> 
-				</xsl:if>  
 				<script type="text/javascript"> 
 					<xsl:attribute name="src"> 
 						<xsl:value-of select="$site_relative_url"/><xsl:text>js/luna.js</xsl:text> 

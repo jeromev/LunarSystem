@@ -116,7 +116,7 @@ The XSLT stylesheet for the page then reads these nodes out of the RDF/XML — s
 | [`mod_admin_users`](../luna/luna.mods/luna.mod_admin_users.php) | CRUD for users (add/modify/delete) |
 | [`mod_admin_pages`](../luna/luna.mods/luna.mod_admin_pages.php) | CRUD for pages; links mods + a level to each page |
 | [`mod_admin_mods`](../luna/luna.mods/luna.mod_admin_mods.php) | Register/enable/disable available modules |
-| [`mod_edit_texts`](../luna/luna.mods/luna.mod_edit_texts.php) | Edit page text blocks per language (CKEditor) |
+| [`mod_edit_texts`](../luna/luna.mods/luna.mod_edit_texts.php) | Edit page text blocks per language (plain textarea) |
 | [`mod_journal`](../luna/luna.mods/luna.mod_journal.php) | Journal/activity view over the `luna_logs` table (it queries `LOGS`, **not** `luna_actions`); also handles the `purgelogs` action that wipes the log |
 | [`mod_log`](../luna/luna.mods/luna.mod_log.php) | Login/logout + authentication handling |
 | [`mod_node`](../luna/luna.mods/luna.mod_node.php) | Emits a requested node as raw RDF |

@@ -9,7 +9,7 @@ templates and no template engine — the entire presentation layer is XSL.
 | Location | Role |
 |---|---|
 | [luna/luna.xsl/luna.html.xsl/](../luna/luna.xsl/luna.html.xsl/) | The built-in HTML stylesheets (the default theme) |
-| `luna.domains/<domain>/xsl/html.xsl/` | Per-domain overrides (e.g. lunarsystem.org ships a full set) |
+| `luna.domains/<domain>/xsl/html.xsl/` | Per-domain overrides (optional; none ship in the repo) |
 | `luna.domains/luna.default/xsl/` | Empty — the default domain falls back to the built-ins |
 
 > **Naming:** built-in stylesheets carry a `luna.` prefix (e.g.

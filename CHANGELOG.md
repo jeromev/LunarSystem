@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0-alpha] - 2026-06-19
+- Public-readiness, part 1 — safety + trim (toward making the repo a public, minimal, safe semantic-web testing unit; the remaining git history was audited and confirmed clean — no secret was ever committed).
+  - **Safety (blocker):** `docker-compose.yml` now binds **every** host port to `127.0.0.1` (loopback) — app `8080`, MySQL `3307`, Ontop `8081`, Oxigraph `7879`. Previously they published to `0.0.0.0`, exposing an **unauthenticated Oxigraph `/update`** (open graph-write) and the MySQL port to the whole network on a bare `docker-compose up`.
+  - **Safety:** added a loud "study/experiment artifact — run on localhost only" banner at the top of the README (before the quick start), a demo-credentials note next to the login line, and a concrete loopback-binding mitigation in `docs/security.md`.
+  - **Trim (~40% smaller: 15 MB → 8.6 MB):** removed **CKEditor** (`js/ckeditor`, ~6 MB) — the admin text editor is now a plain `<textarea>` (you see the exact HTML going into the graph); neutralised its wiring in `luna.header.html.xsl` and `js/luna.js`. Removed the **`lunarsystem.org` production domain** (theme + the real-looking on-disk `db.ini`); the demo uses `luna.default`.
+  - Docs: fixed every reference to the removed CKEditor / production domain across README, configuration, templating, modules, security, roadmap; resolved the "real DB credentials in the working tree" security finding (the file is gone).
+  - Verified on Docker: site renders, content still served from the triplestore, no errors.
+
 ## [0.3.6-alpha] - 2026-06-19
 - Docs: added **[docs/why-rdf.md](docs/why-rdf.md)** — a plain-English "so what?" doc explaining what the RDF-native app can do that a vanilla PHP/MySQL app can't (ad-hoc SPARQL across all content types, graph traversal, the app's own routing/ACL answered by SPARQL; schema.org JSON-LD + standards-based interop; storage as a swappable component), each capability tagged **live** / **one step away** / **roadmap** and grounded in queries run against the live stack. Wired into the docs index and READMEs. The doc's claims were adversarially fact-checked against the running Oxigraph/Ontop stack (zero inaccuracies found). No code change.
 

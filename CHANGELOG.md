@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.1-alpha] - 2026-06-19
+- **SCSS source maps in the dev build.** `make css-watch` now compiles with source maps (`--embed-sources`), so browser dev tools point compiled rules back to the `_*.scss` file and line instead of `luna.css`. The map (`css/luna.css.map`) is gitignored; `make css` stays clean (no source map) for the committed `css/luna.css`. Shared Sass flags were factored into a `SASS_FLAGS` variable in the `Makefile`.
+
 ## [0.6.0-alpha] - 2026-06-19
 - **Adopted a baseline grid for typography** — [baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) (v3.0.1, MIT © Jérôme Vogel), vendored under `scss/vendor/`:
   - `scss/_bg.scss` configures it (`@forward 'baselinegrid'`); `_base.scss` calls `@include bg.begin()`, sets `html { @include bg.root(); font-family: Verdana, sans-serif; }` (a responsive base font + the `--base-unit` rhythm), reconciles form-control fonts (`font: inherit`), and aligns body text via `p { @include bg.set(); }`.

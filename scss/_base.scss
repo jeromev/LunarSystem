@@ -14,90 +14,105 @@ table.zebra {
 	padding: 0;
 	width: 100%;
 	border-collapse: collapse;
-}
-table.zebra tbody { background: rgba(255, 255, 255, .90); }
-table.zebra thead div.pagination {
-	border-bottom: solid 0.0625rem #eee;
-	padding: 0.125rem 0;
-	margin: 0.125rem 0 0;
-	color: var(--muted-2);
-}
-table.zebra thead div.pagination a.prev,
-table.zebra thead div.pagination a.next,
-table.zebra thead div.pagination a.first,
-table.zebra thead div.pagination a.last {
-	border-radius: 0.1875rem;
-	background: rgba(255, 255, 255, .60);
-	border: 0.125rem solid #ccc;
-	padding: 0 0.3125rem 0.0625rem;
-}
-table.zebra thead div.pagination a.prev:hover,
-table.zebra thead div.pagination a.next:hover,
-table.zebra thead div.pagination a.first:hover,
-table.zebra thead div.pagination a.last:hover { border-color: var(--accent-bright); }
-table.zebra thead div.alphabetic { border-bottom: none; }
-table.zebra thead div.alphabetic strong.on {
-	display: inline;
-	font-size: 0.6875rem;
-}
-table.zebra thead th {
-	background: rgba(0, 0, 0, .15);
-	color: #fff;
-	padding: 0.3125rem 0.375rem;
-	margin: 0;
-	text-align: left;
-	font-weight: normal;
-	border-bottom: solid 0.0625rem #bbb;
-	white-space: nowrap;
-	text-shadow: 0.0625rem 0.0625rem .5em rgba(0, 0, 0, .5);
-}
-table.zebra thead th:first-child { border-radius: 0.3125rem 0 0 0; }
-table.zebra thead th:last-child { border-radius: 0 0.3125rem 0 0; }
-table.zebra thead th a { display: block; color: inherit; }
-table.zebra thead th a strong {
-	display: block;
-	font-size: 0.6875rem;
-	font-style: italic;
-	font-weight: normal;
-}
-table.zebra caption {
-	padding: 0.375rem 0;
-	text-align: left;
-	font-size: 0.6875rem;
-	line-height: 0.9375rem;
-	margin-top: 0.625rem;
-}
-table.zebra tbody tr {
-	background: rgba(255, 255, 255, .80);
-	padding: 0;
-	margin: 0;
-	border-bottom: thin solid #f9f9f9;
-	color: var(--muted);
-}
-table.zebra tbody tr:hover { background: rgba(0, 0, 0, .15); color: #000; }
-table.zebra tbody tr.even {
-	background: rgba(0, 0, 0, .10);
-	padding: 0.1875rem;
-}
-table.zebra tbody tr.even:hover, table.zebra tbody tr.even.hover { background: rgba(0, 0, 0, .10); }
-table.zebra tbody tr.odd {
-	background: rgba(0, 0, 0, .05);
-	padding: 0.1875rem;
-}
-table.zebra tbody tr.odd:hover, table.zebra tbody tr.odd.hover { background: rgba(0, 0, 0, .10); }
-table.zebra tbody tr.active:hover, table.zebra tbody tr.active.hover {
-	background: #cdedef;
-	cursor: pointer;
+
+	tbody { background: rgba(255, 255, 255, .90); }
+	thead {
+		div.pagination {
+			border-bottom: solid 0.0625rem #eee;
+			padding: 0.125rem 0;
+			margin: 0.125rem 0 0;
+			color: var(--muted-2);
+
+			a.prev,
+			a.next,
+			a.first,
+			a.last {
+				border-radius: 0.1875rem;
+				background: rgba(255, 255, 255, .60);
+				border: 0.125rem solid #ccc;
+				padding: 0 0.3125rem 0.0625rem;
+
+				&:hover { border-color: var(--accent-bright); }
+			}
+		}
+		div.alphabetic {
+			border-bottom: none;
+
+			strong.on {
+				display: inline;
+				font-size: 0.6875rem;
+			}
+		}
+		th {
+			background: rgba(0, 0, 0, .15);
+			color: #fff;
+			padding: 0.3125rem 0.375rem;
+			margin: 0;
+			text-align: left;
+			font-weight: normal;
+			border-bottom: solid 0.0625rem #bbb;
+			white-space: nowrap;
+			text-shadow: 0.0625rem 0.0625rem .5em rgba(0, 0, 0, .5);
+
+			&:first-child { border-radius: 0.3125rem 0 0 0; }
+			&:last-child { border-radius: 0 0.3125rem 0 0; }
+			a {
+				display: block;
+				color: inherit;
+
+				strong {
+					display: block;
+					font-size: 0.6875rem;
+					font-style: italic;
+					font-weight: normal;
+				}
+			}
+		}
+	}
+	caption {
+		padding: 0.375rem 0;
+		text-align: left;
+		font-size: 0.6875rem;
+		line-height: 0.9375rem;
+		margin-top: 0.625rem;
+	}
+	tbody tr {
+		background: rgba(255, 255, 255, .80);
+		padding: 0;
+		margin: 0;
+		border-bottom: thin solid #f9f9f9;
+		color: var(--muted);
+
+		&:hover { background: rgba(0, 0, 0, .15); color: #000; }
+		&.even {
+			background: rgba(0, 0, 0, .10);
+			padding: 0.1875rem;
+
+			&:hover, &.hover { background: rgba(0, 0, 0, .10); }
+		}
+		&.odd {
+			background: rgba(0, 0, 0, .05);
+			padding: 0.1875rem;
+
+			&:hover, &.hover { background: rgba(0, 0, 0, .10); }
+		}
+		&.active:hover, &.active.hover {
+			background: #cdedef;
+			cursor: pointer;
+		}
+	}
 }
 table.zebra tbody tr.info, body div#Page div.message.info { background: #d6ffe0; }
 table.zebra tbody tr.notice, body div#Page div.message.notice { background: #ffe5c1; }
 table.zebra tbody tr.critical, body div#Page div.message.critical { background: #febbbf; }
 table.zebra tbody tr.warning, body div#Page div.message.warning { background: #ffc6c6; }
 table.zebra tbody tr.error, body div#Page div.message.error { background: #ff8680; }
-table.zebra tbody tr.deleted, table.zebra tbody tr.deleted a, table.zebra tbody tr.inactive, table.zebra tbody tr.inactive a { font-style: italic; color: var(--muted-2) !important; }
-table.zebra tbody td {
-	padding: 0.3125rem 0.375rem;
-	margin: 0;
+table.zebra tbody {
+	tr.deleted, tr.deleted a, tr.inactive, tr.inactive a { font-style: italic; color: var(--muted-2) !important; }
+	td {
+		padding: 0.3125rem 0.375rem;
+		margin: 0;
+	}
 }
 
 form {
@@ -105,94 +120,99 @@ form {
 	margin: 0;
 	padding: 0;
 	background: transparent;
+
+	fieldset {
+		border: none;
+		display: block;
+		margin: 0;
+		padding: 0;
+
+		p { color: var(--muted); }
+		div.box {
+			padding: 0.6875rem;
+			margin: 0;
+			background: rgba(0, 0, 0, .10);
+		}
+		legend {
+			padding: 0;
+			margin: 0;
+			display: block !important;
+			text-align: left;
+			font-size: 0.6875rem;
+			line-height: 0.9375rem;
+		}
+		label {
+			padding: 0;
+			margin: 0;
+			display: block;
+
+			span.label {
+				display: block;
+				color: var(--muted);
+				padding: 0 0 0.1875rem;
+			}
+		}
+		select {
+			margin: 0;
+			font-weight: normal;
+			font-size: 0.8125rem;
+			border: solid 0.125rem var(--field-border);
+			line-height: 0.9375rem;
+			padding: 0.125rem 0.0625rem 0.125rem 0.125rem;
+			width: 11.625rem;
+			border-radius: 0.1875rem;
+		}
+		input {
+			padding: 0.1875rem 0.3125rem;
+			width: 10.75rem;
+			margin: 0;
+			font-weight: normal;
+			font-size: 0.8125rem;
+			border: solid 0.125rem var(--field-border);
+			line-height: 0.9375rem;
+			border-radius: 0.1875rem;
+
+			&.submit {
+				background: var(--chrome);
+				color: #fff;
+				font-size: 0.6875rem;
+				letter-spacing: 0.0625rem;
+				margin: 0.3125rem 0 0.25rem 0.375rem;
+				padding: 0.375rem 0.25rem 0.3125rem;
+				text-transform: uppercase;
+				width: 11.6875rem;
+				border-radius: 0.1875rem;
+
+				&:hover, &:focus {
+					cursor: pointer;
+					color: #fff;
+					background: var(--ok);
+				}
+			}
+			&.warning:hover {
+				background: var(--warn);
+				color: #f9f9f9;
+			}
+			&.becarefull:hover { color: #f9f9f9; }
+		}
+		textarea {
+			padding: 0.3125rem 0.375rem;
+			margin: 0;
+			font-weight: normal;
+			border: solid 0.125rem var(--field-border);
+			width: 10.625rem;
+			height: 8.75rem;
+			font-size: 0.6875rem;
+			border-radius: 0.1875rem;
+		}
+		input:hover,
+		input:focus,
+		select:hover,
+		select:focus,
+		textarea:hover,
+		textarea:focus { border: solid 0.125rem var(--field-focus); }
+	}
 }
-form fieldset {
-	border: none;
-	display: block;
-	margin: 0;
-	padding: 0;
-}
-form fieldset p { color: var(--muted); }
-form fieldset div.box {
-	padding: 0.6875rem;
-	margin: 0;
-	background: rgba(0, 0, 0, .10);
-}
-form fieldset legend {
-	padding: 0;
-	margin: 0;
-	display: block !important;
-	text-align: left;
-	font-size: 0.6875rem;
-	line-height: 0.9375rem;
-}
-form fieldset label {
-	padding: 0;
-	margin: 0;
-	display: block;
-}
-form fieldset label span.label {
-	display: block;
-	color: var(--muted);
-	padding: 0 0 0.1875rem;
-}
-form fieldset select {
-	margin: 0;
-	font-weight: normal;
-	font-size: 0.8125rem;
-	border: solid 0.125rem var(--field-border);
-	line-height: 0.9375rem;
-	padding: 0.125rem 0.0625rem 0.125rem 0.125rem;
-	width: 11.625rem;
-	border-radius: 0.1875rem;
-}
-form fieldset input {
-	padding: 0.1875rem 0.3125rem;
-	width: 10.75rem;
-	margin: 0;
-	font-weight: normal;
-	font-size: 0.8125rem;
-	border: solid 0.125rem var(--field-border);
-	line-height: 0.9375rem;
-	border-radius: 0.1875rem;
-}
-form fieldset input.submit {
-	background: var(--chrome);
-	color: #fff;
-	font-size: 0.6875rem;
-	letter-spacing: 0.0625rem;
-	margin: 0.3125rem 0 0.25rem 0.375rem;
-	padding: 0.375rem 0.25rem 0.3125rem;
-	text-transform: uppercase;
-	width: 11.6875rem;
-	border-radius: 0.1875rem;
-}
-form fieldset input.submit:hover, form fieldset input.submit:focus {
-	cursor: pointer;
-	color: #fff;
-	background: var(--ok);
-}
-form fieldset input.warning:hover {
-	background: var(--warn);
-	color: #f9f9f9;
-}
-form fieldset input.becarefull:hover { color: #f9f9f9; }
-form fieldset textarea {
-	padding: 0.3125rem 0.375rem;
-	margin: 0;
-	font-weight: normal;
-	border: solid 0.125rem var(--field-border);
-	width: 10.625rem;
-	height: 8.75rem;
-	font-size: 0.6875rem;
-	border-radius: 0.1875rem;
-}
-form fieldset input:hover,
-form fieldset input:focus,
-form fieldset select:hover,
-form fieldset select:focus,
-form fieldset textarea:hover,
-form fieldset textarea:focus { border: solid 0.125rem var(--field-focus); }
 
 hr { display: none; }
 acronym {
@@ -203,8 +223,9 @@ acronym {
 a {
 	text-decoration: none;
 	color: var(--link);
+
+	&:hover { color: var(--link-hover); }
 }
-a:hover { color: var(--link-hover); }
 small {
 	font-size: 0.5625rem;
 	line-height: 0.8125rem;
@@ -239,13 +260,17 @@ dd {
 	margin: 0;
 	padding: 0;
 }
-dl.analyse { margin: 0.6875rem 0; background: transparent; }
-dl.analyse dt {
-	color: var(--muted-2);
-	padding: 0.3125rem 0;
-	background: rgba(0, 0, 0, .05);
+dl.analyse {
+	margin: 0.6875rem 0;
+	background: transparent;
+
+	dt {
+		color: var(--muted-2);
+		padding: 0.3125rem 0;
+		background: rgba(0, 0, 0, .05);
+	}
+	dd { padding: 0.3125rem 0.6875rem; }
 }
-dl.analyse dd { padding: 0.3125rem 0.6875rem; }
 
 h1, h2, h3, h4, h5, h6 {
 	color: #000;

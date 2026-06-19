@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.5.4-alpha] - 2026-06-19
+- **Refactored the SCSS partials into nested rules.** The flat descendant selectors (which repeated their full ancestor chain on every line) are now idiomatic nested SCSS — the `form` → `fieldset` → fields block, the whole `table.zebra` block (`_base.scss`), the deep `body div#Page …` layout tree (`_page.scss`), and the `ul.tv …` tree (`_treeview.scss`); pseudo-classes / compound selectors use `&` (`&:hover`, `&.even`, `&.submit`). The nesting is order-preserving, so the **compiled `css/luna.css` is byte-identical** (normalised) to before — verified against a pre-refactor snapshot of the exact same flat source. Carries forward the in-progress responsive width tweaks (rem → `%`) already in the working tree.
+
 ## [0.5.3-alpha] - 2026-06-19
 - **Added an SCSS build apparatus for the stylesheet.** `css/luna.css` is now a *generated* file compiled from a new `scss/` source tree with [Dart Sass](https://sass-lang.com/dart-sass):
   - `scss/luna.scss` is the entry point; the previous single stylesheet is split into partials along its existing sections — `_tokens.scss` (the `:root` palette), `_base.scss`, `_classes.scss`, `_page.scss`, `_clearfix.scss`, `_tinymce.scss`, `_treeview.scss` — wired with `@use`.

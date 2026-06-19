@@ -3,6 +3,100 @@
    .css directly. Edit the partials here and run `make css` (or `make css-watch`).
    Source of truth: scss/. Build tool: Dart Sass (`sass`).
    =========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+*::after, *::before {
+  box-sizing: border-box;
+}
+*:not(a) {
+  cursor: default;
+}
+
+html,
+body {
+  text-rendering: optimizeLegibility;
+  min-height: 100%;
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+abbr,
+abbr[title] {
+  cursor: help;
+  line-height: 1;
+  border: none;
+  text-decoration: none;
+}
+
+pre,
+code {
+  font-family: monospace;
+  white-space: pre;
+  cursor: text;
+}
+
+code {
+  font-size: 0.95em;
+}
+
+address {
+  font-style: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+sup {
+  top: -0.3em;
+  font-weight: bolder;
+  font-size: 64%;
+  letter-spacing: 0.045em;
+  vertical-align: bottom;
+  position: relative;
+}
+
+figure {
+  margin: 0;
+  line-height: 0;
+}
+figure figcaption {
+  line-height: normal;
+}
+figure p {
+  line-height: normal;
+}
+
+hr {
+  border: none;
+  border-top: solid 1px;
+  width: 100%;
+}
+
 /* ////////////////////////////////////////////////////////////  CUSTOM PROPS */
 /*
 	Modernised 2026: lowercased element selectors, dropped -moz-/-webkit-
@@ -52,18 +146,15 @@ table.zebra {
   width: 100%;
   border-collapse: collapse;
 }
-
 table.zebra tbody {
   background: rgba(255, 255, 255, 0.9);
 }
-
 table.zebra thead div.pagination {
   border-bottom: solid 0.0625rem #eee;
   padding: 0.125rem 0;
   margin: 0.125rem 0 0;
   color: var(--muted-2);
 }
-
 table.zebra thead div.pagination a.prev,
 table.zebra thead div.pagination a.next,
 table.zebra thead div.pagination a.first,
@@ -73,23 +164,19 @@ table.zebra thead div.pagination a.last {
   border: 0.125rem solid #ccc;
   padding: 0 0.3125rem 0.0625rem;
 }
-
 table.zebra thead div.pagination a.prev:hover,
 table.zebra thead div.pagination a.next:hover,
 table.zebra thead div.pagination a.first:hover,
 table.zebra thead div.pagination a.last:hover {
   border-color: var(--accent-bright);
 }
-
 table.zebra thead div.alphabetic {
   border-bottom: none;
 }
-
 table.zebra thead div.alphabetic strong.on {
   display: inline;
   font-size: 0.6875rem;
 }
-
 table.zebra thead th {
   background: rgba(0, 0, 0, 0.15);
   color: #fff;
@@ -101,27 +188,22 @@ table.zebra thead th {
   white-space: nowrap;
   text-shadow: 0.0625rem 0.0625rem 0.5em rgba(0, 0, 0, 0.5);
 }
-
 table.zebra thead th:first-child {
   border-radius: 0.3125rem 0 0 0;
 }
-
 table.zebra thead th:last-child {
   border-radius: 0 0.3125rem 0 0;
 }
-
 table.zebra thead th a {
   display: block;
   color: inherit;
 }
-
 table.zebra thead th a strong {
   display: block;
   font-size: 0.6875rem;
   font-style: italic;
   font-weight: normal;
 }
-
 table.zebra caption {
   padding: 0.375rem 0;
   text-align: left;
@@ -129,7 +211,6 @@ table.zebra caption {
   line-height: 0.9375rem;
   margin-top: 0.625rem;
 }
-
 table.zebra tbody tr {
   background: rgba(255, 255, 255, 0.8);
   padding: 0;
@@ -137,30 +218,24 @@ table.zebra tbody tr {
   border-bottom: thin solid #f9f9f9;
   color: var(--muted);
 }
-
 table.zebra tbody tr:hover {
   background: rgba(0, 0, 0, 0.15);
   color: #000;
 }
-
 table.zebra tbody tr.even {
   background: rgba(0, 0, 0, 0.1);
   padding: 0.1875rem;
 }
-
 table.zebra tbody tr.even:hover, table.zebra tbody tr.even.hover {
   background: rgba(0, 0, 0, 0.1);
 }
-
 table.zebra tbody tr.odd {
   background: rgba(0, 0, 0, 0.05);
   padding: 0.1875rem;
 }
-
 table.zebra tbody tr.odd:hover, table.zebra tbody tr.odd.hover {
   background: rgba(0, 0, 0, 0.1);
 }
-
 table.zebra tbody tr.active:hover, table.zebra tbody tr.active.hover {
   background: #cdedef;
   cursor: pointer;
@@ -190,7 +265,6 @@ table.zebra tbody tr.deleted, table.zebra tbody tr.deleted a, table.zebra tbody 
   font-style: italic;
   color: var(--muted-2) !important;
 }
-
 table.zebra tbody td {
   padding: 0.3125rem 0.375rem;
   margin: 0;
@@ -202,24 +276,20 @@ form {
   padding: 0;
   background: transparent;
 }
-
 form fieldset {
   border: none;
   display: block;
   margin: 0;
   padding: 0;
 }
-
 form fieldset p {
   color: var(--muted);
 }
-
 form fieldset div.box {
   padding: 0.6875rem;
   margin: 0;
   background: rgba(0, 0, 0, 0.1);
 }
-
 form fieldset legend {
   padding: 0;
   margin: 0;
@@ -228,19 +298,16 @@ form fieldset legend {
   font-size: 0.6875rem;
   line-height: 0.9375rem;
 }
-
 form fieldset label {
   padding: 0;
   margin: 0;
   display: block;
 }
-
 form fieldset label span.label {
   display: block;
   color: var(--muted);
   padding: 0 0 0.1875rem;
 }
-
 form fieldset select {
   margin: 0;
   font-weight: normal;
@@ -251,7 +318,6 @@ form fieldset select {
   width: 11.625rem;
   border-radius: 0.1875rem;
 }
-
 form fieldset input {
   padding: 0.1875rem 0.3125rem;
   width: 10.75rem;
@@ -262,7 +328,6 @@ form fieldset input {
   line-height: 0.9375rem;
   border-radius: 0.1875rem;
 }
-
 form fieldset input.submit {
   background: var(--chrome);
   color: #fff;
@@ -274,22 +339,18 @@ form fieldset input.submit {
   width: 11.6875rem;
   border-radius: 0.1875rem;
 }
-
 form fieldset input.submit:hover, form fieldset input.submit:focus {
   cursor: pointer;
   color: #fff;
   background: var(--ok);
 }
-
 form fieldset input.warning:hover {
   background: var(--warn);
   color: #f9f9f9;
 }
-
 form fieldset input.becarefull:hover {
   color: #f9f9f9;
 }
-
 form fieldset textarea {
   padding: 0.3125rem 0.375rem;
   margin: 0;
@@ -300,7 +361,6 @@ form fieldset textarea {
   font-size: 0.6875rem;
   border-radius: 0.1875rem;
 }
-
 form fieldset input:hover,
 form fieldset input:focus,
 form fieldset select:hover,
@@ -324,7 +384,6 @@ a {
   text-decoration: none;
   color: var(--link);
 }
-
 a:hover {
   color: var(--link-hover);
 }
@@ -380,13 +439,11 @@ dl.analyse {
   margin: 0.6875rem 0;
   background: transparent;
 }
-
 dl.analyse dt {
   color: var(--muted-2);
   padding: 0.3125rem 0;
   background: rgba(0, 0, 0, 0.05);
 }
-
 dl.analyse dd {
   padding: 0.3125rem 0.6875rem;
 }
@@ -475,7 +532,6 @@ h6 {
   cursor: pointer;
   background: url("../images/menu-collapsed.png") no-repeat 0 50%;
 }
-
 .box-handle.expanded {
   padding-left: 1.375rem;
   cursor: pointer;
@@ -490,39 +546,33 @@ body div#Page {
   background: transparent;
   position: relative;
 }
-
 body div#Page div#Top {
   background: transparent;
 }
-
 body div#Page div#Top div.box {
   float: left;
   display: inline;
-  width: 38.875rem;
+  width: 66%;
   margin: 0;
   padding: 0.125rem 0 0;
   background: var(--chrome);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
 body div#Page div#Top div.box:first-child {
-  width: 12.5rem;
+  width: 33%;
   margin: 0 0.6875rem 0 0;
 }
-
 body div#Page div#Top h1 {
   padding: 0;
   margin: 0;
 }
-
 body div#Page div#Top h1 a {
   color: #fff;
   display: block;
   padding: 0.6875rem;
   text-shadow: 0.0625rem 0.0625rem 0.5em rgba(0, 0, 0, 0.5);
 }
-
 body div#Page div#Content {
   background: transparent;
   position: relative;
@@ -531,169 +581,135 @@ body div#Page div#Content {
   width: 66%;
   padding: 0.6875rem 0;
 }
-
 body div#Page div#Content div#Content-header h1 {
   padding: 0;
   margin: 0;
 }
-
 body div#Page div#Content div#Content-header h1 a {
   color: #fff;
   display: block;
   padding: 0.6875rem;
   background: var(--accent);
 }
-
 body div#Page div#Content div#Bottom {
   padding: 0.375rem 0.6875rem;
   margin: 0;
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
 }
-
 body div#Page div#Content div#Content-main {
   padding: 0;
   background: transparent;
 }
-
 body div#Page div#Content div#Content-main div.box {
   margin: 0 0 0.6875rem;
   padding: 0 0.6875rem;
   background: rgba(255, 255, 255, 0.6);
 }
-
 body div#Page div#Content div#Content-main div.box.text {
   padding: 0.6875rem 1.375rem 1.375rem;
   background: rgba(255, 255, 255, 0.9);
 }
-
 body div#Page div#Content div#Content-main div.box.text h2 {
   font-size: 155%;
 }
-
 body div#Page div#Content div#Content-main div.box.text .box-content {
   font-size: 108%;
   line-height: 140%;
   padding: 0;
 }
-
 body div#Page div#Content div#Content-main div.box.text .box-content ul {
   margin: 0;
   padding: 0;
 }
-
 body div#Page div#Content div#Content-main div.box.text .box-content li {
   margin: 0;
   font-size: 83%;
 }
-
 body div#Page div#Content div#Content-main div.boxtable {
   padding: 0 0 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main #PagesList table td.level2 {
   padding-left: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main #PagesList table td.level3 {
   padding-left: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main #PagesList table td.level4 {
   padding-left: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main #PagesList table td.level5 {
   padding-left: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main div.onecol {
   padding: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main div.onecol label {
   clear: both;
 }
-
 body div#Page div#Content div#Content-main div.col {
   display: inline;
   float: left;
   padding: 0.6875rem 0 0.6875rem 0.6875rem;
   width: 11.5625rem;
 }
-
-body div#Page div#Content div#Content-main div.col.autowidth input,
-body div#Page div#Content div#Content-main div.col.autowidth textarea,
-body div#Page div#Content div#Content-main div.col.autowidth label span.label {
+body div#Page div#Content div#Content-main div.col.autowidth input, body div#Page div#Content div#Content-main div.col.autowidth textarea, body div#Page div#Content div#Content-main div.col.autowidth label span.label {
   width: auto !important;
 }
-
 body div#Page div#Content div#Content-main div.col label.big input,
 body div#Page div#Content div#Content-main div.col label.big textarea,
 body div#Page div#Content div#Content-main div.col label.big span.label {
   width: 35.25rem;
 }
-
 body div#Page div#Content div#Content-main form fieldset {
   background: transparent;
 }
-
 body div#Page div#Content div#Content-main form fieldset div.box-content {
   padding-bottom: 0.6875rem;
 }
-
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth input,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth textarea,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth label span.label {
   width: auto !important;
 }
-
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big input,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big textarea,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big span.label {
   width: 35.25rem;
 }
-
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large input,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large textarea,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large select,
 body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large span.label {
   width: 23.875rem;
 }
-
 body div#Page div#Content-main form fieldset label.big input,
 body div#Page div#Content-main form fieldset label.big span.label {
   width: 35.25rem;
 }
-
 body div#Page div#Content-main form fieldset label.big textarea {
   width: 35.25rem;
   height: 12.5rem;
 }
-
 body div#Page div#Content div#Content-main div.text div.col {
   display: inline;
   float: left;
   padding: 0 0.375rem 0.6875rem 0.5625rem;
   width: 11.375rem;
 }
-
 body div#Page div#Content div#Content-main div.text div.col:first-child {
   padding-left: 0;
 }
-
 body div#Page div#Content div#Content-main div.text div.col:last-child {
   padding-right: 0;
   border: none;
 }
-
 body div#Page div#Content div#Content-main div.fields {
   background: rgba(0, 0, 0, 0.05);
   border-top-left-radius: 0.3125rem;
   border-top-right-radius: 0.3125rem;
   padding: 0.0006875rem 0 0;
 }
-
 body div#Page div#Content div#Content-main div.submit {
   margin: 0;
   padding: 0.25rem;
@@ -702,16 +718,13 @@ body div#Page div#Content div#Content-main div.submit {
   border-bottom-left-radius: 0.3125rem;
   border-bottom-right-radius: 0.3125rem;
 }
-
 body div#Page div#AnalyseLog {
   padding: 0 0.6875rem 0.6875rem 0;
 }
-
 body div#Page div#AnalyseLog div.message {
   padding: 0.3125rem 0.6875rem;
   width: 35.25rem;
 }
-
 body div#Page div#Messages p {
   color: #f9f9f9;
   padding: 0.375rem 0.6875rem 0.4375rem;
@@ -719,59 +732,47 @@ body div#Page div#Messages p {
   font-weight: bold;
   border-radius: 0.3125rem;
 }
-
 body div#Page div.message {
   padding: 0.3125rem 0.6875rem;
   width: 35.25rem;
 }
-
 body div#Page div#Messages p.warning {
   background: var(--warn);
 }
-
 body div#Page div#Messages p.notice {
   background: #c99;
 }
-
 body div#Page div#Messages p.okay {
   background: var(--ok);
 }
-
 body div#Page div#Nav {
   padding: 0.6875rem 0 0;
 }
-
 body div#Page div#Nav div.box {
   padding: 0 0.6875rem;
-  width: 11.125rem;
+  width: 33%;
 }
-
 body div#Page div#Nav div#SiteMap {
   background: rgba(255, 255, 255, 0.5);
   display: inline;
   float: left;
 }
-
 body div#Page div#Nav div#SiteMap div.box-content {
   margin-bottom: 0.6875rem;
 }
-
 body div#Page div#Nav div#SiteMap div.box-content li {
   font-size: 97%;
 }
-
 body div#Page div#Nav div#Options {
   position: absolute;
   top: 0.5rem;
   right: 0.6875rem;
 }
-
 body div#Page div#Nav div#Options ul {
   list-style: none;
   display: inline;
   float: left;
 }
-
 body div#Page div#Nav div#Options ul li {
   list-style: none;
   display: inline;
@@ -779,7 +780,6 @@ body div#Page div#Nav div#Options ul li {
   letter-spacing: 0.0625rem;
   font-size: 0.625rem;
 }
-
 body div#Page div#Nav div#Options ul li a {
   color: #fff;
   display: block;
@@ -788,19 +788,15 @@ body div#Page div#Nav div#Options ul li a {
   z-index: 100;
   margin-left: -0.0625rem;
 }
-
 body div#Page div#Nav div#Options ul li:first-child a {
   border-radius: 0.1875rem 0 0 0.1875rem;
 }
-
 body div#Page div#Nav div#Options ul li:last-child a {
   border-radius: 0 0.1875rem 0.1875rem 0;
 }
-
 body div#Page div#Nav div#Options ul li a:hover {
   background: var(--accent);
 }
-
 body div#Page div#Nav div#Options ul li a.on {
   background: rgba(0, 0, 0, 0.3);
   color: #ddd;
@@ -823,7 +819,6 @@ span.mceEditorContainer {
   display: block;
   border: 0.125rem;
 }
-
 span.mceEditorContainer iframe.mceEditorIframe {
   background: #fff;
 }
@@ -841,14 +836,12 @@ ul.tv, ul.tv ul {
   margin: 0;
   list-style: none;
 }
-
 ul.tv li {
   position: relative;
   margin: 0;
   padding: 0.125rem 0 0.125rem 0.625rem;
   z-index: 10;
 }
-
 ul.tv div.tvca {
   height: 0.9375rem;
   width: 0.9375rem;
@@ -858,39 +851,30 @@ ul.tv div.tvca {
   cursor: pointer;
   z-index: 50;
 }
-
 ul.tv li, ul.tv .tvi {
   background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat;
 }
-
 ul.tv .tvic {
   background-image: url(../images/treeView/tvie.png);
 }
-
 ul.tv .tvie {
   background-image: url(../images/treeView/tvic.png);
 }
-
 ul.tv .tvil {
   background-image: url(../images/treeView/tvil.png);
 }
-
 ul.tv .tvilc {
   background-image: url(../images/treeView/tvile.png);
 }
-
 ul.tv .tvile {
   background-image: url(../images/treeView/tvilc.png);
 }
-
 ul.tv .tvload {
   background-image: url(../images/treeView/tviload.gif);
 }
-
 ul.tv .tvclosed ul, ul.tv .tvclosed li.tvclosed ul {
   display: none;
 }
-
 ul.tv .tvclosed ul ul {
   display: block;
 }

@@ -6,9 +6,12 @@ an **in-memory RDF triple store** for the duration of a request, projects
 relational rows into it, and serialises it (to RDF/XML for XSLT, or to
 XML/JSON/N-Triples for raw output).
 
-> RDF here is a *representation*, not a storage engine. Nothing is persisted as
-> triples; the graph is rebuilt from MySQL on every request and discarded at the
-> end.
+> In the archival model, RDF here is a *representation*, not a storage engine: the
+> graph is rebuilt from MySQL on every request and discarded at the end. The
+> semantic-web layer changes this — as of 0.3.3-alpha every content write also
+> persists into the Oxigraph triplestore (via `rdf_sync_node()`), which is now the
+> default read source. See the "Semantic-web layer" note at the end of this file
+> and [linked-data.md](linked-data.md).
 
 ## The in-memory structure
 

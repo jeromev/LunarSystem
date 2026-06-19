@@ -1,7 +1,7 @@
 # LunarSystem Documentation
 
 Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS
-(v0.3.4-alpha, circa 2006–2010) that models all content as **RDF triples** and
+(v0.3.5-alpha, circa 2006–2010) that models all content as **RDF triples** and
 renders pages through **XSLT transformations**.
 
 This `docs/` folder is the canonical technical reference. The top-level
@@ -27,7 +27,7 @@ This `docs/` folder is the canonical technical reference. The top-level
 | [installation.md](installation.md) | Docker and manual setup, requirements |
 | [security.md](security.md) | Known issues and hardening notes |
 | [linked-data.md](linked-data.md) | The semantic-web layer: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
-| [roadmap.md](roadmap.md) | Where the project is headed: finishing the RDF-native transition, then a data-first server + client-side rendering (and why native browser XSLT is a dead end) |
+| [roadmap.md](roadmap.md) | Where the project is headed: finishing the RDF-native transition, then a data-first server (and why client-side/native-browser XSLT is a dead end, so P5 was dropped) |
 
 ## Reading order
 
@@ -45,6 +45,6 @@ If you are new to the codebase, read in this order:
 
 This started as a historical / archival codebase (the original, preserved on the
 `legacy` branch as `v0.2.14-alpha`) and is now an RDF-native Semantic Web CMS on
-`main` (`0.3.4-alpha`) — see [linked-data.md](linked-data.md). It still
+`main` (`0.3.5-alpha`) — see [linked-data.md](linked-data.md). It still
 runs only on **PHP 5.3–5.6**; see [security.md](security.md) before exposing it
 publicly.

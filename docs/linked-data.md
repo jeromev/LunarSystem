@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.3.4-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.3.5-alpha`).** The semantic-web work
 > described here is now the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
@@ -217,9 +217,11 @@ mirror never breaks a save). On top of it:
 - **`rdf_sync_node($nid)`** re-projects a node's *whole* description into the
   graph — `DELETE { <uri> ?p ?o } INSERT { …the triples the R2RML mapping derives… }`
   — typing the resource (`page`→`schema:WebPage`, `text`→`schema:Article`,
-  `user`→`foaf:Person`, level/group/mod→`luna:`) and emitting its edges
-  (`schema:isPartOf`/`hasPart`, `luna:level`) with numeric values typed
-  `xsd:integer` to match the materialisation. `insert`/`update`/`link`/`unlink`
+  `user`→`foaf:Person`; level/group/mod stay untyped, carrying only
+  `schema:name`/`schema:identifier`/`luna:isActive`) and emitting its edges
+  (`schema:isPartOf`/`hasPart`, `luna:level`) as `/id/{lid}` resource URIs, plus
+  scalar properties (`schema:identifier`, `luna:isActive`) typed `xsd:integer` to
+  match the materialisation. `insert`/`update`/`link`/`unlink`
   all call it; `mod_edit_texts` calls it after writing a text body (it replaced
   the old `rdf_put_article`).
 - **`rdf_delete_node($nid)`** drops every triple mentioning the resource — as

@@ -79,11 +79,11 @@ All hooks are optional except `singleton()`. `load_mods()` checks for each with
 
 On a submit the dispatcher calls the generic `submit()` **first** (if defined),
 *then* the mode-specific hook selected by the `$_POST['mode']` switch — they are
-not alternatives, both fire ([luna.php:464-482](../luna/luna.php#L464)).
+not alternatives, both fire ([luna.php:470-488](../luna/luna.php#L470)).
 
 After **any** submit (when the request is not AJAX), `load_mods()` runs
 `lunaDB::optimise()` (an `OPTIMIZE TABLE`) on the nodes/map/actions tables —
-regardless of whether the submit actually succeeded ([luna.php:483](../luna/luna.php#L483)).
+regardless of whether the submit actually succeeded ([luna.php:490](../luna/luna.php#L490)).
 
 ### Injecting data into the model
 
@@ -98,7 +98,9 @@ common calls (see [rdf-model.md](rdf-model.md)):
   from the DB.
 - `luna::$model->set_property($node, $lid, $value)` — set a property.
 - `insert()` / `link()` / `update()` / `unlink()` — graph mutation that writes
-  through to MySQL (used by the admin CRUD mods).
+  through to MySQL (the system of record) and, best-effort, mirrors the affected
+  node(s) into the SPARQL triplestore (Oxigraph) via `rdf_sync_node()` (used by the
+  admin CRUD mods).
 
 The XSLT stylesheet for the page then reads these nodes out of the RDF/XML — see
 [templating.md](templating.md).

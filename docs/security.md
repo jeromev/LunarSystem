@@ -38,21 +38,44 @@ against the running Docker stack.
 
 | Issue | Severity | Status | Detail | Location |
 |---|---|---|---|---|
-| **No CSRF protection anywhere** | High | ⬜ open | No anti-forgery token is generated or verified. Every state-changing action (create/modify/delete users, groups, levels, pages, mods; the site `disable` kill-switch) fires on the mere presence of `submit`/`batch_submit` in the request. | dispatch [luna.php:464-482](../luna/luna.php#L464) |
+| **No CSRF protection anywhere** | High | ⬜ open | No anti-forgery token is generated or verified. Every state-changing action (create/modify/delete users, groups, levels, pages, mods) fires on the mere presence of `submit`/`batch_submit` in the request. | dispatch [luna.php:470-487](../luna/luna.php#L470) |
 | **SQL injection in `mod_journal`** | High | ✅ fixed | `start` is now `intval()`'d before the `LIMIT` clause and `order_by` is whitelisted before it is interpolated as a SQL identifier into `COUNT()`/`ORDER BY`. | [luna.mod_journal.php](../luna/luna.mods/luna.mod_journal.php) |
-| **Session fixation (no ID regeneration)** | High | ⬜ open | `login()` only `UPDATE`s `session_logged_in` on the *existing* session id; `session_regenerate_id()` is never called. With `use_trans_sid=1` the id can arrive from the URL, so a pre-seeded id survives authentication. (Deferred: the DB-keyed session handler needs careful manual rotation.) | [luna.mod_log.php:164](../luna/luna.mods/luna.mod_log.php#L164) |
-| **Submit handlers never re-check privileges** | High | ⬜ open | `check_privileges()` runs once in the constructor against the *requested page's* level only. No `submit_add/modify/delete` re-validates rights on the specific target node (whose id comes from request input). | [luna.tools.class.php:717](../luna/luna.classes/luna.tools.class.php#L717), called at [luna.php:257](../luna/luna.php#L257) |
+| **Session fixation (no ID regeneration)** | High | ⬜ open | `login()` only `UPDATE`s `session_logged_in` on the *existing* session id; `session_regenerate_id()` is never called. With `use_trans_sid=1` the id can arrive from the URL, so a pre-seeded id survives authentication. (Deferred: the DB-keyed session handler needs careful manual rotation.) | [luna.mod_log.php:167-176](../luna/luna.mods/luna.mod_log.php#L167) |
+| **Submit handlers never re-check privileges** | High | ⬜ open | `check_privileges()` runs once in the constructor against the *requested page's* level only. No `submit_add/modify/delete` re-validates rights on the specific target node (whose id comes from request input). | [luna.tools.class.php:710](../luna/luna.classes/luna.tools.class.php#L710), called at [luna.php:264](../luna/luna.php#L264) |
 | **No login throttling** | Medium | ✅ fixed | `login()` now reads `login_attempts` and applies a capped per-account back-off (`sleep(min(attempts, 5))`); a correct password still resets the counter, so accounts are never permanently locked. | [luna.mod_log.php](../luna/luna.mods/luna.mod_log.php) |
 | **PHP object injection via `unserialize()`** | Medium | ✅ fixed | Sort cookies now use `json_encode`/`json_decode` (cannot instantiate objects); the `load_request()` path guards `unserialize()` against `O:`/`C:` object payloads. | [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php); [luna.model.class.php](../luna/luna.classes/luna.model.class.php) |
-| **Reflected XSS in the error page** | Medium | ✅ fixed | `raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the HTML response. | [luna.tools.class.php:296](../luna/luna.classes/luna.tools.class.php#L296) |
+| **Reflected XSS in the error page** | Medium | ✅ fixed | `raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the HTML response. | [luna.tools.class.php:295](../luna/luna.classes/luna.tools.class.php#L295) |
 | **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the era-2009 HTML_Safe filter applied on save. | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`, and the lunarsystem.org theme) |
-| **`purgelogs` wipes the audit log via GET** | Medium | ✅ fixed | The `DELETE FROM luna_logs` now requires `$_POST['purgelogs']`, so a forged link/`<img>` (GET) can no longer trigger it. | [luna.mod_journal.php:79](../luna/luna.mods/luna.mod_journal.php#L79) |
+| **`purgelogs` wipes the audit log via GET** | Medium | ✅ fixed | The `DELETE FROM luna_logs` now requires `$_POST['purgelogs']`, so a forged link/`<img>` (GET) can no longer trigger it. | [luna.mod_journal.php:81](../luna/luna.mods/luna.mod_journal.php#L81) |
 | **Sensitive data written to `luna_logs`** | Low | ✅ fixed | `lunaLog::log()` now stores only a small `$_SERVER` whitelist (remote addr, method, URI, host, UA, referer) instead of the whole array (which carried the cookie header / session id). | [luna.log.class.php](../luna/luna.classes/luna.log.class.php) |
 | **Weak/bypassable session hijack guard** | Low | ◐ partial | `encode_ip()` no longer trusts `X-Forwarded-For` (it uses `REMOTE_ADDR`), closing the IP-spoof bypass. The guard is still bound to the client-controlled User-Agent, and still breaks users behind rotating IPs. | [luna.session.class.php:322](../luna/luna.classes/luna.session.class.php#L322); [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php) |
 
 > These are a code-reading review, not a penetration test, and not exhaustive.
 > `mod_node`, by contrast, **does** enforce per-node level access before dumping
 > a node ([luna.mod_node.php:71-74](../luna/luna.mods/luna.mod_node.php#L71)).
+
+## Triplestore / SPARQL surface (0.3.x)
+
+The RDF-native read/write loop (see [linked-data.md](linked-data.md)) adds a
+network surface the original CMS did not have. Status: ⬜ open — new, not yet
+hardened.
+
+- **Unauthenticated endpoints — keep them internal.** The app talks to Oxigraph
+  over plain HTTP (`SPARQL_ENDPOINT`, `SPARQL_UPDATE_ENDPOINT` in `luna.php`) with
+  no authentication. Oxigraph's `/update` accepts arbitrary graph mutations, so it
+  must stay on the internal Docker network and never be exposed publicly — the same
+  posture as the MySQL port. Ontop (virtual SPARQL) is read-only but equally must
+  not be public.
+- **Hand-rolled SPARQL string assembly.** The write-through (`rdf_sync_node` /
+  `rdf_delete_node`) builds updates by interpolation, escaping string literals via
+  `sparql_literal()` and IRIs via `rdf_uri()` (rawurlencode'd lid); the read
+  builders (`load_nodes_sparql` / `load_texts_sparql`) interpolate the page slug and
+  the user's level ids. Present but bespoke — treat as SPARQL-injection surface and
+  audit before trusting (same caveat as the MDB2 `quote()` note). User content
+  reaches RDF only through these escapers.
+- **Best-effort by design.** The write-through never blocks a save on a SPARQL
+  failure, so MySQL stays the source of truth; a failed mirror means the graph can
+  lag — reconcile with `rdf_resync_all()`.
 
 ## Repository hygiene
 

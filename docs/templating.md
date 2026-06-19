@@ -24,9 +24,9 @@ serialised directly by ARC2 rather than via XSLT — see below).
 
 ## Stylesheet selection (the cascade)
 
-`luna::transform()` ([luna.php:512](../luna/luna.php#L512)) picks a stylesheet by
+`luna::transform()` ([luna.php:518](../luna/luna.php#L518)) picks a stylesheet by
 trying paths in order, first hit wins (the cascade itself is
-[luna.php:580-613](../luna/luna.php#L580)). Roughly, for output format `html` and a
+[luna.php:586-619](../luna/luna.php#L586)). Roughly, for output format `html` and a
 page whose `lid` is `$lid`:
 
 1. `SITEPATH/xsl/html.xsl/<lid>.html.xsl` — domain, page-specific
@@ -49,8 +49,8 @@ The built-ins use a shared base + includes pattern. Sampling
 | File | Role |
 |---|---|
 | `luna.header.html.xsl` | The XHTML skeleton (`<html>`/`<head>`/`<body>`), namespace declarations, global variables (`$site_uri`, `$lang`, `$masternodelid`, `$masternodenid`, `$cleanurls`, …), and client-side JS bootstrap vars. Matches the `/rdf:RDF` root. |
-| `luna.common.html.xsl` | Shared utility templates: string truncation (`cutstring`), message rendering (matches `luna:message`), pagination URL building (`buildSortURL`), loops. |
-| `luna.common_admin.html.xsl` | Admin UI helpers: `forminput` (renders inputs/selects/textareas), list renderers (`groupslist`, `levelslist`), `online_users`. |
+| `luna.common.html.xsl` | Shared utility templates: string truncation (`cutstring`), form-input rendering (`forminput`, renders inputs/selects/textareas), message rendering (matches `luna:message`), pagination URL building (`buildSortURL`), loops. |
+| `luna.common_admin.html.xsl` | Admin UI helpers: list renderers (`groupslist`, `levelslist`), `online_users`. |
 | `luna.default.html.xsl` | The fallback content page — iterates `luna:text` nodes whose `luna:page` matches the current page and emits `<div class="box text">` with the title and unescaped `luna:content`. |
 | `luna.<page>.html.xsl` | One per admin page: `admin`, `admin_groups`, `admin_levels`, `admin_mods`, `admin_pages`, `admin_users`, `edit_texts`, `journal`, `login`, `logout`, `root`. Each sets a `$mod_lid` and includes the header/common templates. |
 
@@ -116,7 +116,7 @@ a machine-readable RDF endpoint. See [rdf-model.md](rdf-model.md).
 > `lunaModel::to_jsonld()` (a schema.org JSON-LD projection), *not* by ARC2. The
 > same JSON-LD is also embedded in every HTML page: after the XSLT transform,
 > `luna::transform()` injects a `<script type="application/ld+json">` block before
-> `</head>` ([luna.php:618](../luna/luna.php#L618)) — done in PHP post-processing,
+> `</head>` ([luna.php:625](../luna/luna.php#L625)) — done in PHP post-processing,
 > not in the stylesheets, so `luna.header.html.xsl` is unchanged. See
 > [linked-data.md](linked-data.md).
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.7-alpha] - 2026-06-19
+- **Un-bundled jQuery — load it from a CDN.** Removed the vendored `js/jquery/jquery.js` (jQuery 1.4.1, 2010) and now load **jQuery 3.7.1 from cdnjs** with an SRI `integrity` hash + `crossorigin` / `referrerpolicy` ([luna.header.html.xsl](luna/luna.xsl/luna.html.xsl/luna.header.html.xsl)).
+  - **Updated `js/luna.js` for jQuery 3.x:** the two-callback `.toggle(fn, fn)` (removed in jQuery 1.9) is gone — the `.box-handle` collapse that drives the bottom-bar hamburger is now a single class-driven click handler, and the tree-view caret uses a delegated click. The rest (zebra striping, row hover) was already 3.x-compatible.
+  - Verified in a real browser (headless Chrome): `jQuery.fn.jquery` reports `3.7.1`, the SRI passes, the hamburger toggles the sitemap (`display: none → block`), and there are no console errors beyond the pre-existing `favicon.ico` 404.
+  - Updated [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) (jQuery is no longer bundled). **Note:** the page now needs internet access to fetch jQuery from the CDN.
+
 ## [0.5.6-alpha] - 2026-06-19
 - **New fixed bottom toolbar.** All site tools now live in one bar pinned to the bottom of every page:
   - a **hamburger** (`☰ Site map`) on the left that pops the sitemap tree up as a panel above the bar — it reuses the existing `box-handle` jQuery toggle, and the sitemap now defaults to **collapsed**;

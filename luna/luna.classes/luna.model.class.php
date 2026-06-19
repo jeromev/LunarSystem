@@ -586,11 +586,11 @@ class lunaModel {
 		$base = rtrim(luna::$site_uri, '/');
 		$pageuri = $base.'/id/'.rawurlencode(defined('PAGELID')? PAGELID : '');
 		$q = 'PREFIX schema: <https://schema.org/> '
-		   . 'SELECT ?text ?title ?body ?lang ?tident WHERE { '
+		   . 'PREFIX luna: <http://lunarsystem.org/ontology#> SELECT ?text ?title ?body ?content ?lang ?tident WHERE { '
 		   . '<'.$pageuri.'> schema:hasPart ?text . '
 		   . '?text a schema:Article ; schema:identifier ?tident ; '
 		   . 'schema:headline ?title ; schema:articleBody ?body . '
-		   . 'OPTIONAL { ?text schema:inLanguage ?lang } }';
+		   . 'OPTIONAL { ?text schema:inLanguage ?lang } OPTIONAL { ?text luna:content ?content } }';
 		$rows = $this->sparql_select($q);
 		$items = array();
 		foreach ($rows as $r) {
@@ -601,7 +601,7 @@ class lunaModel {
 				'lid'          => $lid,
 				'title'        => isset($r['title']['value'])? $r['title']['value'] : '',
 				'lang'         => isset($r['lang']['value'])? $r['lang']['value'] : luna::$lang,
-				'content_html' => isset($r['body']['value'])? $r['body']['value'] : '',
+				'content_html' => isset($r['content']['value'])? $r['content']['value'] : (isset($r['body']['value'])? $r['body']['value'] : ''),
 				'is_active'    => 1,
 				'save_time'    => 0,
 				'pages'        => array($page_nid)
@@ -748,6 +748,7 @@ class lunaModel {
 				if ($t = $this->rdf_text_row($nid)) {
 					$po[] = 'schema:headline '.self::rdf_str($t->title);
 					$po[] = 'schema:articleBody '.self::rdf_str(trim(strip_tags($t->content_html)));
+					$po[] = 'luna:content '.self::rdf_str($t->content_html);
 					$po[] = 'schema:inLanguage '.self::rdf_str($t->lang);
 				}
 				foreach ($this->rdf_edges($nid, array('page')) as $e) { $po[] = 'schema:isPartOf '.self::rdf_uri($e->lid); }

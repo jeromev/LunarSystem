@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.8-alpha] - 2026-06-19
+- **Fixed: edited text lost its markup on render.** Text saved through the `edit_texts` module came back as plain text (`<p>`, `<strong>`, links… stripped) when displayed.
+  - **Root cause:** the triplestore (the default read path) stored text content only as `schema:articleBody`, which the write-through deliberately runs through `strip_tags()` (correct — `articleBody` is plain text for schema.org). The read path (`load_texts_sparql`) then rebuilt the rendered `content_html` *from* that stripped `articleBody`. Un-edited texts looked fine because the R2RML mapping materialised `articleBody` un-stripped — markup was lost only once a text was **edited** (when the PHP write-through overwrote it with the stripped version), exactly matching the report.
+  - **Fix:** the write-through ([rdf_sync_node](luna/luna.classes/luna.model.class.php)) now also stores the full markup as **`luna:content`** (alongside the plain `schema:articleBody`), and the read path reads `luna:content` for the rendered content (falling back to `articleBody` for texts not yet re-synced). The R2RML mapping ([semantic/ontop/mapping.ttl](semantic/ontop/mapping.ttl)) maps `content_html` → `luna:content` too, so the materialise / Ontop paths stay consistent.
+  - Verified on the live stack: edited text renders its full markup through **both** the graph and SQL read paths; rich content (quotes, `&`, newlines, `<a href>`) round-trips intact; the JSON-LD `schema:articleBody` stays correctly plain-text; zero warnings/fatals.
+
 ## [0.5.7-alpha] - 2026-06-19
 - **Un-bundled jQuery — load it from a CDN.** Removed the vendored `js/jquery/jquery.js` (jQuery 1.4.1, 2010) and now load **jQuery 3.7.1 from cdnjs** with an SRI `integrity` hash + `crossorigin` / `referrerpolicy` ([luna.header.html.xsl](luna/luna.xsl/luna.html.xsl/luna.header.html.xsl)).
   - **Updated `js/luna.js` for jQuery 3.x:** the two-callback `.toggle(fn, fn)` (removed in jQuery 1.9) is gone — the `.box-handle` collapse that drives the bottom-bar hamburger is now a single class-driven click handler, and the tree-view caret uses a delegated click. The rest (zebra striping, row hover) was already 3.x-compatible.

@@ -7,8 +7,8 @@ this `scss/` tree, compiled with [Dart Sass](https://sass-lang.com/dart-sass).
 
 | Command | What |
 |---|---|
-| `make css`       | one-off build → `css/luna.css` |
-| `make css-watch` | live rebuild on every save while you work |
+| `make css`       | clean one-off build (no source map) — run before committing |
+| `make css-watch` | live rebuild **with source maps** — dev tools show `_*.scss:line` |
 | `make css-min`   | minified build |
 
 `sass` must be on your PATH (`brew install sass`, or `npm i -g sass`).
@@ -34,3 +34,5 @@ The palette is CSS custom properties (runtime-themeable), not Sass `$` variables
 so themes can override them without recompiling.
 
 The baseline grid is vendored under `vendor/` and loaded via `--load-path=scss/vendor` (already in the `Makefile`) so `--quiet-deps` can silence its compile-time deprecation notices while still surfacing luna's own.
+
+`make css-watch` emits `css/luna.css.map` (gitignored, with the SCSS embedded via `--embed-sources`), so browser dev tools resolve compiled rules back to the `.scss` source and line. `make css` builds a clean `css/luna.css` with no source-map reference — run it before committing.

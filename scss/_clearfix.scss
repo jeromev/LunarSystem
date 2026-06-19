@@ -1,10 +1,4 @@
 /* /////////////////////////////////////////////////////////  CLEARFIX (FLOATS) */
-body div#Page::after,
-body div#Page div#Content div#Content-main::after,
-body div#Page div#Top::after,
-body div#Page div#Content div#Content-main div.box-content::after,
-body div#Page div#Content div#Content-main div.fields::after {
-	content: "";
-	display: block;
-	clear: both;
-}
+/* The float clearfix that used to live here is gone: the layout is now grid /
+   flexbox (see _page.scss), which contains its own children — no clearing
+   needed. Kept as an empty partial so scss/luna.scss can still `@use` it. */

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5-alpha] - 2026-06-19
+- **Replaced every CSS float with Grid / Flexbox** (`grep float css/luna.css` → 0):
+  - **Page macro-layout → CSS Grid.** `body div#Page` now uses `grid-template-areas` ("top" spanning the full width, then `nav` + `content`), placing the header, left nav and right content by area regardless of DOM order — replacing the old `div#Content { float: right }` + full-width-`div#Nav` float trick.
+  - **Flexbox** for the `div#Top` header (its two boxes now sit side-by-side as intended, instead of wrapping from the old width+margin overflow), the admin form columns (`div.fields`), the `div#Options` language/output switcher, and `div#Nav`.
+  - Removed the float **clearfix** (`_clearfix.scss` is now empty) and the obsolete float-clearing `clear: both` — grid/flex contain their own children.
+  - Verified with before/after headless-Chrome screenshots (home, login, authenticated admin incl. an expanded multi-column form): the two-column layout, forms, nav tree, zebra tables and language switcher all render correctly with zero warnings/fatals. The only intentional visual change is the header becoming a proper side-by-side row.
+
 ## [0.5.4-alpha] - 2026-06-19
 - **Refactored the SCSS partials into nested rules.** The flat descendant selectors (which repeated their full ancestor chain on every line) are now idiomatic nested SCSS — the `form` → `fieldset` → fields block, the whole `table.zebra` block (`_base.scss`), the deep `body div#Page …` layout tree (`_page.scss`), and the `ul.tv …` tree (`_treeview.scss`); pseudo-classes / compound selectors use `&` (`&:hover`, `&.even`, `&.submit`). The nesting is order-preserving, so the **compiled `css/luna.css` is byte-identical** (normalised) to before — verified against a pre-refactor snapshot of the exact same flat source. Carries forward the in-progress responsive width tweaks (rem → `%`) already in the working tree.
 

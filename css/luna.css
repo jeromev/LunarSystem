@@ -541,18 +541,24 @@ h6 {
 
 /* ////////////////////////////////////////////////////////////////////  PAGE */
 body div#Page {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-areas: "top top" "nav content";
+  column-gap: 0.6875rem;
+  align-items: start;
   margin: 0 auto;
   width: 100%;
   background: transparent;
   position: relative;
 }
 body div#Page div#Top {
+  grid-area: top;
+  display: flex;
+  gap: 0.6875rem;
   background: transparent;
 }
 body div#Page div#Top div.box {
-  float: left;
-  display: inline;
-  width: 66.667%;
+  flex: 0 1 66.667%;
   margin: 0;
   padding: 0.125rem 0 0;
   background: var(--chrome);
@@ -560,8 +566,7 @@ body div#Page div#Top div.box {
   border-top-right-radius: 0;
 }
 body div#Page div#Top div.box:first-child {
-  width: 33.333%;
-  margin: 0 0.6875rem 0 0;
+  flex: 0 1 33.333%;
 }
 body div#Page div#Top h1 {
   padding: 0;
@@ -574,11 +579,9 @@ body div#Page div#Top h1 a {
   text-shadow: 0.0625rem 0.0625rem 0.5em rgba(0, 0, 0, 0.5);
 }
 body div#Page div#Content {
+  grid-area: content;
   background: transparent;
   position: relative;
-  float: right;
-  display: inline;
-  width: 66%;
   padding: 0.6875rem 0;
 }
 body div#Page div#Content div#Content-header h1 {
@@ -643,13 +646,12 @@ body div#Page div#Content div#Content-main #PagesList table td.level5 {
 }
 body div#Page div#Content div#Content-main div.onecol {
   padding: 0.6875rem;
+  width: 100%;
 }
 body div#Page div#Content div#Content-main div.onecol label {
   clear: both;
 }
 body div#Page div#Content div#Content-main div.col {
-  display: inline;
-  float: left;
   padding: 0.6875rem 0 0.6875rem 0.6875rem;
   width: 11.5625rem;
 }
@@ -691,9 +693,16 @@ body div#Page div#Content-main form fieldset label.big textarea {
   width: 35.25rem;
   height: 12.5rem;
 }
+body div#Page div#Content div#Content-main div.fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 0.3125rem;
+  border-top-right-radius: 0.3125rem;
+  padding: 0.0006875rem 0 0;
+}
 body div#Page div#Content div#Content-main div.text div.col {
-  display: inline;
-  float: left;
   padding: 0 0.375rem 0.6875rem 0.5625rem;
   width: 11.375rem;
 }
@@ -704,17 +713,10 @@ body div#Page div#Content div#Content-main div.text div.col:last-child {
   padding-right: 0;
   border: none;
 }
-body div#Page div#Content div#Content-main div.fields {
-  background: rgba(0, 0, 0, 0.05);
-  border-top-left-radius: 0.3125rem;
-  border-top-right-radius: 0.3125rem;
-  padding: 0.0006875rem 0 0;
-}
 body div#Page div#Content div#Content-main div.submit {
   margin: 0;
   padding: 0.25rem;
   background: rgba(0, 0, 0, 0.1);
-  clear: both;
   border-bottom-left-radius: 0.3125rem;
   border-bottom-right-radius: 0.3125rem;
 }
@@ -746,16 +748,16 @@ body div#Page div#Messages p.okay {
   background: var(--ok);
 }
 body div#Page div#Nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
   padding: 0.6875rem 0 0;
 }
 body div#Page div#Nav div.box {
   padding: 0 0.6875rem;
-  width: 33%;
 }
 body div#Page div#Nav div#SiteMap {
   background: rgba(255, 255, 255, 0.5);
-  display: inline;
-  float: left;
 }
 body div#Page div#Nav div#SiteMap div.box-content {
   margin-bottom: 0.6875rem;
@@ -767,16 +769,14 @@ body div#Page div#Nav div#Options {
   position: absolute;
   top: 0.5rem;
   right: 0.6875rem;
+  display: flex;
 }
 body div#Page div#Nav div#Options ul {
   list-style: none;
-  display: inline;
-  float: left;
+  display: flex;
 }
 body div#Page div#Nav div#Options ul li {
   list-style: none;
-  display: inline;
-  float: left;
   letter-spacing: 0.0625rem;
   font-size: 0.625rem;
 }
@@ -803,16 +803,9 @@ body div#Page div#Nav div#Options ul li a.on {
 }
 
 /* /////////////////////////////////////////////////////////  CLEARFIX (FLOATS) */
-body div#Page::after,
-body div#Page div#Content div#Content-main::after,
-body div#Page div#Top::after,
-body div#Page div#Content div#Content-main div.box-content::after,
-body div#Page div#Content div#Content-main div.fields::after {
-  content: "";
-  display: block;
-  clear: both;
-}
-
+/* The float clearfix that used to live here is gone: the layout is now grid /
+   flexbox (see _page.scss), which contains its own children — no clearing
+   needed. Kept as an empty partial so scss/luna.scss can still `@use` it. */
 /* /////////////////////////////////////////////////////////////////  TINYMCE */
 span.mceEditorContainer {
   margin-right: 0.6875rem;

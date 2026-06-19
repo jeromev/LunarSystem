@@ -126,7 +126,11 @@ class lunaModel {
 			unset($array);
 		} else { 
 			// load all the pages from the db into the model
-			$this->merge_index($this->load_nodes('page', 'level'));
+				if (lunaTools::request('sparql')) {
+				$this->merge_index($this->load_nodes_sparql('page'));
+			} else {
+				$this->merge_index($this->load_nodes('page', 'level'));
+			}
 			if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); } 
 			if (luna::$cache) { $cache_obj->save(serialize(array('index' => $this->index, 'aliases' => $this->aliases))); }
 		}
@@ -603,6 +607,52 @@ class lunaModel {
 		}
 		if (empty($items)) { return array(); }
 		return $this->load_text($items);
+	}
+	// }}}
+	// {{{ load_nodes_sparql()
+	/**
+	 * SPARQL-backed replacement for load_nodes('page','level'): loads the page
+	 * tree (scoped to the levels the current user holds) from the schema.org
+	 * graph and rebuilds it through the same load_node() + calculate_aliases()
+	 * the SQL path uses — so routing and access control are driven by SPARQL.
+	 *
+	 * @access public
+	 * @param string $type1
+	 * @return array nodes
+	 */
+	public function load_nodes_sparql($type1 = 'page') {
+		$levels = (luna::$session && isset(luna::$session->user->levels) && is_array(luna::$session->user->levels))? luna::$session->user->levels : array();
+		if (empty($levels)) { return array(); }
+		$vals = array();
+		foreach ($levels as $l) { $vals[] = '"'.intval($l).'"'; }
+		$q = 'PREFIX schema: <https://schema.org/> '
+		   . 'PREFIX luna: <http://lunarsystem.org/ontology#> '
+		   . 'SELECT DISTINCT ?pnid ?lid ?active ?lnid ?llid ?lactive ?parentNid WHERE { '
+		   . '?page a schema:WebPage ; schema:identifier ?pnid ; schema:name ?lid ; '
+		   . 'luna:isActive ?active ; luna:level ?level . '
+		   . '?level schema:identifier ?lnid ; schema:name ?llid ; luna:isActive ?lactive . '
+		   . 'OPTIONAL { ?page schema:isPartOf ?parent . ?parent schema:identifier ?parentNid } '
+		   . 'FILTER ( STR(?lnid) IN ('.implode(', ', $vals).') ) }';
+		$rows = $this->sparql_select($q);
+		$nodes = array();
+		foreach ($rows as $r) {
+			$row = array(
+				'nid'        => isset($r['pnid']['value'])? $r['pnid']['value'] : '',
+				'type1'      => 'page',
+				'lid'        => isset($r['lid']['value'])? $r['lid']['value'] : '',
+				'is_active'  => isset($r['active']['value'])? $r['active']['value'] : '1',
+				'parent_nid' => isset($r['parentNid']['value'])? $r['parentNid']['value'] : 0,
+				'nid2'       => isset($r['lnid']['value'])? $r['lnid']['value'] : null,
+				'lid2'       => isset($r['llid']['value'])? $r['llid']['value'] : null,
+				'is_active2' => isset($r['lactive']['value'])? $r['lactive']['value'] : '1'
+			);
+			$nodes = $this->merge_nodes($nodes, $this->load_node($row, 'page', 'level'));
+		}
+		if (!empty($nodes)) {
+			$this->aliases = array();
+			if (!$nodes = $this->calculate_aliases($nodes)) { return array(); }
+		}
+		return $nodes;
 	}
 	// }}}
 	// {{{ load_messages()

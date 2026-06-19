@@ -179,9 +179,20 @@ matches exactly, and the HTML page renders the same). The mapping gained a
 `schema:identifier` (the legacy `nid`) so the SPARQL loader can rebuild the exact
 `/node/{nid}` index the XSLT expects — `nid` as a *property*, not as identity.
 
-This is the move that makes SPARQL the **read boundary**: as each loader is
-migrated to read this way, swapping Ontop for a triplestore (Phase B) changes
-nothing in the application above the endpoint.
+**Routing and access control go through SPARQL too.** `load_nodes_sparql()`
+loads the whole page tree — scoped to the levels the current user holds — and
+rebuilds it through the same `load_node()` + `calculate_aliases()` the SQL path
+uses, so URL→page resolution *and* the level-based ACL are driven by the graph.
+Verified: as a guest, `/?sparql=1` renders the public home but `/admin?sparql=1`
+is **404** (admin pages aren't in a guest's level-filtered alias table); as
+admin, the deep alias `/admin/journal?sparql=1` resolves and renders. Under
+`?sparql=1` the page's **routing and content** are built from SPARQL; the only
+remaining SQL read on the page path is the mod list (`load_mods`) — infrastructure,
+not content.
+
+This is the move that makes SPARQL the **read boundary**: with the loaders
+reading this way, swapping Ontop for a triplestore (Phase B) changes nothing in
+the application above the endpoint.
 
 ## Roadmap
 

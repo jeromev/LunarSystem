@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.2-alpha] - 2026-06-19
+- **Source maps now on every dev build** (`make css` and `make css-watch`), not just the watch loop — the earlier split meant a plain `make css` produced a map-less `css/luna.css`, so dev tools still showed `luna.css` line numbers. `make css-min` remains the clean, minified production build with no map. The `.map` stays gitignored.
+
 ## [0.6.1-alpha] - 2026-06-19
 - **SCSS source maps in the dev build.** `make css-watch` now compiles with source maps (`--embed-sources`), so browser dev tools point compiled rules back to the `_*.scss` file and line instead of `luna.css`. The map (`css/luna.css.map`) is gitignored; `make css` stays clean (no source map) for the committed `css/luna.css`. Shared Sass flags were factored into a `SASS_FLAGS` variable in the `Makefile`.
 

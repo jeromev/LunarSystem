@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.4.0-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.4.1-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning, with known, unfixed issues (unsalted MD5
@@ -22,6 +22,8 @@ Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 > The Docker stack also starts a **triplestore** (Oxigraph on host port `7879`) and a virtual **SPARQL endpoint** (Ontop on host port `8081`). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
 
 Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are demo credentials shipped in the seed data — change them before exposing the app anywhere.)
+
+> **New here?** Follow the ~10-minute hands-on tour in **[docs/try-it.md](docs/try-it.md)**.
 
 > MySQL is exposed on host port `3307` to avoid conflicts with a local MySQL on `3306`.
 
@@ -90,6 +92,7 @@ The Docker stack now boots cleanly: the schema was updated from the obsolete `TY
 Full technical documentation lives in [docs/](docs/):
 
 - [Overview](docs/overview.md) — the big idea and glossary
+- [Try it](docs/try-it.md) — a ~10-minute hands-on Semantic-Web lab
 - [Architecture](docs/architecture.md) — request lifecycle and core classes
 - [RDF model](docs/rdf-model.md) — the in-memory triple store and SQL→RDF projection
 - [Database schema](docs/database-schema.md) — every table and the seed data
@@ -101,6 +104,7 @@ Full technical documentation lives in [docs/](docs/):
 - [Linked Data](docs/linked-data.md) — the Semantic Web layer (URI policy, vocabularies, JSON-LD, SPARQL via Ontop & Oxigraph)
 - [Why RDF](docs/why-rdf.md) — what going RDF-native unlocks, in plain English (and what's still roadmap)
 - [Roadmap](docs/roadmap.md) — what's next: single source of truth, semantics, a data-first server
+- [Going public](docs/going-public.md) — readiness checklist for opening the repo
 
 ## Changelog
 

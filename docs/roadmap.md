@@ -5,7 +5,7 @@ Where LunarSystem is headed, and in what order. Two big arcs:
 1. **Finish the RDF-native transition** — make the triplestore the system of record for content and retire MySQL for it (phases **P0–P3**; P0/P1 done).
 2. **Become a data-first server** — emit data (RDF/XML + JSON-LD) under content negotiation (phase **P4**). *(P5, moving the XSLT transform into the browser, was dropped — see below.)*
 
-Current state: **v0.3.3-alpha** on `main`. **P0 and P1 are done.** Every content write mirrors into Oxigraph through a generic write-through in the model's CRUD, the whole store can be rebuilt from MySQL with `rdf_resync_all()`, and the read path (routing, ACL, texts) is served from the triplestore **by default** — with MySQL as the system of record and an automatic SQL fallback (`?sparql=0`). What remains in Part 1 is **P2** (retire the MySQL content write — blocked on the rename/URI decision) and the optional **P3**. **Part 2's client-side-XSLT goal (P5) has been dropped** (see below); P4 — the data-first server — is where Part 2 now ends.
+Current state: **v0.3.4-alpha** on `main`. **P0 and P1 are done**, and **decision #1 is resolved** (slugs are immutable — "forbid slug edits") and now **enforced** in `lunaModel::update()`. Every content write mirrors into Oxigraph through a generic write-through in the model's CRUD, the whole store can be rebuilt from MySQL with `rdf_resync_all()`, and the read path (routing, ACL, texts) is served from the triplestore **by default** — with MySQL as the system of record and an automatic SQL fallback (`?sparql=0`). What remains in Part 1 is the **rest of P2** — retiring the MySQL *content write* itself (a larger migration: it touches every admin mod's direct SQL, and needs must-succeed writes + an outbox) — and the optional **P3**. **Part 2's client-side-XSLT goal (P5) has been dropped** (see below); P4 — the data-first server — is where Part 2 now ends.
 
 > The cardinal rule across every phase: **freeze the URIs.** `/id/{slug}` is identity; it must not change, or external links and `owl:sameAs` break.
 
@@ -52,9 +52,10 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 **Risks (carried):** a *partial* mirror gap (some-but-not-all triples) is **not** caught by the empty-result fallback — run `rdf_resync_all()` after out-of-band changes; the dual-write is still best-effort, so reads can serve a stale mirror until the next successful sync (eliminated only by P2).
 
-### P2 — Retire the MySQL content write; triplestore = single source of truth ⬅ next, **blocked on decision #1**
+### P2 — Retire the MySQL content write; triplestore = single source of truth ⬅ next (decision #1 resolved)
 **Goal:** stop writing content to MySQL, mint identity from slugs, and harden the now-single write.
 
+- **Done (the URI-policy piece):** decision #1 is **"forbid slug edits"** — `lunaModel::update()` now refuses any change to a node's `lid`, so `<base/id/{lid}>` is frozen by construction (rename = create-new + delete-old). This holds for every node type, since all share the `/id/{lid}` identity scheme.
 - **First, harden the write:** promote the Oxigraph `UPDATE` from best-effort to **must-succeed** (fail the save on mirror failure) and add a relational **outbox** table for at-least-once replay/reconciliation — there is *no 2-phase commit* across MySQL and an HTTP SPARQL endpoint.
 - Add **optimistic concurrency** (version/etag in the `WHERE`) to replace the row locking MySQL gave for free.
 - **Atomic cutover:** freeze writes → final MySQL→graph materialisation → switch off SQL writes (replay any in-window edits from the outbox).
@@ -108,7 +109,7 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 | # | Decision | Blocks |
 |---|---|---|
-| 1 | **Rename / URI-identity policy.** Once `<base/id/{slug}>` *is* identity, can a slug ever be edited? (a) forbid post-creation slug edits, or (b) on rename mint the new URI, copy triples, emit `owl:sameAs` + 303 redirect old→new. | P2 (cardinal-rule critical) |
+| 1 | ✅ **Resolved (June 2026): (a) forbid post-creation slug edits.** Enforced in `lunaModel::update()` — a rename is create-new + delete-old. (Option (b), mint-new-URI + `owl:sameAs` + 303, was rejected as more machinery than this project needs.) | — |
 | 2 | **Dual-write durability.** Confirm flipping the Oxigraph `UPDATE` to must-succeed + a relational **outbox** for replay/reconciliation (no 2PC exists). | P2 |
 | 3 | **Keep or drop MySQL/Ontop** after P2 — retire entirely, or keep as a read-only SQL projection behind Ontop? | P2/P3 |
 | 4 | **Fate of `nid`** — drop the `/node/{nid}` identity once XSLT no longer needs it, or keep `nid` as a non-identifying `schema:identifier` indefinitely? | P2 |
@@ -121,6 +122,6 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 ## Suggested sequencing
 
-**P0 and P1 are done** (0.3.3-alpha). The remaining spine is **P2** — blocked only on decision #1 (the rename/URI-identity policy), which is the gate to make the triplestore the single source of truth and eliminate dual-write drift. **P3** is optional polish. **P4** (data-first server) is low-risk, valuable on its own, and is now the **end of Part 2** — P5 (client-side XSLT) has been dropped. **Recommended next:** settle decision #1, then P2; P4 whenever a clean RDF/data API is wanted.
+**P0 and P1 are done** (0.3.3-alpha), and **decision #1 is resolved + enforced** (immutable slugs, 0.3.4-alpha). The remaining spine is the **rest of P2** — actually retiring the MySQL *content write* so the triplestore is the single source of truth and dual-write drift disappears. That's a larger migration (it touches every admin mod's direct SQL reads/writes, and needs must-succeed writes + an outbox since there's no 2PC), worth doing deliberately. **P3** is optional polish. **P4** (data-first server) is low-risk, valuable on its own, and is now the **end of Part 2** — P5 (client-side XSLT) has been dropped. **Recommended next:** the P2 write-retirement migration when you want to commit to it; P4 whenever a clean RDF/data API is wanted.
 
 > The browser-XSLT analysis in this doc was the basis for dropping P5; it was verified against Chrome's deprecation guidance, LWN, and WHATWG/Mozilla tracking bugs (mid-2026).

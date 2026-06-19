@@ -1,7 +1,7 @@
 # LunarSystem Documentation
 
 Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS
-(v0.3.3-alpha, circa 2006–2010) that models all content as **RDF triples** and
+(v0.3.4-alpha, circa 2006–2010) that models all content as **RDF triples** and
 renders pages through **XSLT transformations**.
 
 This `docs/` folder is the canonical technical reference. The top-level
@@ -45,6 +45,6 @@ If you are new to the codebase, read in this order:
 
 This started as a historical / archival codebase (the original, preserved on the
 `legacy` branch as `v0.2.14-alpha`) and is now an RDF-native Semantic Web CMS on
-`main` (`0.3.3-alpha`) — see [linked-data.md](linked-data.md). It still
+`main` (`0.3.4-alpha`) — see [linked-data.md](linked-data.md). It still
 runs only on **PHP 5.3–5.6**; see [security.md](security.md) before exposing it
 publicly.

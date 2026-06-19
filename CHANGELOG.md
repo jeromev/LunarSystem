@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.3.4-alpha] - 2026-06-19
+- Semantic web (P2, first step — URI-identity policy). Resolved roadmap decision #1 as **"forbid slug edits"** and enforced it: `lunaModel::update()` now refuses any change to a node's `lid`, since `<base/id/{lid}>` *is* the resource's identity and the cardinal rule is "freeze the URIs." A rename is create-new + delete-old. This applies to every node type (page slugs, user emails, …), as all share the `/id/{lid}` scheme. Normal edits (same lid) are unaffected; a true rename returns `false` and logs a warning. Verified on Docker. The rest of P2 — retiring the MySQL *content write* itself — remains a larger, deliberate migration (see [docs/roadmap.md](docs/roadmap.md)).
+
 ## [0.3.3-alpha] - 2026-06-19
 - Semantic web (Phase C complete — the triplestore is now authoritative for the read/write loop; MySQL stays the system of record). The RDF track is being finished; the client-side-XSLT idea (roadmap P5) has been **dropped**. See [docs/linked-data.md](docs/linked-data.md) and [docs/roadmap.md](docs/roadmap.md).
   - **P0 — generic write-through.** Replaced the per-mod `rdf_put_article` hook with a generic projection wired into the model's CRUD, so *every* content write mirrors to the graph by construction:

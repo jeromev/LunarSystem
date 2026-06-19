@@ -2163,10 +2163,22 @@ class lunaModel {
 	 * @param integer $parent_nid
 	 * @return integer
 	 */
-	public function update($nid = false, $lid = false, $is_active = false, $parent_nid = false) { 
+	public function update($nid = false, $lid = false, $is_active = false, $parent_nid = false) {
 		if (empty($nid) || !is_integer(intval($nid))) { return false; }
 		if (empty($lid) || !is_string($lid)) { return false; }
-		$is_active = ($is_active == true)? true : false; 
+		// URI policy (roadmap decision #1, "forbid slug edits"): the lid IS the
+		// resource's identity — <base/id/{lid}> — and must be frozen. Refuse any
+		// change to it rather than silently breaking every link and owl:sameAs;
+		// a rename is create-new + delete-old. Applies to every node type (page
+		// slugs, user emails, …) since all share the /id/{lid} identity scheme.
+		$cur = lunaDB::query('SELECT lid FROM '.luna::get_ini('DBtables', 'NODES').' WHERE nid = '.lunaDB::quote(intval($nid)));
+		$curlid = ($cur && ($crow = $cur->fetchRow()))? $crow->lid : false;
+		if ($cur) { $cur->free(); }
+		if ($curlid !== false && $curlid !== $lid) {
+			lunaLog::log('Refused immutable-slug change on node '.intval($nid).': "'.$curlid.'" -> "'.$lid.'"', PEAR_LOG_WARNING);
+			return false;
+		}
+		$is_active = ($is_active == true)? true : false;
 		$parent_nid = intval($parent_nid);
 		if (empty($parent_nid)) { $parent_nid = false; }
 		$res = lunaDB::query('

@@ -11,8 +11,9 @@
 # URIs match, the virtual SPARQL graph and the JSON-LD describe the very same
 # resources.
 #
-# luna_types ids are hard-coded (user=1, text=4, page=5) to keep the SQL simple
-# for Ontop's parser. This same mapping materialises into the Phase B
+# luna_types ids are hard-coded in the WHERE clauses (user=1, level=3, text=4,
+# page=5; see the luna_types seed in luna/luna.sql/luna.mysql.sql) to keep the
+# SQL simple for Ontop's parser. This same mapping materialises into the Phase B
 # triplestore unchanged — it is the bridge between A and B.
 # ---------------------------------------------------------------------------
 

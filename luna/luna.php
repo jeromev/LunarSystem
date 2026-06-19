@@ -39,7 +39,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 // Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
 if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); }
 // SPARQL endpoint for the experimental read-through-SPARQL path (Phase A; see docs/linked-data.md).
-if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT')? getenv('SPARQL_ENDPOINT') : 'http://ontop:8080/sparql'); }
+if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://ontop:8080/sparql'); }
 /**
  * luna Class
  */

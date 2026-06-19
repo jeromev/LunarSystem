@@ -126,7 +126,7 @@ class lunaModel {
 			unset($array);
 		} else { 
 			// load all the pages from the db into the model
-				if (lunaTools::request('sparql')) {
+			if (lunaTools::request('sparql')) {
 				$this->merge_index($this->load_nodes_sparql('page'));
 			} else {
 				$this->merge_index($this->load_nodes('page', 'level'));
@@ -617,7 +617,7 @@ class lunaModel {
 	 * the SQL path uses — so routing and access control are driven by SPARQL.
 	 *
 	 * @access public
-	 * @param string $type1
+	 * @param string $type1  unused — accepted only for signature parity with load_nodes()
 	 * @return array nodes
 	 */
 	public function load_nodes_sparql($type1 = 'page') {

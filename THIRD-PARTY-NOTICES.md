@@ -3,29 +3,47 @@
 LunarSystem itself is licensed under the **GNU GPL v2** (see [LICENSE](LICENSE)).
 It bundles the following third-party libraries under `luna/luna.lib/` and
 `js/`. Each retains its own license and copyright; the per-file headers are the
-authoritative statement. They are vendored (committed in-tree) because the app
-targets PHP 5.3–5.6 and its original 2006–2010 dependency set.
+authoritative statement. They are vendored (committed in-tree, no Composer/PEAR
+install) because the app originated in the 2006–2010 PHP 5.x era; it now runs on
+PHP 8.3 / MySQL 8.0 (the database layer was migrated from PEAR MDB2 to PDO in
+0.5.0-alpha, so MDB2 is no longer bundled).
 
 | Component | Location | Upstream | License (per file headers / upstream) |
 |---|---|---|---|
 | PEAR Base (`PEAR.php`, `PEAR5.php`) | `luna/luna.lib/` | pear.php.net | New BSD License (© 1997–2009 The Authors / PHP Group) |
-| PEAR **MDB2** (database layer) | `luna/luna.lib/MDB2*` | pear.php.net/package/MDB2 | BSD-style license (© 1998–2007 Manuel Lemos, Tomas V.V.Cox, et al.) |
-| PEAR **Log** | `luna/luna.lib/Log*` | pear.php.net/package/Log | MIT / BSD (per upstream PEAR package) |
-| PEAR **Cache_Lite** | `luna/luna.lib/Cache/` | pear.php.net/package/Cache_Lite | LGPL (per upstream PEAR package) |
-| PEAR **XML_Util** | `luna/luna.lib/XML/` | pear.php.net/package/XML_Util | BSD License (© 2003–2008 Stephan Schmidt) |
-| **HTML_Safe** (input sanitiser) | `luna/luna.lib/HTML/Safe.php` | pear.php.net/package/HTML_Safe | BSD License (3-Clause) |
-| **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol ARC2 license — <http://arc.semsol.org/license> (W3C-style; also offered under the GPL) |
-| **jQuery** | `js/jquery/` | jquery.com | MIT License |
+| PEAR **Log** (base class) | `luna/luna.lib/Log.php` | pear.php.net/package/Log | PHP / BSD-style (© Chuck Hagenbuch, Jon Parise) |
+| PEAR **Cache_Lite** | `luna/luna.lib/Cache/` | pear.php.net/package/Cache_Lite | LGPL (© Fabien Marty) |
+| **XML_HTMLSax3** (HTML SAX parser; HTML_Safe's dependency) | `luna/luna.lib/XML/` | pear.php.net/package/XML_HTMLSax3 | PHP License v3.0 (© 1997–2002 The PHP Group; A. Zhukov, H. Fuecks) |
+| **HTML_Safe** (input sanitiser) | `luna/luna.lib/HTML/Safe.php` | pear.php.net/package/HTML_Safe | BSD License (3-Clause, © Roman Ivanov) |
+| **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
+| **jQuery** 1.4.1 | `js/jquery/` | jquery.com | MIT or GPL v2 (dual-licensed) |
 
-Notes:
+The **jQuery TreeView** navigation icons under `images/treeView/` (© 2006 Myles
+Angell, <http://be.twixt.us/jquery/>) are also third-party; no explicit license
+was stated by the author.
+
+## Inlined third-party functions
+
+A few small utility functions were copied — with attribution in their
+docblocks — directly into the app code rather than vendored as packages. All are
+GPL-compatible with LunarSystem's own GPL v2:
+
+| Function(s) | File | Origin | License |
+|---|---|---|---|
+| `encode_ip()` / `decode_ip()` | [luna.tools.class.php](luna/luna.classes/luna.tools.class.php) | phpBB 2.0.5 | GPL v2 (© 2001 The phpBB Group) |
+| `remove_accents()` | [luna.tools.class.php](luna/luna.classes/luna.tools.class.php) | WordPress 2.0.4 | GPL v2 (© 2006 WordPress) |
+| `set_site_path()` (`conf_path`/`conf_init`) | [luna.php](luna/luna.php) | Drupal 5.1 `bootstrap.inc` | GPL v2 |
+| `array_to_object()` | [luna.tools.class.php](luna/luna.classes/luna.tools.class.php) | lost-in-code.com (2008 blog post) | no license stated by the original author |
+
+## Notes
 
 - The project license (GPL v2) governs LunarSystem's own code. The bundled
   components above are independent works, aggregated for convenience; their
   permissive/LGPL/BSD/MIT terms are compatible with redistribution here. If you
   repackage or relicense, consult each component's own license text and headers.
-- Where a license column says "per upstream PEAR package," the vendored copy did
-  not carry a license header inline; the stated license is the upstream package's
-  published license. Verify against the upstream project if it matters to you.
+- Where a license column cites the upstream PEAR package rather than an inline
+  header, the vendored copy did not carry a license header inline; verify against
+  the upstream project if it matters to you.
 - The **CKEditor** rich-text editor that previously lived under `js/ckeditor/`
   (LGPL/MPL/GPL tri-license) was **removed** in 0.4.0-alpha to keep this build
   minimal; the admin editor is now a plain `<textarea>`.

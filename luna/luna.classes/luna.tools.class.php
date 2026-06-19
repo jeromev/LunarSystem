@@ -299,56 +299,6 @@ class lunaTools {
 		die($message);
 	}
 	// }}}
-	// {{{ parse_bbcode()
-	/**
-	 * @param string $txt
-	 * @access public
-	 * @return string
-	 */
-	public static function parse_bbcode($txt) {
-		$bbcode_rules = array(
-			# [b]Bold text[/b]
-			'/\[(b)\](.*?)\[\/\\1\]/is' => '<strong>$2</strong>',
-			# [i]Italic text[/i]
-			'/\[(i)\](.*?)\[\/\\1\]/is' => '<em>$2</em>',
-			# [u]Underlined text[/u]
-			'/\[(u)\](.*?)\[\/\\1\]/is' => '<u>$2</u>',
-			# [lettrine]A[/lettrine]
-			'/\[(lettrine)\](.*?)\[\/\\1\]/is' => '<span class="$1">$2</span>',
-			# [righthand]
-			'/\[righthand\]/is' => '<span class="righthand"></span>',
-			# [color=red]Red text[/color]
-			'/\[(color)=(#[0-9A-F]{6})\](.*?)\[\/\\1\]/is' => '<span style="color:$2;">$3</span>',
-			# [image]image file[/image]
-			'/\[(image)\](.*?)\[\/\\1\]/is' => '<img src="$2" alt="" />',
-			# [div=somename]content[/div]
-			'/\[(div)=([^]]*)\](.*?)\[\/\\1\]/is' => '<div id="$2">$3</div>',
-			# [div somename]content[/div]
-			'/\[(div) ([^]]*)\](.*?)\[\/\\1\]/is' => '<div class="$2">$3</div>',
-			# [quote=John Doe]quoted text[/quote]
-			'/\[(quote)=([^]]*)\](.*?)\[\/\\1\]/is' => '$2: <blockquote><p>$3</p></blockquote>',
-			# [list]this is a list[/list]
-			'/\[(list)\](.*?)\[\/\\1\]/is' => '</p><ul class="show">$2</ul><p>',
-			# [*]this is an item from a list[/*]
-			'/\[(\*)\](.*?)\[\/\\1\]/is' => '<li>$2</li>',
-			# [h1]this is first header[/h1]
-			'/\[(h\d{1-6})\](.*?)\[\/\\1\]/is' => '<$1>$2</$1>'
-		);
-		if (strpos($txt, '[') !== false) {
-			if (strpos($txt,'[url=') !== false) { $txt = preg_replace('#\[(url)=((\/*)([\w]+?\:\/\/)*([^ \"\n\r\t\)\:\]\[\<]+))\](.*?)\[\/\\1\]#is', '<a href="$4$5">$6</a>', $txt); }
-			if (strpos($txt,'[email=') !== false) { $txt = preg_replace('#\[(email)=([^]]*)\](.*?)\[\/\\1\]#is', '<a href="$2">$3</a>', $txt); }
-	 		if (isset($bbcode_rules) && !empty($bbcode_rules)) {
-				foreach ($bbcode_rules as $in => $out) {
-					$bbcode_pats[] = $in;
-					$bbcode_reps[] = $out;
-				}
-				$txt = preg_replace($bbcode_pats, $bbcode_reps, $txt);
-			}
-		}
-		if (strpos($txt, '[') !== false) { $txt = preg_replace('/\[(\/)?[^&\]]+\]/', '', $txt); }
-		return $txt;
-	 }
-	// }}}
 	// {{{ go()
 	/**
 	 * @param string $where

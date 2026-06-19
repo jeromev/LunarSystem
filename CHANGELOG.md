@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2-alpha] - 2026-06-19
+- **Vendor-code audit + minimal cleanup.** A multi-agent audit inventoried every piece of third-party code still in the tree (each tagged used/dead and cross-checked against the notices). Acted on the safe findings:
+  - **Corrected [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)**, which the recent migrations had made inaccurate: dropped the **PEAR MDB2** row (removed in 0.5.0-alpha), replaced the wrong **XML_Util** row with the **XML_HTMLSax3** that is actually bundled (HTML_Safe's SAX parser), refreshed the stale "targets PHP 5.3–5.6" line and a few license/version details (ARC2 → semsol/arc2 3.1.0 GPL-2/W3C; jQuery 1.4.1 dual MIT/GPL), and added an **"Inlined third-party functions"** section documenting the small credited snippets copied into app code (phpBB `encode_ip`/`decode_ip`, WordPress `remove_accents`, Drupal `conf_path`/`conf_init`, the lost-in-code `array_to_object`).
+  - **Removed dead code:** `lunaTools::parse_bbcode()` — a BBCode→HTML routine verified completely unreferenced across the tree.
+  - **Removed orphaned assets:** the six duplicate `images/treeView/*.gif` icons (the `.png` variants + `tviload.gif` are the ones actually referenced by `css/luna.css`) and the unreferenced `images/body.png`.
+  - No behavioural change: every public page still renders with zero warnings/fatals; the audit confirmed CKEditor is fully gone and that the kept libraries (ARC2 serializers, HTML_Safe + XML_HTMLSax3, Cache_Lite, PEAR Log constants, jQuery) are all genuinely used.
+
 ## [0.5.1-alpha] - 2026-06-19
 - **Modernised `css/luna.css` (syntax cleanup, no intended visual change).** The 15-year-old admin/theme stylesheet brought up to date while keeping a pixel-identical result:
   - **Lowercased element selectors** (`HTML`/`BODY`/`TABLE`/… → `html`/`body`/`table`/…). IDs and classes keep their original casing because the XSL markup is case-sensitive (`#Page`, `#Content`, `.zebra`, …).

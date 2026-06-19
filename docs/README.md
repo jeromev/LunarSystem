@@ -26,6 +26,7 @@ This `docs/` folder is the canonical technical reference. The top-level
 | [installation.md](installation.md) | Docker and manual setup, requirements |
 | [security.md](security.md) | Known issues and hardening notes |
 | [linked-data.md](linked-data.md) | The semantic-web layer: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
+| [roadmap.md](roadmap.md) | Where the project is headed: finishing the RDF-native transition, then a data-first server + client-side rendering (and why native browser XSLT is a dead end) |
 
 ## Reading order
 
@@ -37,6 +38,7 @@ If you are new to the codebase, read in this order:
 4. **[modules.md](modules.md)** + **[templating.md](templating.md)** — how a page is assembled and rendered.
 5. **[configuration.md](configuration.md)** + **[installation.md](installation.md)** — how to run it.
 6. **[linked-data.md](linked-data.md)** — the semantic-web layer built on top.
+7. **[roadmap.md](roadmap.md)** — where it's headed next.
 
 ## Status
 

@@ -101,4 +101,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-GPL v2 — see [luna/LICENSE.txt](luna/LICENSE.txt).
+GPL v2 — see [LICENSE](LICENSE).

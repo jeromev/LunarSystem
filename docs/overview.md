@@ -5,7 +5,7 @@
 LunarSystem is a small, self-contained PHP 5 content-management system written
 between **2006 and 2010** by "Odradek" (lunarsystem.org). It was released on
 SourceForge as alpha software and reached version **0.2.7-alpha** in 2010; this
-archival revival carries the version forward to **0.3.2-alpha**.
+archival revival carries the version forward to **0.3.3-alpha**.
 
 Functionally it is a Drupal-like CMS: a tree of pages, a pluggable module
 system, users/groups/access-levels, editable text content, and i18n. What makes
@@ -70,9 +70,11 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
 
 - The original CMS is **not** a triplestore database. RDF lives only in memory
   during a request; persistence is plain relational MySQL. *(The semantic-web
-  layer adds an Oxigraph triplestore — see [linked-data.md](linked-data.md).)*
+  layer adds an Oxigraph triplestore that every content write now mirrors into,
+  and that the read path is served from by default — see [linked-data.md](linked-data.md).)*
 - The original CMS does **not** use a SPARQL engine. Graph queries are
-  hand-written SQL joins. *(The read path now also runs through SPARQL via
-  Ontop/Oxigraph under `?sparql=1` — see [linked-data.md](linked-data.md).)*
+  hand-written SQL joins. *(Routing, access control and texts now run through
+  SPARQL by default — Oxigraph, or Ontop over MySQL — with `?sparql=0` to fall
+  back to the SQL joins — see [linked-data.md](linked-data.md).)*
 - It is **not** compatible with PHP 7+. See [security.md](security.md) and
   [installation.md](installation.md).

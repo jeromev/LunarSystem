@@ -129,8 +129,8 @@ class mod_edit_texts {
 						'.lunaDB::quote($_POST['add_text_content']).'
 					)
 			');
-			// RDF write-through: mirror the new text into the triplestore (best-effort).
-			luna::$model->rdf_put_article($_POST['add_text_lid'], $_POST['add_text_title'], $_POST['add_text_content'], $_POST['add_text_lang']);
+			// RDF write-through: project the new text (and its page links) into the graph (best-effort).
+			luna::$model->rdf_sync_node($node);
 			lunaTools::purge_cache();
 			luna::$model->purge_index();
 			$message = sprintf(_("The text “%1\$s” has been created."), $_POST['add_text_lid']);
@@ -193,9 +193,9 @@ class mod_edit_texts {
 				WHERE
 					nid = '.lunaDB::quote($node).'
 			');
-			// RDF write-through: mirror the edit into the triplestore as a
-			// schema:Article (best-effort; see docs/linked-data.md).
-			luna::$model->rdf_put_article($_POST['modify_text_lid'], $_POST['modify_text_title'], $_POST['modify_text_content'], $_POST['modify_text_lang']);
+			// RDF write-through: re-project the edited text into the graph
+			// (best-effort; see docs/linked-data.md).
+			luna::$model->rdf_sync_node($node);
 			lunaTools::purge_cache();
 			luna::$model->purge_index();
 			$message = sprintf(_("The text “%1\$s” has been modified."), _($_POST['modify_text_lid']));

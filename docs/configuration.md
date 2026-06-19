@@ -111,14 +111,18 @@ The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 
 ## `SPARQL_ENDPOINT` (semantic-web layer, optional)
 
-The app reads one extra setting — the
-`SPARQL_ENDPOINT` environment variable — which selects the SPARQL endpoint used
-by the read-through-SPARQL path (`?sparql=1`). It is defined as a constant in
-[luna.php](../luna/luna.php) (`getenv('SPARQL_ENDPOINT')` falling back to
-`http://ontop:8080/sparql`) and wired through `docker-compose.yml`. It defaults
-to the Ontop virtual endpoint and can be flipped to the Oxigraph triplestore with
-no code change. This is **not** used by the archival CMS — see
-[linked-data.md](linked-data.md).
+The app reads three extra settings, all defined as constants in
+[luna.php](../luna/luna.php) (via `getenv()`) and wired through `docker-compose.yml`:
+
+- **`SPARQL_ENDPOINT`** — the read endpoint, defaulting to the Oxigraph
+  triplestore (`http://oxigraph:7878/query`); set it to `http://ontop:8080/sparql`
+  to read live over MySQL through Ontop instead (no code change).
+- **`SPARQL_UPDATE_ENDPOINT`** — where content writes mirror to
+  (`http://oxigraph:7878/update`, best-effort).
+- **`SPARQL_READS`** — whether the read path uses SPARQL at all (default `1`);
+  `SPARQL_READS=0`, or `?sparql=0` on any URL, forces the SQL read path.
+
+None of these are used by the archival CMS — see [linked-data.md](linked-data.md).
 
 ## `luna_config` (runtime config)
 

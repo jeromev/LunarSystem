@@ -140,7 +140,8 @@ RDF/XML shape the templates consume.
 > **Semantic-web layer:** beyond the ARC2 flavours
 > above, `lunaModel` also projects the current page to compact schema.org
 > JSON-LD via `to_jsonld()` (reached by `?output=jsonld` and embedded in every
-> HTML `<head>`), and can source the graph from a SPARQL endpoint rather than
-> MySQL — `sparql_select()`, `load_nodes_sparql()`, and `load_texts_sparql()`
-> run under `?sparql=1`. None of this changes the relational read path or the
-> serialisers described above. See [linked-data.md](linked-data.md).
+> HTML `<head>`), and now sources the graph from a SPARQL endpoint rather than
+> MySQL **by default** — `sparql_select()`, `load_nodes_sparql()`, and
+> `load_texts_sparql()` (with `?sparql=0` to fall back to the relational readers).
+> Content writes also mirror into the triplestore via `rdf_sync_node()`. None of
+> this changes the serialisers described above. See [linked-data.md](linked-data.md).

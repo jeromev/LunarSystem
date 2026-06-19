@@ -1,0 +1,10 @@
+/* /////////////////////////////////////////////////////////  CLEARFIX (FLOATS) */
+body div#Page::after,
+body div#Page div#Content div#Content-main::after,
+body div#Page div#Top::after,
+body div#Page div#Content div#Content-main div.box-content::after,
+body div#Page div#Content div#Content-main div.fields::after {
+	content: "";
+	display: block;
+	clear: both;
+}

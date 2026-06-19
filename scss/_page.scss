@@ -1,0 +1,204 @@
+/* ////////////////////////////////////////////////////////////////////  PAGE */
+body div#Page {
+	margin: 0 auto;
+	width: 100%;
+	background: transparent;
+	position: relative;
+}
+body div#Page div#Top { background: transparent; }
+body div#Page div#Top div.box {
+	float: left;
+	display: inline;
+	width: 38.875rem;
+	margin: 0;
+	padding: 0.125rem 0 0;
+	background: var(--chrome);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+body div#Page div#Top div.box:first-child {
+	width: 12.5rem;
+	margin: 0 0.6875rem 0 0;
+}
+body div#Page div#Top h1 {
+	padding: 0;
+	margin: 0;
+}
+body div#Page div#Top h1 a {
+	color: #fff;
+	display: block;
+	padding: 0.6875rem;
+	text-shadow: 0.0625rem 0.0625rem .5em rgba(0, 0, 0, .5);
+}
+body div#Page div#Content {
+	background: transparent;
+	position: relative;
+	float: right;
+	display: inline;
+	width: 66%;
+	padding: 0.6875rem 0;
+}
+body div#Page div#Content div#Content-header h1 {
+	padding: 0;
+	margin: 0;
+}
+body div#Page div#Content div#Content-header h1 a {
+	color: #fff;
+	display: block;
+	padding: 0.6875rem;
+	background: var(--accent);
+}
+body div#Page div#Content div#Bottom {
+	padding: 0.375rem 0.6875rem;
+	margin: 0;
+	background: rgba(255, 255, 255, .10);
+	color: var(--muted);
+}
+body div#Page div#Content div#Content-main {
+	padding: 0;
+	background: transparent;
+}
+body div#Page div#Content div#Content-main div.box {
+	margin: 0 0 0.6875rem;
+	padding: 0 0.6875rem;
+	background: rgba(255, 255, 255, .60);
+}
+body div#Page div#Content div#Content-main div.box.text {
+	padding: 0.6875rem 1.375rem 1.375rem;
+	background: rgba(255, 255, 255, .90);
+}
+body div#Page div#Content div#Content-main div.box.text h2 { font-size: 155%; }
+body div#Page div#Content div#Content-main div.box.text .box-content {
+	font-size: 108%;
+	line-height: 140%;
+	padding: 0;
+}
+body div#Page div#Content div#Content-main div.box.text .box-content ul {
+	margin: 0;
+	padding: 0;
+}
+body div#Page div#Content div#Content-main div.box.text .box-content li {
+	margin: 0;
+	font-size: 83%;
+}
+body div#Page div#Content div#Content-main div.boxtable { padding: 0 0 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level2 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level3 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level4 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level5 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main div.onecol { padding: 0.6875rem; }
+body div#Page div#Content div#Content-main div.onecol label { clear: both; }
+body div#Page div#Content div#Content-main div.col {
+	display: inline;
+	float: left;
+	padding: 0.6875rem 0 0.6875rem 0.6875rem;
+	width: 11.5625rem;
+}
+body div#Page div#Content div#Content-main div.col.autowidth input,
+body div#Page div#Content div#Content-main div.col.autowidth textarea,
+body div#Page div#Content div#Content-main div.col.autowidth label span.label { width: auto !important; }
+body div#Page div#Content div#Content-main div.col label.big input,
+body div#Page div#Content div#Content-main div.col label.big textarea,
+body div#Page div#Content div#Content-main div.col label.big span.label { width: 35.25rem; }
+body div#Page div#Content div#Content-main form fieldset { background: transparent; }
+body div#Page div#Content div#Content-main form fieldset div.box-content { padding-bottom: 0.6875rem; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth label span.label { width: auto !important; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big span.label { width: 35.25rem; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large select,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large span.label { width: 23.875rem; }
+body div#Page div#Content-main form fieldset label.big input,
+body div#Page div#Content-main form fieldset label.big span.label { width: 35.25rem; }
+body div#Page div#Content-main form fieldset label.big textarea {
+	width: 35.25rem;
+	height: 12.5rem;
+}
+body div#Page div#Content div#Content-main div.text div.col {
+	display: inline;
+	float: left;
+	padding: 0 0.375rem 0.6875rem 0.5625rem;
+	width: 11.375rem;
+}
+body div#Page div#Content div#Content-main div.text div.col:first-child { padding-left: 0; }
+body div#Page div#Content div#Content-main div.text div.col:last-child {
+	padding-right: 0;
+	border: none;
+}
+body div#Page div#Content div#Content-main div.fields {
+	background: rgba(0, 0, 0, .05);
+	border-top-left-radius: 0.3125rem;
+	border-top-right-radius: 0.3125rem;
+	padding: 0.0006875rem 0 0;
+}
+body div#Page div#Content div#Content-main div.submit {
+	margin: 0;
+	padding: 0.25rem;
+	background: rgba(0, 0, 0, .10);
+	clear: both;
+	border-bottom-left-radius: 0.3125rem;
+	border-bottom-right-radius: 0.3125rem;
+}
+
+body div#Page div#AnalyseLog { padding: 0 0.6875rem 0.6875rem 0; }
+body div#Page div#AnalyseLog div.message {
+	padding: 0.3125rem 0.6875rem;
+	width: 35.25rem;
+}
+body div#Page div#Messages p {
+	color: #f9f9f9;
+	padding: 0.375rem 0.6875rem 0.4375rem;
+	margin: 0 0 0.6875rem;
+	font-weight: bold;
+	border-radius: 0.3125rem;
+}
+body div#Page div.message { padding: 0.3125rem 0.6875rem; width: 35.25rem; }
+body div#Page div#Messages p.warning { background: var(--warn); }
+body div#Page div#Messages p.notice { background: #c99; }
+body div#Page div#Messages p.okay { background: var(--ok); }
+
+body div#Page div#Nav { padding: 0.6875rem 0 0; }
+body div#Page div#Nav div.box {
+	padding: 0 0.6875rem;
+	width: 11.125rem;
+}
+body div#Page div#Nav div#SiteMap {
+	background: rgba(255, 255, 255, .50);
+	display: inline;
+	float: left;
+}
+body div#Page div#Nav div#SiteMap div.box-content { margin-bottom: 0.6875rem; }
+body div#Page div#Nav div#SiteMap div.box-content li { font-size: 97%; }
+body div#Page div#Nav div#Options {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.6875rem;
+}
+body div#Page div#Nav div#Options ul {
+	list-style: none;
+	display: inline;
+	float: left;
+}
+body div#Page div#Nav div#Options ul li {
+	list-style: none;
+	display: inline;
+	float: left;
+	letter-spacing: 0.0625rem;
+	font-size: 0.625rem;
+}
+body div#Page div#Nav div#Options ul li a {
+	color: #fff;
+	display: block;
+	padding: 0.1875rem 0.3125rem 0.125rem;
+	background: rgba(255, 255, 255, .20);
+	z-index: 100;
+	margin-left: -0.0625rem;
+}
+body div#Page div#Nav div#Options ul li:first-child a { border-radius: 0.1875rem 0 0 0.1875rem; }
+body div#Page div#Nav div#Options ul li:last-child a { border-radius: 0 0.1875rem 0.1875rem 0; }
+body div#Page div#Nav div#Options ul li a:hover { background: var(--accent); }
+body div#Page div#Nav div#Options ul li a.on { background: rgba(0, 0, 0, .30); color: #ddd; }

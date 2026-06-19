@@ -1,0 +1,25 @@
+/* /////////////////////////////////////////////////////////////////  CLASSES */
+.on { display: block; }
+.off { display: none; }
+.autowidth { width: auto !important; }
+.autoscroll { overflow: auto; }
+.nowrap { white-space: nowrap; }
+.box {
+	border-radius: 0.3125rem;
+	box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, .1);
+}
+.box-content {
+	border-radius: 0.1875rem;
+	padding: 0;
+}
+.box-handle.collapsed {
+	padding-left: 1.375rem;
+	cursor: pointer;
+	background: url("../images/menu-collapsed.png") no-repeat 0 50%;
+}
+.box-handle.expanded {
+	padding-left: 1.375rem;
+	cursor: pointer;
+	background: url("../images/menu-expanded.png") no-repeat 0 50%;
+	color: #744d4c;
+}

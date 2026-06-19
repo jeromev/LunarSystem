@@ -1,0 +1,25 @@
+/* ////////////////////////////////////////////////////////////  CUSTOM PROPS */
+/*
+	Modernised 2026: lowercased element selectors, dropped -moz-/-webkit-
+	prefixes (standard border-radius/box-shadow restore corners that modern
+	browsers no longer get from the obsolete -moz- properties), and replaced
+	the 2x2 semi-transparent black/white PNG overlay tiles with pixel-
+	equivalent rgba() fills. No intended visual change. IDs/classes keep casing
+	because the XSL markup is case-sensitive (#Page, #Content, .zebra, ...).
+*/
+:root {
+	--bg:           #e2e2e2;
+	--ink:          #1d1d1d;
+	--chrome:       rgb(36, 36, 36); /* dark top bar / submit button */
+	--muted:        #666;
+	--muted-2:      #999;
+	--link:         #cc007a;
+	--link-hover:   #ff6099;
+	--accent:       #0066cc;         /* content header + nav hover */
+	--accent-bright:#09f;            /* pagination hover border */
+	--ok:           #007b5e;         /* submit hover / "okay" message */
+	--warn:         #a60045;         /* warning button / message */
+	--field-border: #ccc;
+	--field-focus:  #938379;
+	--font: 16px/1.5rem Verdana, sans-serif;
+}

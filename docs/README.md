@@ -1,7 +1,7 @@
 # LunarSystem Documentation
 
 Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS
-(v0.3.5-alpha, circa 2006–2010) that models all content as **RDF triples** and
+(v0.3.6-alpha, circa 2006–2010) that models all content as **RDF triples** and
 renders pages through **XSLT transformations**.
 
 This `docs/` folder is the canonical technical reference. The top-level
@@ -10,7 +10,8 @@ This `docs/` folder is the canonical technical reference. The top-level
 > **Semantic Web layer.** This CMS has been extended into an RDF-native Semantic
 > Web system — a JSON-LD projection, a generic SPARQL write-through that mirrors
 > every content write into a triplestore (Oxigraph), and a read path served from
-> that triplestore by default (with a SQL fallback). See [linked-data.md](linked-data.md).
+> that triplestore by default (with a SQL fallback). See [linked-data.md](linked-data.md)
+> for the design, and [why-rdf.md](why-rdf.md) for what it unlocks in plain English.
 > The untouched archival CMS is preserved on the `legacy` branch (`v0.2.14-alpha`).
 
 ## Contents
@@ -27,6 +28,7 @@ This `docs/` folder is the canonical technical reference. The top-level
 | [installation.md](installation.md) | Docker and manual setup, requirements |
 | [security.md](security.md) | Known issues and hardening notes |
 | [linked-data.md](linked-data.md) | The semantic-web layer: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
+| [why-rdf.md](why-rdf.md) | The payoff in plain English: what you can do now that a vanilla PHP/MySQL app can't — queries, interop, engine-swap — and what's still roadmap |
 | [roadmap.md](roadmap.md) | Where the project is headed: finishing the RDF-native transition, then a data-first server (and why client-side/native-browser XSLT is a dead end, so P5 was dropped) |
 
 ## Reading order
@@ -39,12 +41,13 @@ If you are new to the codebase, read in this order:
 4. **[modules.md](modules.md)** + **[templating.md](templating.md)** — how a page is assembled and rendered.
 5. **[configuration.md](configuration.md)** + **[installation.md](installation.md)** — how to run it.
 6. **[linked-data.md](linked-data.md)** — the semantic-web layer built on top.
-7. **[roadmap.md](roadmap.md)** — where it's headed next.
+7. **[why-rdf.md](why-rdf.md)** — what that layer unlocks, and what's still to come.
+8. **[roadmap.md](roadmap.md)** — where it's headed next.
 
 ## Status
 
 This started as a historical / archival codebase (the original, preserved on the
 `legacy` branch as `v0.2.14-alpha`) and is now an RDF-native Semantic Web CMS on
-`main` (`0.3.5-alpha`) — see [linked-data.md](linked-data.md). It still
+`main` (`0.3.6-alpha`) — see [linked-data.md](linked-data.md). It still
 runs only on **PHP 5.3–5.6**; see [security.md](security.md) before exposing it
 publicly.

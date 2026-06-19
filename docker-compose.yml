@@ -5,6 +5,12 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
+    # Phase A/B: which SPARQL endpoint the read-through-SPARQL path (?sparql=1)
+    # hits. Default = Ontop (virtual, live over MySQL). Override to Oxigraph
+    # (the materialised triplestore) to demonstrate the A->B swap with no code change:
+    #   SPARQL_ENDPOINT=http://oxigraph:7878/query docker-compose up -d app
+    environment:
+      SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://ontop:8080/sparql}"
     depends_on:
       - db
 
@@ -43,5 +49,17 @@ services:
     depends_on:
       - db
 
+  # Phase B (experiment/semantic-web): a real triplestore. Loaded by materialising
+  # the SAME R2RML mapping (semantic/ontop/dump.nt). Flip the app's SPARQL_ENDPOINT
+  # here and the read path is served by the triplestore instead of MySQL — no app change.
+  oxigraph:
+    image: oxigraph/oxigraph
+    command: ["serve", "--location", "/data", "--bind", "0.0.0.0:7878"]
+    ports:
+      - "7879:7878"
+    volumes:
+      - oxigraph_data:/data
+
 volumes:
   db_data:
+  oxigraph_data:

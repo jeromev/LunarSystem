@@ -194,17 +194,51 @@ This is the move that makes SPARQL the **read boundary**: with the loaders
 reading this way, swapping Ontop for a triplestore (Phase B) changes nothing in
 the application above the endpoint.
 
+## Phase B — the swap (demonstrated)
+
+The point of the whole plan: **swap the engine, not the application.** The
+`mapping.ttl` written for Phase A doubles as the materialisation script for B.
+
+```bash
+# 1. materialise the SAME mapping into a static RDF dump (97 triples)
+docker exec lunarsystem-ontop-1 /opt/ontop/ontop materialize \
+  -m /opt/ontop/input/mapping.ttl -p /opt/ontop/input/ontop.properties \
+  -o /opt/ontop/input/dump.nt -f ntriples
+
+# 2. load it into a real triplestore (Oxigraph)
+docker-compose up -d oxigraph
+curl -X POST 'http://localhost:7879/store?default' \
+  -H 'Content-Type: application/n-triples' --data-binary @semantic/ontop/dump.nt
+
+# 3. flip the app at the triplestore — NO code change, just an env var
+SPARQL_ENDPOINT=http://oxigraph:7878/query docker-compose up -d app
+```
+
+After the flip, `?sparql=1` is served by Oxigraph. The proof it's genuinely the
+triplestore and not MySQL-via-Ontop: **stop Ontop** and the read path keeps
+working —
+
+```text
+docker stop lunarsystem-ontop-1
+guest  /?sparql=1            -> 200   (home renders from the triplestore)
+guest  /admin?sparql=1       -> 404   (level-based ACL preserved in the graph)
+admin  /admin/journal?sparql=1 -> 200 (deep alias resolved from the graph)
+```
+
+Routing, access control, and content — all served by the triplestore, with the
+PHP unchanged. `mapping.ttl` (Phase A) → `dump.nt` (Phase B) is the only moving
+part. The dump is generated (gitignored); regenerate it with the command above.
+
 ## Roadmap
 
-- **Phase A (in progress — prototype):** R2RML + Ontop virtual SPARQL endpoint
-  over the existing MySQL (above), and the page-text **read path now flows
-  through SPARQL** (gated by `?sparql=1`). Next within A: migrate the remaining
-  loaders (page nodes, mods) the same way so SPARQL is the *only* read path;
-  expand the mapping to `luna_actions` (PROV-O) and access levels; add an
-  LDP-style API.
-- **Phase B:** materialise the same `mapping.ttl` into Oxigraph/Fuseki; point the
-  endpoint at it (app read code unchanged); move writes to SPARQL `UPDATE`; turn
-  on RDFS/OWL inference, SHACL validation, and named graphs for drafts/versions.
+- **Phase A (done — prototype):** R2RML + Ontop virtual SPARQL endpoint over the
+  existing MySQL; the page **read path (routing, ACL, text content) flows through
+  SPARQL** under `?sparql=1`. Remaining: migrate the mod list; make `?sparql=1`
+  the default; expand the mapping to `luna_actions` (PROV-O).
+- **Phase B (done — demonstrated):** materialised `mapping.ttl` into Oxigraph and
+  flipped the app at it by env var (above). Next: move writes to SPARQL `UPDATE`
+  (retire the relational write path), turn on RDFS/OWL inference and SHACL
+  validation, and use named graphs for drafts/versions.
 
 The cardinal rule across all phases: **freeze the URIs.** Same `/id/{slug}` in 0,
 A, and B, so every external link and `owl:sameAs` keeps working.

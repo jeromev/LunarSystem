@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.5.0-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.5.1-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning, with known, unfixed issues (unsalted MD5
@@ -29,9 +29,9 @@ Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are dem
 
 ## Manual setup
 
-Requirements: Apache 2 + `mod_rewrite`, **PHP 5.3–5.6**, MySQL 5.x, PHP extensions: `mysql`, `xsl`, `mbstring`, `gettext`.
+Requirements: Apache 2 + `mod_rewrite`, **PHP 8.3** (the tested stack), MySQL 8.0, PHP extensions: `pdo_mysql`, `xsl`, `mbstring`, `gettext`.
 
-> PHP 7+ is **not supported** — the `mysql_*` extension was removed in PHP 7 and the bundled PEAR MDB2 library depends on it.
+> As of 0.5.0-alpha the app runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the `mysql_*` + PEAR MDB2 dependency that previously blocked PHP 7+ was removed.
 
 1. Copy `luna/luna.domains/luna.default/ini/db.example.ini` → `db.ini` and fill in your credentials.  
    *(The file at `luna/luna.domains/luna.default/ini/db.ini` already contains Docker defaults.)*
@@ -59,13 +59,13 @@ luna/
   luna.php                     Main luna class (bootstrap, routing, XSLT rendering)
   luna.classes/
     luna.model.class.php       RDF model (in-memory triple store, ARC2, XSLT)
-    luna.db.class.php          Database wrapper (PEAR MDB2)
+    luna.db.class.php          Database wrapper (PDO / pdo_mysql)
     luna.session.class.php     DB-backed session handler
     luna.tools.class.php       Utilities (sanitisation, URL building, i18n, ACL)
-    luna.log.class.php         Error logging (PEAR Log)
+    luna.log.class.php         Error logging (direct PDO INSERT)
   luna.mods/                   Pluggable page modules (admin, journal, node, …)
   luna.xsl/luna.html.xsl/      Built-in XSLT templates (HTML output)
-  luna.lib/                    Vendored libraries: PEAR MDB2, PEAR Log, Cache_Lite, ARC2
+  luna.lib/                    Vendored libraries: semsol/arc2 3.1.0, Cache_Lite, HTML_Safe (PEAR Log base kept for constants)
   luna.domains/
     luna.default/              Fallback site configuration (used for local/Docker)
   luna.sql/luna.mysql.sql      Database schema + seed data
@@ -80,12 +80,11 @@ semantic/                      Semantic-web layer (SPARQL over the unchanged MyS
 
 | Issue | Impact | Notes |
 |---|---|---|
-| **PHP 5.3–5.6 only** | Hard limit | `mysql_*` removed in PHP 7; PEAR MDB2 does not support PDO |
 | **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
 | **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs; no `session_regenerate_id()` on login (fixation) |
 | **No CSRF on admin actions** | Security | Admin forms still carry no anti-forgery token (the `mod_journal` SQLi, reflected XSS, login throttling, cookie object-injection and `$_SERVER` log leak were hardened in 0.2.14 — see [docs/security.md](docs/security.md)) |
 
-The Docker stack now boots cleanly: the schema was updated from the obsolete `TYPE=MyISAM` to `ENGINE=MyISAM`, a duplicate-modifier parse error was fixed, and the build repoints apt at `archive.debian.org`. See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
+The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (0.5.0-alpha migrated the DB layer from PEAR MDB2 to PDO; an earlier pass had fixed the schema's obsolete `TYPE=MyISAM` → `ENGINE=MyISAM`). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 
 ## Documentation
 

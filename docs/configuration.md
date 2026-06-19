@@ -81,7 +81,7 @@ differently-named tables without touching code.
 ## `db.ini`
 
 Read by `lunaDB::prepare()` ([luna.db.class.php](../luna/luna.classes/luna.db.class.php))
-to build a PEAR MDB2 DSN. Copy `db.example.ini` to `db.ini` and fill in:
+to build a PDO DSN. Copy `db.example.ini` to `db.ini` and fill in:
 
 ```ini
 driver   = "mysql"

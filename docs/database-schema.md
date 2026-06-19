@@ -128,7 +128,7 @@ seeded as `en, fr` — split on `,` by `lunaTools::load_config`), `session_lengt
 `disable` / `disable_txt`.
 
 ### `luna_logs` — error log sink
-Written by `lunaLog` through PEAR Log's mdb2 handler.
+Written by `lunaLog::log()` via a direct PDO `INSERT` (the PEAR Log mdb2 handler was removed in 0.5.0-alpha); the `PEAR_LOG_*` constants still set the `priority` column.
 
 | Column | Type | Meaning |
 |---|---|---|

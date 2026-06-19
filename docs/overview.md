@@ -2,10 +2,10 @@
 
 ## What LunarSystem is
 
-LunarSystem is a small, self-contained PHP 5 content-management system written
+LunarSystem is a small, self-contained PHP content-management system written
 between **2006 and 2010** by "Odradek" (lunarsystem.org). It was released on
 SourceForge as alpha software and reached version **0.2.7-alpha** in 2010; this
-archival revival carries the version forward to **0.5.0-alpha**.
+archival revival carries the version forward to **0.5.1-alpha**.
 
 Functionally it is a Drupal-like CMS: a tree of pages, a pluggable module
 system, users/groups/access-levels, editable text content, and i18n. What makes
@@ -76,5 +76,5 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
   hand-written SQL joins. *(Routing, access control and texts now run through
   SPARQL by default — Oxigraph, or Ontop over MySQL — with `?sparql=0` to fall
   back to the SQL joins — see [linked-data.md](linked-data.md).)*
-- It is **not** compatible with PHP 7+. See [security.md](security.md) and
+- It targeted **PHP 5** until 0.5.0-alpha migrated it to **PHP 8.3 / MySQL 8.0** (PEAR MDB2 → PDO). See [security.md](security.md) and
   [installation.md](installation.md).

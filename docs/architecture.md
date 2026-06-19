@@ -33,10 +33,10 @@ triggers a fatal error).
 |---|---|---|
 | `luna` | [luna/luna.php](../luna/luna.php) | Bootstrap, routing, mod loading, render orchestration |
 | `lunaModel` | [luna/luna.classes/luna.model.class.php](../luna/luna.classes/luna.model.class.php) | The in-memory RDF triple store; SQL→RDF; XSLT transform |
-| `lunaDB` | [luna/luna.classes/luna.db.class.php](../luna/luna.classes/luna.db.class.php) | PEAR MDB2 database wrapper |
+| `lunaDB` | [luna/luna.classes/luna.db.class.php](../luna/luna.classes/luna.db.class.php) | PDO (`pdo_mysql`) database wrapper |
 | `lunaSession` | [luna/luna.classes/luna.session.class.php](../luna/luna.classes/luna.session.class.php) | DB-backed session handler; builds the `$user` object |
 | `lunaTools` | [luna/luna.classes/luna.tools.class.php](../luna/luna.classes/luna.tools.class.php) | Sanitisation, caching, i18n, URL building, ACL, error pages |
-| `lunaLog` / `lunaException` | [luna/luna.classes/luna.log.class.php](../luna/luna.classes/luna.log.class.php) | Exception type and DB error logging (PEAR Log) |
+| `lunaLog` / `lunaException` | [luna/luna.classes/luna.log.class.php](../luna/luna.classes/luna.log.class.php) | Exception type and DB error logging (direct PDO INSERT) |
 
 ## Phase 1 — Bootstrap
 
@@ -66,7 +66,7 @@ with a message instead ([luna.php:212-222](../luna/luna.php#L212)):
 5. **Sanitise inputs** — `lunaTools::sanitize_inputs()` cleans the superglobals.
 6. **Cache + AJAX detection** — `lunaTools::check_cache()`; define `AJAX` from
    the `X-Requested-With` header.
-7. **Database** — `lunaDB::prepare()` then `lunaDB::connect()` (PEAR MDB2).
+7. **Database** — `lunaDB::prepare()` then `lunaDB::connect()` (PDO).
 8. **Config** — `lunaTools::load_config()` reads the `luna_config` table.
 9. **Routing** — `set_requested_path()` normalises the requested URL path.
 10. **Session** — `lunaSession::singleton()->start()` (DB-backed; builds `$user`).
@@ -161,7 +161,7 @@ HTTP request
 luna::singleton()  ── bootstrap ──────────────────────────────┐
    │  • pick domain (HTTP_HOST → luna.domains/…)               │
    │  • load luna.ini → constants                              │
-   │  • connect MySQL (PEAR MDB2)                              │
+   │  • connect MySQL (PDO)                                    │
    │  • start DB-backed session, build $user (groups/levels)   │
    │  • negotiate language + output format                     │
    │  • build lunaModel (triple store)                         │

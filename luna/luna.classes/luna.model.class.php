@@ -1016,7 +1016,7 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['foaf'].'Person';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'nid'][0]['value'] = $user['nid'];
-			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'ip'][0]['value'] = $user['session_ip'];
+			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'ip'][0]['value'] = $user['session_ip'] ?? '';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $user['is_active'];
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_guest'][0]['value'] = $user['email'] == ANONYMOUS? '1' : '0';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_current'][0]['value'] = $is_current? '1' : '0';
@@ -1154,7 +1154,7 @@ class lunaModel {
 			$letters = array();
 			$this->letter = 'A';
 			if ($alphastyle) {
-				switch($order_by) {
+				switch($cookie['order_by']) {
 					case 'firstname':
 					case 'lastname':
 					case 'email':
@@ -1191,7 +1191,7 @@ class lunaModel {
 			}
 			*/
 			lunaTools::set_cookie(luna::$data['lid'].'_sort', $cookie);
-			switch($order_by) {
+			switch($cookie['order_by']) {
 				case 'firstname':
 				case 'lastname':
 				case 'email':
@@ -1250,7 +1250,7 @@ class lunaModel {
 			$row = $res->fetchRow();
 			$res->free();
 			$total = empty($row)? 0 : $row->total; 
-			switch($order_by) {
+			switch($cookie['order_by']) {
 				case 'firstname':
 				case 'lastname':
 				case 'email':
@@ -1713,7 +1713,7 @@ class lunaModel {
 			$texts[$row->nid]['user']['nid'] = $row->user_nid;
 			$texts[$row->nid]['user']['firstname'] = $row->firstname;
 			$texts[$row->nid]['user']['lastname'] = $row->lastname;
-			$texts[$row->nid]['pages'][$row->page_nid] = $row->page_nid;
+			if (isset($row->page_nid)) { $texts[$row->nid]['pages'][$row->page_nid] = $row->page_nid; }
 			$texts[$row->nid]['save_time'] = $row->ntime;
 			if (isset($row->content_html)) { $texts[$row->nid]['content_html'] = $row->content_html; }
 			if (isset($row->lang)) { $texts[$row->nid]['lang'] = $row->lang; }

@@ -9,9 +9,9 @@ public internet without significant hardening.
 
 | Issue | Impact | Detail |
 |---|---|---|
-| **PHP 5.3–5.6 only** | Blocking | Uses the `mysql_*` extension (removed in PHP 7) via PEAR MDB2, which has no PDO path here. Will not run on PHP 7+. |
-| **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 5.7 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **PEAR dependencies** | Maintenance | Relies on vendored PEAR MDB2 / Log / Cache_Lite and ARC2 — all unmaintained. |
+| **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
+| **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
+| **Vendored libs** | Maintenance | Bundles Cache_Lite, HTML_Safe and semsol/arc2 3.1.0; the PEAR Log base class is kept only for its `PEAR_LOG_*` constants. |
 
 ## Security weaknesses
 
@@ -20,7 +20,7 @@ public internet without significant hardening.
 | **Unsalted MD5 passwords** | High | `luna_users.password` is a bare `md5()` hash. Trivially crackable; vulnerable to rainbow tables. | Do not reuse real passwords. Don't expose the site publicly. |
 | **Session ID in URL** | High | `session.use_trans_sid = 1` ([luna.php:33](../luna/luna.php#L33)) propagates the session ID through URLs, which leak via referrers, logs, and shared links — enabling session fixation/hijacking. | Disable trans_sid; require cookies. |
 | **Weak default admin** | Medium | Seed admin is `admin@lunarsystem.local` / `luna`. | Change immediately after install. |
-| **Old sanitisation stack** | Medium | Input cleaning leans on PEAR HTML_Safe and hand-rolled filters of its era. SQL is escaped via MDB2 `quote()`, but coverage should not be assumed complete against modern XSS/SQLi techniques. | Audit before any untrusted exposure. |
+| **Old sanitisation stack** | Medium | Input cleaning leans on PEAR HTML_Safe and hand-rolled filters of its era. SQL is escaped via PDO `quote()` (`lunaDB::quote`), but coverage should not be assumed complete against modern XSS/SQLi techniques. | Audit before any untrusted exposure. |
 | **`register_globals`-era assumptions** | Low | Code predates modern superglobal handling; it explicitly disables `register_globals` and guards `magic_quotes`, but the design assumptions are dated. | — |
 
 ## Additional findings (2026 code-review pass)
@@ -74,7 +74,7 @@ hardened.
   `sparql_literal()` and IRIs via `rdf_uri()` (rawurlencode'd lid); the read
   builders (`load_nodes_sparql` / `load_texts_sparql`) interpolate the page slug and
   the user's level ids. Present but bespoke — treat as SPARQL-injection surface and
-  audit before trusting (same caveat as the MDB2 `quote()` note). User content
+  audit before trusting (same caveat as the PDO `quote()` note). User content
   reaches RDF only through these escapers.
 - **Best-effort by design.** The write-through never blocks a save on a SPARQL
   failure, so MySQL stays the source of truth; a failed mirror means the graph can

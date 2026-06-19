@@ -143,7 +143,7 @@ So none of the above is over-read:
   **best-effort** (a failed mirror never blocks a save), and reconciled by
   `rdf_resync_all()` if it drifts. Making the triplestore the *single* source of truth
   is **P2** (not done — see [roadmap.md](roadmap.md)).
-- It is still **PHP 5.3–5.6** and still **XSLT-rendered** server-side.
+- It now runs on **PHP 8.3 / MySQL 8.0** (PDO) and is still **XSLT-rendered** server-side.
 - The inference, validation, public-API and dereferenceable-URI items in §4 are **not
   built yet** — they are within reach, not done.
 

@@ -20,7 +20,7 @@
 // log row directly via the PDO lunaDB layer below.
 require_once 'Log.php';
 // {{{
-class lunaException extends Exception {}
+class lunaException extends Exception { public $session; public $server; }
 // }}}
 // {{{
 class lunaLog {
@@ -39,7 +39,7 @@ class lunaLog {
 			$e->session = luna::$session;
 			$e->server = self::server_whitelist();
 			$message = serialize($e);
-			$priority = (int) $e->getCode();
+			$priority = $e->getCode() ? (int) $e->getCode() : PEAR_LOG_ERR;
 		} else if (is_string($e)) {
 			$o = new stdClass();
 			$o->message = $e;

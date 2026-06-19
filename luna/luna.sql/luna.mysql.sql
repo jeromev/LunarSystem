@@ -22,7 +22,7 @@ CREATE TABLE `luna_config` (
 DROP TABLE IF EXISTS `luna_logs`;
 CREATE TABLE `luna_logs` (
   `id` int(11) NOT NULL auto_increment,
-  `logtime` timestamp NOT NULL,
+  `logtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ident` varchar(16) NOT NULL default '',
   `priority` int(11) NOT NULL default '0',
   `message` text,

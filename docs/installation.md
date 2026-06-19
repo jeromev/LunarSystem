@@ -1,23 +1,23 @@
 # Installation
 
-> LunarSystem runs **only on PHP 5.3–5.6**. It uses the `mysql_*` extension
-> (removed in PHP 7) and the PEAR MDB2 library. The Docker setup below pins a
-> compatible stack; running on a modern PHP directly will not work. See
+> LunarSystem runs on **PHP 8.3 / MySQL 8.0** (0.5.0-alpha migrated PEAR MDB2 and
+> the removed `mysql_*` extension to PDO / `pdo_mysql`). The Docker stack below
+> builds it; a modern PHP install also works directly. See
 > [security.md](security.md).
 
 ## Requirements
 
 | Component | Version / notes |
 |---|---|
-| PHP | **5.3–5.6** |
-| PHP extensions | `mysql` (or `mysqli`), `xsl`, `mbstring`, `gettext` |
+| PHP | **8.3** |
+| PHP extensions | `pdo_mysql`, `xsl`, `mbstring`, `gettext` |
 | Web server | Apache 2 with `mod_rewrite` and `AllowOverride All` |
-| Database | MySQL 5.x (5.7 needs `sql_mode=""` for the legacy column defaults; the Docker stack sets this) |
-| Bundled libs | PEAR MDB2, PEAR Log, Cache_Lite, ARC2 — all vendored in `luna/luna.lib/`, no Composer/PEAR install needed |
+| Database | MySQL 8.0 (run with `sql_mode=""` for the legacy MyISAM column defaults; the Docker stack sets this) |
+| Bundled libs | Cache_Lite, HTML_Safe, semsol/arc2 3.1.0 — vendored in `luna/luna.lib/`, no Composer needed |
 
 ## Option A — Docker (recommended)
 
-The repo ships a working Docker stack: PHP 5.6 + Apache, and MySQL 5.7.
+The repo ships a working Docker stack: PHP 8.3 + Apache, and MySQL 8.0.
 
 ```bash
 docker-compose up --build -d
@@ -36,7 +36,7 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
   Mounts the repo at `/var/www/html` and publishes port **8080 → 80**. (The
   Dockerfile repoints apt at `archive.debian.org` because the base image's
   Debian 9 "stretch" repos are no longer on the main mirrors.)
-- **db** — `mysql:5.7` started with `--sql_mode=""` (so the legacy column
+- **db** — `mysql:8.0` started with `--sql_mode=""` (so the legacy column
   defaults import cleanly), seeded automatically by mounting
   [luna.mysql.sql](../luna/luna.sql/luna.mysql.sql) into
   `/docker-entrypoint-initdb.d/`. Database `lunadb`, user/pass `luna`/`luna`.
@@ -65,7 +65,7 @@ docker-compose up --build -d
 
 ## Option B — Manual setup
 
-1. Install Apache 2 + PHP 5.3–5.6 with the `mysql`, `xsl`, `mbstring`, and
+1. Install Apache 2 + PHP 8.3 with the `pdo_mysql`, `xsl`, `mbstring`, and
    `gettext` extensions; enable `mod_rewrite` and set `AllowOverride All` for the
    document root.
 2. Create a MySQL database and import the schema + seed data:

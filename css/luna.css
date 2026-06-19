@@ -1,615 +1,582 @@
-/* ////////////////////////////////////////////////////////////////////  TAGS */
-HTML, BODY {
-		margin: 0;
-		padding: 0;
-		background: #e2e2e2;
-		color: #1d1d1d;
-	}
-	BODY {
-			padding: 0 11px 11px;
-		}
-		BODY, INPUT, TEXTAREA, BUTTON, SELECT, OPTGROUP, TABLE { font: 11px/15px "Lucida Grande", Verdana, sans-serif; }
-			TABLE { }
-				TABLE.zebra {
-						border: none;
-						margin: 0;
-						padding: 0;
-						width: 100%;
-						border-collapse: collapse;
-					}
-					TABLE.zebra TBODY {
-							background: url("../images/background/white90.png") repeat scroll 0 0 transparent;
-						}
-					TABLE.zebra THEAD DIV.pagination {
-							border-bottom: solid 1px #eee;
-							padding: 2px 0 2px 0;
-							margin: 2px 0 0 0;
-							color: #999;
-						}
-						TABLE.zebra THEAD DIV.pagination A.prev,
-						TABLE.zebra THEAD DIV.pagination A.next,
-						TABLE.zebra THEAD DIV.pagination A.first,
-						TABLE.zebra THEAD DIV.pagination A.last {
-								-moz-border-radius:3px;
-								-webkit-border-radius:3px;
-								background:url("../images/background/white60.png") repeat scroll 0 0 transparent;
-								border:2px solid #CCCCCC;
-								padding: 0 5px 1px 5px;
-							}
-							TABLE.zebra THEAD DIV.pagination A.prev:hover,
-							TABLE.zebra THEAD DIV.pagination A.next:hover,
-							TABLE.zebra THEAD DIV.pagination A.first:hover,
-							TABLE.zebra THEAD DIV.pagination A.last:hover { border-color: #09f; }
-						TABLE.zebra THEAD DIV.alphabetic { border-bottom: none; }
-							TABLE.zebra THEAD DIV.alphabetic STRONG.on {
-								display: inline;
-								font-size: 11px;
-							}
-					TABLE.zebra THEAD TH {
-							background: url("../images/background/black15.png") repeat scroll 0 0 transparent;
-							color: #fff;
-							padding: 5px 6px;
-							margin: 0;
-							text-align: left;
-							font-weight: normal;
-							border-bottom: solid 1px #bbb;
-							white-space: nowrap;
-							text-shadow:1px 1px .5em rgba(0, 0, 0, 0.5);
-						}
-						TABLE.zebra THEAD TH:first-child {
-								-moz-border-radius:5px 0 0 0;
-								-webkit-border-radius:5px 0 0 0;
-							}
-						TABLE.zebra THEAD TH:last-child {
-								-moz-border-radius: 0 5px 0 0;
-								-webkit-border-radius: 0 5px 0 0;
-							}
-						TABLE.zebra THEAD TH A { display: block; color: inherit; }
-							TABLE.zebra THEAD TH A STRONG {
-								display: block;
-								font-size: 11px;
-								font-style:italic;
-								font-weight:normal;
-							}
-					TABLE.zebra CAPTION {
-						padding: 6px 0;
-						text-align: left;
-						font-size: 11px;
-						line-height: 15px;
-						margin-top: 10px;
-					}
-					TABLE.zebra TBODY TR {
-							background: url("../images/background/white80.png") repeat scroll 0 0 transparent;
-							padding: 0;
-							margin: 0;
-							border-bottom: thin solid #f9f9f9;
-							color: #666;
-						}
-						TABLE.zebra TBODY TR:hover { background: url("../images/background/black15.png") repeat scroll 0 0 transparent; color: #000; }
-							TABLE.zebra TBODY TR.even {
-									background: url("../images/background/black10.png") repeat scroll 0 0 transparent;
-									padding: 3px;
-								}
-								TABLE.zebra TBODY TR.even:hover, TABLE.zebra TBODY TR.even.hover { background: url("../images/background/black10.png") repeat scroll 0 0 transparent; }
-							TABLE.zebra TBODY TR.odd {
-									background: url("../images/background/black05.png") repeat scroll 0 0 transparent;
-									padding: 3px;
-								}
-								TABLE.zebra TBODY TR.odd:hover, TABLE.zebra TBODY TR.odd.hover { background: url("../images/background/black10.png") repeat scroll 0 0 transparent; }
-							TABLE.zebra TBODY TR.active:hover, TABLE.zebra TBODY TR.active.hover {
-								background: #cdedef;
-								cursor: pointer;
-							}
-							TABLE.zebra TBODY TR.info, BODY DIV#Page DIV.message.info { background: #D6FFE0; }
-							TABLE.zebra TBODY TR.notice, BODY DIV#Page DIV.message.notice { background: #FFE5C1; }
-							TABLE.zebra TBODY TR.critical, BODY DIV#Page DIV.message.critical { background: #febbbf; }
-							TABLE.zebra TBODY TR.warning, BODY DIV#Page DIV.message.warning { background: #FFC6C6; }
-							TABLE.zebra TBODY TR.error, BODY DIV#Page DIV.message.error { background: #FF8680; }
-							TABLE.zebra TBODY TR.deleted, TABLE.zebra TBODY TR.deleted A, TABLE.zebra TBODY TR.inactive, TABLE.zebra TBODY TR.inactive A { font-style: italic; color: #999 !important; }
-						TABLE.zebra TBODY TD {
-							padding: 5px 6px;
-							margin: 0;
-						}
-			FORM {
-					display: block;
-					margin: 0;
-					padding: 0;
-					background: transparent;
-				}
-				FORM FIELDSET {
-						border: none;
-						display: block;
-						margin: 0;
-						padding: 0;
-					}
-					FORM FIELDSET P { color: #666; }
-					FORM FIELDSET DIV.box {
-						padding: 11px;
-						margin: 0;
-						background: url("../images/background/black10.png") repeat scroll 0 0 transparent;
-					}
-					FORM FIELDSET LEGEND {
-							padding: 0;
-							margin: 0;
-							display: block !important;
-							text-align: left;
-							font-size: 11px;
-							line-height: 15px;
-						}
-					FORM FIELDSET LABEL {
-							padding: 0;
-							margin: 0;
-							display: block;
-						}
-						FORM FIELDSET LABEL SPAN.label {
-							display: block;
-							color: #666;
-							padding: 0 0 3px 0;
-						}
-					FORM FIELDSET SELECT {
-						margin: 0;
-						font-weight: normal;
-						font-size: 13px;
-						border: solid 2px #ccc;
-						line-height: 15px;
-						padding:2px 1px 2px 2px;
-						width:186px;
-						-moz-border-radius:3px;
-						-webkit-border-radius:3px;
-					}
-					FORM FIELDSET INPUT {
-							padding:3px 5px;
-							width:172px;
-							margin: 0;
-							font-weight: normal;
-							font-size: 13px;
-							border: solid 2px #ccc;
-							line-height: 15px;
-							-moz-border-radius:3px;
-							-webkit-border-radius:3px;
-						}
+/* ////////////////////////////////////////////////////////////  CUSTOM PROPS */
+/*
+	Modernised 2026: lowercased element selectors, dropped -moz-/-webkit-
+	prefixes (standard border-radius/box-shadow restore corners that modern
+	browsers no longer get from the obsolete -moz- properties), and replaced
+	the 2x2 semi-transparent black/white PNG overlay tiles with pixel-
+	equivalent rgba() fills. No intended visual change. IDs/classes keep casing
+	because the XSL markup is case-sensitive (#Page, #Content, .zebra, ...).
+*/
+:root {
+	--bg:           #e2e2e2;
+	--ink:          #1d1d1d;
+	--chrome:       rgb(36, 36, 36); /* dark top bar / submit button */
+	--muted:        #666;
+	--muted-2:      #999;
+	--link:         #cc007a;
+	--link-hover:   #ff6099;
+	--accent:       #0066cc;         /* content header + nav hover */
+	--accent-bright:#09f;            /* pagination hover border */
+	--ok:           #007b5e;         /* submit hover / "okay" message */
+	--warn:         #a60045;         /* warning button / message */
+	--field-border: #ccc;
+	--field-focus:  #938379;
+	--font: 11px/0.9375rem Verdana, sans-serif;
+}
 
-						FORM FIELDSET INPUT.submit {
-								background: rgb(36, 36, 36);
-								color:#FFFFFF;
-								font-size:11px;
-								letter-spacing:1px;
-								margin:5px 0 4px 6px;
-								padding:6px 4px 5px;
-								text-transform:uppercase;
-								width:187px;
-								-moz-border-radius:3px;
-								-webkit-border-radius:3px;
-							}
-							FORM FIELDSET INPUT.submit:hover, FORM FIELDSET INPUT.submit:focus {
-									cursor: pointer;
-									color: #fff;
-									background: #007b5e;
-								}
-								FORM FIELDSET INPUT.warning:hover {
-									background: #a60045;
-									color: #f9f9f9;
-								}
-								FORM FIELDSET INPUT.becarefull:hover { color: #f9f9f9; }
-					FORM FIELDSET TEXTAREA {
-							padding: 5px 6px;
-							margin: 0;
-							font-weight: normal;
-							font-size: 10px;
-							border: solid 2px #ccc;
-							width: 170px;
-							height: 140px;
-							font-size: 11px;
-							-moz-border-radius:3px;
-							-webkit-border-radius:3px;
-						}
-					FORM FIELDSET INPUT:hover,
-					FORM FIELDSET INPUT:focus,
-					FORM FIELDSET SELECT:hover,
-					FORM FIELDSET SELECT:focus,
-					FORM FIELDSET TEXTAREA:hover,
-					FORM FIELDSET TEXTAREA:focus  { border: solid 2px #938379; }
-		HR { display: none; }
-		ACRONYM {
-			font-style: normal;
-			text-decoration: none;
-			border: none;
-		}
-		A {
-				text-decoration: none;
-				color: #cc007a;
-			}
-			A:hover { color: #ff6099; }
-		SMALL {
-			font-size: 9px;
-			line-height: 13px;
-		}
-		IMG { border: none; }
-		P {
-			margin: 5.5px 0;
-			padding: 0;
-			clear: both;
-			max-width:560px;
-		}
-		BLOCKQUOTE {
-			margin: 11px 0 0 11px;
-			padding: 0;
-			font-size: 10px;
-			line-height: 11px;
-		}
-		UL {
-			margin: 0;
-			padding: 0 0 0 11px;
-		}
-		OL {
-			margin: 0;
-			padding: 0 0 0 11px;
-		}
-		DL {
-				margin: 0;
-				padding: 0;
-			}
-			DT { clear: both; }
-			DD {
-					margin: 0;
-					padding: 0;
-				}
-			DL.analyse { margin: 11px 0; background: transparent; }
-				DL.analyse DT {
-					color: #999;
-					padding: 5px 0;
-					background: url("../images/background/black05.png") repeat scroll 0 0 transparent;
-				}
-				DL.analyse DD { padding: 5px 11px; }
-		H1, H2, H3, H4, H5, H6 {
-				color: #000;
-				font-weight: normal;
-				margin: 0;
-				padding: 0;
-			}
-			H1 {
-				font-size: 150%;
-				line-height: 80%;
-				padding: 11px 0;
-			}
-			H2 {
-				padding: 11px 0;
-				text-align: left;
-				font-size: 14px;
-				line-height: 14px;
-			}
-			H3 {
-				font-size:125%;
-				line-height:140%;
-				padding: 11px 0;
-				text-align:left;
-			}
-			H4 {
-				font-size:13px;
-				line-height:19px;
-				padding: 11px 0;
-				text-align:left;
-			}
-			H5 {
-				font-size:12px;
-				line-height:18px;
-				padding: 11px 0;
-				text-align:left;
-			}
-			H6 {
-				font-size:11px;
-				line-height:16px;
-				padding: 11px 0;
-				text-align:left;
-			}
+/* ////////////////////////////////////////////////////////////////////  TAGS */
+html, body {
+	margin: 0;
+	padding: 0;
+	background: var(--bg);
+	color: var(--ink);
+}
+body { padding: 0 0.6875rem 0.6875rem; }
+body, input, textarea, button, select, optgroup, table { font: var(--font); }
+
+table.zebra {
+	border: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	border-collapse: collapse;
+}
+table.zebra tbody { background: rgba(255, 255, 255, .90); }
+table.zebra thead div.pagination {
+	border-bottom: solid 0.0625rem #eee;
+	padding: 0.125rem 0;
+	margin: 0.125rem 0 0;
+	color: var(--muted-2);
+}
+table.zebra thead div.pagination a.prev,
+table.zebra thead div.pagination a.next,
+table.zebra thead div.pagination a.first,
+table.zebra thead div.pagination a.last {
+	border-radius: 0.1875rem;
+	background: rgba(255, 255, 255, .60);
+	border: 0.125rem solid #ccc;
+	padding: 0 0.3125rem 0.0625rem;
+}
+table.zebra thead div.pagination a.prev:hover,
+table.zebra thead div.pagination a.next:hover,
+table.zebra thead div.pagination a.first:hover,
+table.zebra thead div.pagination a.last:hover { border-color: var(--accent-bright); }
+table.zebra thead div.alphabetic { border-bottom: none; }
+table.zebra thead div.alphabetic strong.on {
+	display: inline;
+	font-size: 0.6875rem;
+}
+table.zebra thead th {
+	background: rgba(0, 0, 0, .15);
+	color: #fff;
+	padding: 0.3125rem 0.375rem;
+	margin: 0;
+	text-align: left;
+	font-weight: normal;
+	border-bottom: solid 0.0625rem #bbb;
+	white-space: nowrap;
+	text-shadow: 0.0625rem 0.0625rem .5em rgba(0, 0, 0, .5);
+}
+table.zebra thead th:first-child { border-radius: 0.3125rem 0 0 0; }
+table.zebra thead th:last-child { border-radius: 0 0.3125rem 0 0; }
+table.zebra thead th a { display: block; color: inherit; }
+table.zebra thead th a strong {
+	display: block;
+	font-size: 0.6875rem;
+	font-style: italic;
+	font-weight: normal;
+}
+table.zebra caption {
+	padding: 0.375rem 0;
+	text-align: left;
+	font-size: 0.6875rem;
+	line-height: 0.9375rem;
+	margin-top: 0.625rem;
+}
+table.zebra tbody tr {
+	background: rgba(255, 255, 255, .80);
+	padding: 0;
+	margin: 0;
+	border-bottom: thin solid #f9f9f9;
+	color: var(--muted);
+}
+table.zebra tbody tr:hover { background: rgba(0, 0, 0, .15); color: #000; }
+table.zebra tbody tr.even {
+	background: rgba(0, 0, 0, .10);
+	padding: 0.1875rem;
+}
+table.zebra tbody tr.even:hover, table.zebra tbody tr.even.hover { background: rgba(0, 0, 0, .10); }
+table.zebra tbody tr.odd {
+	background: rgba(0, 0, 0, .05);
+	padding: 0.1875rem;
+}
+table.zebra tbody tr.odd:hover, table.zebra tbody tr.odd.hover { background: rgba(0, 0, 0, .10); }
+table.zebra tbody tr.active:hover, table.zebra tbody tr.active.hover {
+	background: #cdedef;
+	cursor: pointer;
+}
+table.zebra tbody tr.info, body div#Page div.message.info { background: #d6ffe0; }
+table.zebra tbody tr.notice, body div#Page div.message.notice { background: #ffe5c1; }
+table.zebra tbody tr.critical, body div#Page div.message.critical { background: #febbbf; }
+table.zebra tbody tr.warning, body div#Page div.message.warning { background: #ffc6c6; }
+table.zebra tbody tr.error, body div#Page div.message.error { background: #ff8680; }
+table.zebra tbody tr.deleted, table.zebra tbody tr.deleted a, table.zebra tbody tr.inactive, table.zebra tbody tr.inactive a { font-style: italic; color: var(--muted-2) !important; }
+table.zebra tbody td {
+	padding: 0.3125rem 0.375rem;
+	margin: 0;
+}
+
+form {
+	display: block;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+form fieldset {
+	border: none;
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+form fieldset p { color: var(--muted); }
+form fieldset div.box {
+	padding: 0.6875rem;
+	margin: 0;
+	background: rgba(0, 0, 0, .10);
+}
+form fieldset legend {
+	padding: 0;
+	margin: 0;
+	display: block !important;
+	text-align: left;
+	font-size: 0.6875rem;
+	line-height: 0.9375rem;
+}
+form fieldset label {
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+form fieldset label span.label {
+	display: block;
+	color: var(--muted);
+	padding: 0 0 0.1875rem;
+}
+form fieldset select {
+	margin: 0;
+	font-weight: normal;
+	font-size: 0.8125rem;
+	border: solid 0.125rem var(--field-border);
+	line-height: 0.9375rem;
+	padding: 0.125rem 0.0625rem 0.125rem 0.125rem;
+	width: 11.625rem;
+	border-radius: 0.1875rem;
+}
+form fieldset input {
+	padding: 0.1875rem 0.3125rem;
+	width: 10.75rem;
+	margin: 0;
+	font-weight: normal;
+	font-size: 0.8125rem;
+	border: solid 0.125rem var(--field-border);
+	line-height: 0.9375rem;
+	border-radius: 0.1875rem;
+}
+form fieldset input.submit {
+	background: var(--chrome);
+	color: #fff;
+	font-size: 0.6875rem;
+	letter-spacing: 0.0625rem;
+	margin: 0.3125rem 0 0.25rem 0.375rem;
+	padding: 0.375rem 0.25rem 0.3125rem;
+	text-transform: uppercase;
+	width: 11.6875rem;
+	border-radius: 0.1875rem;
+}
+form fieldset input.submit:hover, form fieldset input.submit:focus {
+	cursor: pointer;
+	color: #fff;
+	background: var(--ok);
+}
+form fieldset input.warning:hover {
+	background: var(--warn);
+	color: #f9f9f9;
+}
+form fieldset input.becarefull:hover { color: #f9f9f9; }
+form fieldset textarea {
+	padding: 0.3125rem 0.375rem;
+	margin: 0;
+	font-weight: normal;
+	border: solid 0.125rem var(--field-border);
+	width: 10.625rem;
+	height: 8.75rem;
+	font-size: 0.6875rem;
+	border-radius: 0.1875rem;
+}
+form fieldset input:hover,
+form fieldset input:focus,
+form fieldset select:hover,
+form fieldset select:focus,
+form fieldset textarea:hover,
+form fieldset textarea:focus { border: solid 0.125rem var(--field-focus); }
+
+hr { display: none; }
+acronym {
+	font-style: normal;
+	text-decoration: none;
+	border: none;
+}
+a {
+	text-decoration: none;
+	color: var(--link);
+}
+a:hover { color: var(--link-hover); }
+small {
+	font-size: 0.5625rem;
+	line-height: 0.8125rem;
+}
+img { border: none; }
+p {
+	margin: 0.34375rem 0;
+	padding: 0;
+	clear: both;
+	max-width: 35rem;
+}
+blockquote {
+	margin: 0.6875rem 0 0 0.6875rem;
+	padding: 0;
+	font-size: 0.625rem;
+	line-height: 0.6875rem;
+}
+ul {
+	margin: 0;
+	padding: 0 0 0 0.6875rem;
+}
+ol {
+	margin: 0;
+	padding: 0 0 0 0.6875rem;
+}
+dl {
+	margin: 0;
+	padding: 0;
+}
+dt { clear: both; }
+dd {
+	margin: 0;
+	padding: 0;
+}
+dl.analyse { margin: 0.6875rem 0; background: transparent; }
+dl.analyse dt {
+	color: var(--muted-2);
+	padding: 0.3125rem 0;
+	background: rgba(0, 0, 0, .05);
+}
+dl.analyse dd { padding: 0.3125rem 0.6875rem; }
+
+h1, h2, h3, h4, h5, h6 {
+	color: #000;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
+}
+h1 {
+	font-size: 150%;
+	line-height: 80%;
+	padding: 0.6875rem 0;
+}
+h2 {
+	padding: 0.6875rem 0;
+	text-align: left;
+	font-size: 0.875rem;
+	line-height: 0.875rem;
+}
+h3 {
+	font-size: 125%;
+	line-height: 140%;
+	padding: 0.6875rem 0;
+	text-align: left;
+}
+h4 {
+	font-size: 0.8125rem;
+	line-height: 1.1875rem;
+	padding: 0.6875rem 0;
+	text-align: left;
+}
+h5 {
+	font-size: 0.75rem;
+	line-height: 1.125rem;
+	padding: 0.6875rem 0;
+	text-align: left;
+}
+h6 {
+	font-size: 0.6875rem;
+	line-height: 1rem;
+	padding: 0.6875rem 0;
+	text-align: left;
+}
+
 /* /////////////////////////////////////////////////////////////////  CLASSES */
 .on { display: block; }
 .off { display: none; }
 .autowidth { width: auto !important; }
-.autoscroll { overflow: auto;; }
+.autoscroll { overflow: auto; }
 .nowrap { white-space: nowrap; }
-.box{
-		-moz-border-radius:5px;
-		-webkit-border-radius:5px;
-		border-radius:5px;
-		-webkit-box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
-		-moz-box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
-		box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
-	}
-	.box-content{
-			-moz-border-radius:3px;
-			-webkit-border-radius:3px;
-			border-radius:3px;
-			padding:0;
-		}
-	.box-handle { }
-		.box-handle.collapsed {
-				padding-left: 22px;
-				cursor: pointer;
-				background: url("../images/menu-collapsed.png") no-repeat 0 50%;
-			}
-		.box-handle.expanded {
-				padding-left: 22px;
-				cursor: pointer;
-				background: url("../images/menu-expanded.png") no-repeat 0 50%;
-				color:#744D4C;
-			}
+.box {
+	border-radius: 0.3125rem;
+	box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, .1);
+}
+.box-content {
+	border-radius: 0.1875rem;
+	padding: 0;
+}
+.box-handle.collapsed {
+	padding-left: 1.375rem;
+	cursor: pointer;
+	background: url("../images/menu-collapsed.png") no-repeat 0 50%;
+}
+.box-handle.expanded {
+	padding-left: 1.375rem;
+	cursor: pointer;
+	background: url("../images/menu-expanded.png") no-repeat 0 50%;
+	color: #744d4c;
+}
+
 /* ////////////////////////////////////////////////////////////////////  PAGE */
-BODY DIV#Page {
-		margin: 0 auto;
-		width: 833px;
-		background: transparent;
-		position: relative;
-	}
-	BODY DIV#Page DIV#Top {
-			background: transparent;
-		}
-		BODY DIV#Page DIV#Top DIV.box {
-				float: left;
-				display: inline;
-				width: 622px;
-				margin: 0;
-				padding: 2px 0 0 0;
-				background: rgb(36, 36, 36);
-				-moz-border-radius-topleft:0;
-				-moz-border-radius-topright:0;
-				-webkit-border-top-left-radius: 0px 0px;
-				-webkit-border-top-right-radius: 0px 0px;
-			}
-			BODY DIV#Page DIV#Top DIV.box:first-child {
-					width: 200px;
-					margin: 0 11px 0 0;
-				}
-			BODY DIV#Page DIV#Top H1 {
-					padding: 0;
-					margin: 0;
-				}
-				BODY DIV#Page DIV#Top H1 A {
-						color: #fff;
-						display: block;
-						padding: 11px;
-						text-shadow:1px 1px .5em rgba(0, 0, 0, 0.5);
-					}
-	BODY DIV#Page DIV#Content {
-				background: transparent;
-				position: relative;
-				float: right;
-				display: inline;
-				width: 622px;
-				padding:11px 0;
-			}
-			BODY DIV#Page DIV#Content DIV#Content-header H1 {
-					padding: 0;
-					margin: 0;
-				}
-				BODY DIV#Page DIV#Content DIV#Content-header H1 A {
-						color: #fff;
-						display: block;
-						padding: 11px;
-						background: #0066CC;
-					}
-			BODY DIV#Page DIV#Content DIV#Content-header SELECT#quickjump { }
-			BODY DIV#Page DIV#Content DIV#Bottom {
-					padding: 6px 11px;
-					margin: 0;
-					background: url("../images/background/white10.png") repeat scroll 0 0 transparent;
-					color: #666;
-				}
-				BODY DIV#Page DIV#Content DIV#Bottom DIV.box-content {  }
-		BODY DIV#Page DIV#Content DIV#Content-main {
-				padding: 0;
-				background: transparent;
-			}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.box {
-					margin:0 0 11px;
-					padding:0 11px;
-					background: url("../images/background/white60.png") repeat scroll 0 0 transparent;
-				}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text {
-						padding: 11px 22px 22px;
-						background: url("../images/background/white90.png") repeat scroll 0 0 transparent;
-					}
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text H2 {
-							font-size:155%;
-						}
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text .box-content{
-/*							background:url("../images/background/white70.png") repeat scroll 0 0 transparent;*/
-							font-size:108%;
-							line-height:140%;
-							padding:0 0 0 0
-						}
-						BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text .box-content ul{
-								margin:0;
-								padding:0;
-							}
-						BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text .box-content li{
-								margin:0;
-								font-size: 83%;
-							}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.boxtable { padding: 0 0 11px 0; }
-			BODY DIV#Page DIV#Content DIV#Content-main #PagesList TABLE TD.level2 { padding-left: 11px; }
-			BODY DIV#Page DIV#Content DIV#Content-main #PagesList TABLE TD.level3 { padding-left: 11px; }
-			BODY DIV#Page DIV#Content DIV#Content-main #PagesList TABLE TD.level4 { padding-left: 11px; }
-			BODY DIV#Page DIV#Content DIV#Content-main #PagesList TABLE TD.level5 { padding-left: 11px; }
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.onecol { padding:11px; }
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.onecol LABEL { clear: both; }
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.col {
-					display: inline;
-					float: left;
-					padding: 11px 0 11px 11px;
-					width: 185px;
-				}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.col INPUT,
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.col TEXTAREA,
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL SPAN.label {  }
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth INPUT,
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth TEXTAREA,
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth LABEL SPAN.label { width: auto !important; }
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big INPUT,
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big TEXTAREA,
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big SPAN.label { width: 564px; }
-				BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET { background: transparent; }
-				BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content { padding-bottom:11px; }
-					BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col {  }
-						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col INPUT,
-						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col TEXTAREA,
-						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL SPAN.label {  }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth INPUT,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth TEXTAREA,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth LABEL SPAN.label { width: auto !important; }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big INPUT,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big TEXTAREA,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big SPAN.label { width: 564px; }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large INPUT,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large TEXTAREA,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large SELECT,
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large SPAN.label { width: 382px; }
-				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big INPUT,
-				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big SPAN.label { width: 564px; }
-				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big TEXTAREA {
-					width: 564px;
-					height: 200px;
-				}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.text DIV.col {
-					display: inline;
-					float: left;
-					padding:0 6px 11px 9px;
-					width:182px;
-				}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.text DIV.col:first-child {
-						padding-left: 0;
-					}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.text DIV.col:last-child {
-						padding-right: 0;
-						border:none;
-					}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.fields {
-					background: url("../images/background/black05.png") repeat scroll 0 0 transparent;
-					-moz-border-radius-topleft:5px;
-					-moz-border-radius-topright:5px;
-					-webkit-border-top-left-radius: 5px;
-					-webkit-border-top-right-radius: 4px;
-					padding:0.011px 0 0;
-				}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.submit {
-					margin: 0;
-					padding: 4px;
-					background: url("../images/background/black10.png") repeat scroll 0 0 transparent;
-					clear: both;
-					-moz-border-radius-bottomleft:5px;
-					-moz-border-radius-bottomright:5px;
-					-webkit-border-bottom-left-radius: 5px;
-					-webkit-border-bottom-right-radius: 5px;
-				}
+body div#Page {
+	margin: 0 auto;
+	width: 52.0625rem;
+	background: transparent;
+	position: relative;
+}
+body div#Page div#Top { background: transparent; }
+body div#Page div#Top div.box {
+	float: left;
+	display: inline;
+	width: 38.875rem;
+	margin: 0;
+	padding: 0.125rem 0 0;
+	background: var(--chrome);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+body div#Page div#Top div.box:first-child {
+	width: 12.5rem;
+	margin: 0 0.6875rem 0 0;
+}
+body div#Page div#Top h1 {
+	padding: 0;
+	margin: 0;
+}
+body div#Page div#Top h1 a {
+	color: #fff;
+	display: block;
+	padding: 0.6875rem;
+	text-shadow: 0.0625rem 0.0625rem .5em rgba(0, 0, 0, .5);
+}
+body div#Page div#Content {
+	background: transparent;
+	position: relative;
+	float: right;
+	display: inline;
+	width: 38.875rem;
+	padding: 0.6875rem 0;
+}
+body div#Page div#Content div#Content-header h1 {
+	padding: 0;
+	margin: 0;
+}
+body div#Page div#Content div#Content-header h1 a {
+	color: #fff;
+	display: block;
+	padding: 0.6875rem;
+	background: var(--accent);
+}
+body div#Page div#Content div#Bottom {
+	padding: 0.375rem 0.6875rem;
+	margin: 0;
+	background: rgba(255, 255, 255, .10);
+	color: var(--muted);
+}
+body div#Page div#Content div#Content-main {
+	padding: 0;
+	background: transparent;
+}
+body div#Page div#Content div#Content-main div.box {
+	margin: 0 0 0.6875rem;
+	padding: 0 0.6875rem;
+	background: rgba(255, 255, 255, .60);
+}
+body div#Page div#Content div#Content-main div.box.text {
+	padding: 0.6875rem 1.375rem 1.375rem;
+	background: rgba(255, 255, 255, .90);
+}
+body div#Page div#Content div#Content-main div.box.text h2 { font-size: 155%; }
+body div#Page div#Content div#Content-main div.box.text .box-content {
+	font-size: 108%;
+	line-height: 140%;
+	padding: 0;
+}
+body div#Page div#Content div#Content-main div.box.text .box-content ul {
+	margin: 0;
+	padding: 0;
+}
+body div#Page div#Content div#Content-main div.box.text .box-content li {
+	margin: 0;
+	font-size: 83%;
+}
+body div#Page div#Content div#Content-main div.boxtable { padding: 0 0 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level2 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level3 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level4 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main #PagesList table td.level5 { padding-left: 0.6875rem; }
+body div#Page div#Content div#Content-main div.onecol { padding: 0.6875rem; }
+body div#Page div#Content div#Content-main div.onecol label { clear: both; }
+body div#Page div#Content div#Content-main div.col {
+	display: inline;
+	float: left;
+	padding: 0.6875rem 0 0.6875rem 0.6875rem;
+	width: 11.5625rem;
+}
+body div#Page div#Content div#Content-main div.col.autowidth input,
+body div#Page div#Content div#Content-main div.col.autowidth textarea,
+body div#Page div#Content div#Content-main div.col.autowidth label span.label { width: auto !important; }
+body div#Page div#Content div#Content-main div.col label.big input,
+body div#Page div#Content div#Content-main div.col label.big textarea,
+body div#Page div#Content div#Content-main div.col label.big span.label { width: 35.25rem; }
+body div#Page div#Content div#Content-main form fieldset { background: transparent; }
+body div#Page div#Content div#Content-main form fieldset div.box-content { padding-bottom: 0.6875rem; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth label span.label { width: auto !important; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big span.label { width: 35.25rem; }
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large input,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large textarea,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large select,
+body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large span.label { width: 23.875rem; }
+body div#Page div#Content-main form fieldset label.big input,
+body div#Page div#Content-main form fieldset label.big span.label { width: 35.25rem; }
+body div#Page div#Content-main form fieldset label.big textarea {
+	width: 35.25rem;
+	height: 12.5rem;
+}
+body div#Page div#Content div#Content-main div.text div.col {
+	display: inline;
+	float: left;
+	padding: 0 0.375rem 0.6875rem 0.5625rem;
+	width: 11.375rem;
+}
+body div#Page div#Content div#Content-main div.text div.col:first-child { padding-left: 0; }
+body div#Page div#Content div#Content-main div.text div.col:last-child {
+	padding-right: 0;
+	border: none;
+}
+body div#Page div#Content div#Content-main div.fields {
+	background: rgba(0, 0, 0, .05);
+	border-top-left-radius: 0.3125rem;
+	border-top-right-radius: 0.3125rem;
+	padding: 0.0006875rem 0 0;
+}
+body div#Page div#Content div#Content-main div.submit {
+	margin: 0;
+	padding: 0.25rem;
+	background: rgba(0, 0, 0, .10);
+	clear: both;
+	border-bottom-left-radius: 0.3125rem;
+	border-bottom-right-radius: 0.3125rem;
+}
 
-	BODY DIV#Page DIV#AnalyseLog { padding: 0 11px 11px 0; }
-		BODY DIV#Page DIV#AnalyseLog DIV.message {
-			padding: 5px 11px;
-			width: 564px;
-		}
-	BODY DIV#Page DIV#Messages { }
-		BODY DIV#Page DIV#Messages P {
-				color: #f9f9f9;
-				padding: 6px 11px 7px;
-				margin: 0 0 11px;
-				font-weight: bold;
-				-moz-border-radius:5px;
-				-webkit-border-radius: 5px;
-			}
-			BODY DIV#Page DIV.message { padding: 5px 11px; width: 564px; }
-			BODY DIV#Page DIV#Messages P.warning { background: #a60045; }
-			BODY DIV#Page DIV#Messages P.notice { background: #c99; }
-			BODY DIV#Page DIV#Messages P.okay { background: #007b5e; }
+body div#Page div#AnalyseLog { padding: 0 0.6875rem 0.6875rem 0; }
+body div#Page div#AnalyseLog div.message {
+	padding: 0.3125rem 0.6875rem;
+	width: 35.25rem;
+}
+body div#Page div#Messages p {
+	color: #f9f9f9;
+	padding: 0.375rem 0.6875rem 0.4375rem;
+	margin: 0 0 0.6875rem;
+	font-weight: bold;
+	border-radius: 0.3125rem;
+}
+body div#Page div.message { padding: 0.3125rem 0.6875rem; width: 35.25rem; }
+body div#Page div#Messages p.warning { background: var(--warn); }
+body div#Page div#Messages p.notice { background: #c99; }
+body div#Page div#Messages p.okay { background: var(--ok); }
 
-	BODY DIV#Page DIV#Nav { padding: 11px 0 0 0; }
+body div#Page div#Nav { padding: 0.6875rem 0 0; }
+body div#Page div#Nav div.box {
+	padding: 0 0.6875rem;
+	width: 11.125rem;
+}
+body div#Page div#Nav div#SiteMap {
+	background: rgba(255, 255, 255, .50);
+	display: inline;
+	float: left;
+}
+body div#Page div#Nav div#SiteMap div.box-content { margin-bottom: 0.6875rem; }
+body div#Page div#Nav div#SiteMap div.box-content li { font-size: 97%; }
+body div#Page div#Nav div#Options {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.6875rem;
+}
+body div#Page div#Nav div#Options ul {
+	list-style: none;
+	display: inline;
+	float: left;
+}
+body div#Page div#Nav div#Options ul li {
+	list-style: none;
+	display: inline;
+	float: left;
+	letter-spacing: 0.0625rem;
+	font-size: 0.625rem;
+}
+body div#Page div#Nav div#Options ul li a {
+	color: #fff;
+	display: block;
+	padding: 0.1875rem 0.3125rem 0.125rem;
+	background: rgba(255, 255, 255, .20);
+	z-index: 100;
+	margin-left: -0.0625rem;
+}
+body div#Page div#Nav div#Options ul li:first-child a { border-radius: 0.1875rem 0 0 0.1875rem; }
+body div#Page div#Nav div#Options ul li:last-child a { border-radius: 0 0.1875rem 0.1875rem 0; }
+body div#Page div#Nav div#Options ul li a:hover { background: var(--accent); }
+body div#Page div#Nav div#Options ul li a.on { background: rgba(0, 0, 0, .30); color: #ddd; }
 
-		BODY DIV#Page DIV#Nav DIV.box {
-			padding:0 11px;
-			width:178px;
-		}
-
-		BODY DIV#Page DIV#Nav DIV#SiteMap {
-				background: url("../images/background/white50.png") repeat scroll 0 0 transparent;
-				display: inline;
-				float: left;
-			}
-			BODY DIV#Page DIV#Nav DIV#SiteMap DIV.box-content { margin-bottom: 11px; }
-				BODY DIV#Page DIV#Nav DIV#SiteMap DIV.box-content LI { font-size:97%; }
-		BODY DIV#Page DIV#Nav DIV#Options {
-				position: absolute;
-				top: 8px;
-				right: 11px;
-			}
-			BODY DIV#Page DIV#Nav DIV#Options UL {
-					list-style: none;
-					display: inline;
-					float: left;
-				}
-				BODY DIV#Page DIV#Nav DIV#Options UL LI {
-						list-style: none;
-						display: inline;
-						float: left;
-						letter-spacing: 1px;
-						font-size: 10px;
-					}
-					BODY DIV#Page DIV#Nav DIV#Options UL LI A {
-							color: #fff;
-							display: block;
-							padding: 3px 5px 2px;
-							background: url("../images/background/white20.png") repeat scroll 0 0 transparent;
-							z-index: 100;
-							margin-left: -1px;
-						}
-						BODY DIV#Page DIV#Nav DIV#Options UL LI:first-child A {
-							-moz-border-radius-topleft:3px;
-							-moz-border-radius-bottomleft:3px;
-							-webkit-border-top-left-radius: 3px;
-							-webkit-border-bottom-left-radius: 3px;
-						}
-						BODY DIV#Page DIV#Nav DIV#Options UL LI:last-child A {
-							-moz-border-radius-topright:3px;
-							-moz-border-radius-bottomright:3px;
-							-webkit-border-top-right-radius: 3px;
-							-webkit-border-bottom-right-radius: 3px;
-						}
-						BODY DIV#Page DIV#Nav DIV#Options UL LI A:hover { background: #0066CC; }
-						BODY DIV#Page DIV#Nav DIV#Options UL LI A.on { background: url("../images/background/black30.png") repeat scroll 0 0 transparent; color:#ddd; }
-/* ///////////////////////////////////////////////////////////////////  HACKS */
-/*
-	How To Clear Floats Without Structural Markup
-	source: http://positioniseverything.net/easyclearing.html
-*/
-BODY DIV#Page:after,
-BODY DIV#Page DIV#Content DIV#Content-main:after,
-BODY DIV#Page DIV#Top:after,
-BODY DIV#Page DIV#Content DIV#Content-main DIV.box-content:after,
-BODY DIV#Page DIV#Content DIV#Content-main DIV.fields:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
+/* /////////////////////////////////////////////////////////  CLEARFIX (FLOATS) */
+body div#Page::after,
+body div#Page div#Content div#Content-main::after,
+body div#Page div#Top::after,
+body div#Page div#Content div#Content-main div.box-content::after,
+body div#Page div#Content div#Content-main div.fields::after {
+	content: "";
+	display: block;
+	clear: both;
 }
 
 /* /////////////////////////////////////////////////////////////////  TINYMCE */
-SPAN.mceEditorContainer {
-		margin-right: 11px;
-		display: block;
-		border: 2px;
-	}
-	SPAN.mceEditorContainer IFRAME.mceEditorIframe { background: #fff; }
-	TABLE.mceEditor TD.mceToolbarTop SELECT.mceSelectList { width: auto; margin: 3px; border-width: 1px; }
+span.mceEditorContainer {
+	margin-right: 0.6875rem;
+	display: block;
+	border: 0.125rem;
+}
+span.mceEditorContainer iframe.mceEditorIframe { background: #fff; }
+table.mceEditor td.mceToolbarTop select.mceSelectList { width: auto; margin: 0.1875rem; border-width: 0.0625rem; }
+
 /* ////////////////////////////////////////////////////////////////  TVlists */
 /* JQuery Tree View, @ 2006 Myles Angell <mangell@cronin-co.com> See: <http://be.twixt.us/jquery/treeViewCollapsed.php> */
-UL.tv, UL.tv UL { padding: 0; margin: 0; list-style: none; }
-UL.tv LI { position: relative; margin: 0; padding: 2px 0 2px 10px; z-index: 10; }
-UL.tv DIV.tvca { _background: #fff; _filter: alpha(opacity=0); height: 15px; width: 15px; position: absolute; top: 1px; left: -4px; _left: -11px; /* IE... damnit! */ cursor: pointer; z-index: 50; }
-UL.tv LI, UL.tv .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) -6px 0 no-repeat; }
-UL.tv .tvic /* Tree View It	, Collapsable */ { background-image: url(../images/treeView/tvie.png); }
-UL.tv .tvie /* Tree View Item, Expandable */ { background-image: url(../images/treeView/tvic.png); }
-UL.tv .tvil /* Tree View Last Item */ { background-image: url(../images/treeView/tvil.png); }
-UL.tv .tvilc /* Tree View Last Item, Collapsable */ { background-image: url(../images/treeView/tvile.png); }
-UL.tv .tvile /* Tree View Last Item, Expandable */ { background-image: url(../images/treeView/tvilc.png); }
-UL.tv .tvload /* Loading Icon */ { background-image: url(../images/treeView/tviload.gif); }
-UL.tv .tvclosed UL, UL.tv .tvclosed LI.tvclosed UL	{ display: none; }
-UL.tv .tvclosed UL UL { display: block; }
+ul.tv, ul.tv ul { padding: 0; margin: 0; list-style: none; }
+ul.tv li { position: relative; margin: 0; padding: 0.125rem 0 0.125rem 0.625rem; z-index: 10; }
+ul.tv div.tvca { height: 0.9375rem; width: 0.9375rem; position: absolute; top: 0.0625rem; left: -0.25rem; cursor: pointer; z-index: 50; }
+ul.tv li, ul.tv .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat; }
+ul.tv .tvic /* Tree View Item, Collapsable */ { background-image: url(../images/treeView/tvie.png); }
+ul.tv .tvie /* Tree View Item, Expandable */ { background-image: url(../images/treeView/tvic.png); }
+ul.tv .tvil /* Tree View Last Item */ { background-image: url(../images/treeView/tvil.png); }
+ul.tv .tvilc /* Tree View Last Item, Collapsable */ { background-image: url(../images/treeView/tvile.png); }
+ul.tv .tvile /* Tree View Last Item, Expandable */ { background-image: url(../images/treeView/tvilc.png); }
+ul.tv .tvload /* Loading Icon */ { background-image: url(../images/treeView/tviload.gif); }
+ul.tv .tvclosed ul, ul.tv .tvclosed li.tvclosed ul { display: none; }
+ul.tv .tvclosed ul ul { display: block; }

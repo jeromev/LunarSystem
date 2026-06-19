@@ -181,8 +181,7 @@ class mod_edit_texts {
 		} 
 		if ($inerror) { return false; }
 		if ($node = luna::$model->update($_POST['modify_item_nid'], $_POST['modify_text_lid'], ($_POST['modify_text_is_inactive']? 0 : 1))) {
-			luna::$model->unlink($node, 'page');
-			if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { luna::$model->link($node, $_POST['modify_text_pages']); }
+			if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { luna::$model->unlink($node, 'page'); luna::$model->link($node, $_POST['modify_text_pages']); }
 			$res = lunaDB::query('
 				UPDATE
 					'.luna::get_ini('DBtables', 'TEXTS').'

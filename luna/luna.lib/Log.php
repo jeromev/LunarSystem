@@ -539,7 +539,7 @@ class Log
      * @access  public
      * @since   Log 1.0
      */
-    function priorityToString($priority)
+    static function priorityToString($priority)
     {
         $levels = array(
             PEAR_LOG_EMERG   => 'emergency',
@@ -568,7 +568,7 @@ class Log
      * @access  public
      * @since   Log 1.9.0
      */
-    function stringToPriority($name)
+    static function stringToPriority($name)
     {
         $levels = array(
             'emergency' => PEAR_LOG_EMERG,

@@ -204,11 +204,11 @@ class lunaTools {
 	 * @param string $format
 	 * @return string
 	 */
-	public static function format_date($time = NOW, $format = '%Y-%m-%d %H:%M') {
+	public static function format_date($time = NOW, $format = 'Y-m-d H:i') {
 		$time = intval($time);
 		if (empty($time)) { return ''; }
-		if (empty($format) || !is_string($format)) { $format = '%Y-%m-%d %H:%M'; }
-		return strftime($format, $time); 
+		if (empty($format) || !is_string($format)) { $format = 'Y-m-d H:i'; }
+		return date($format, $time);
 	}
 	// }}}
 	// {{{ display_string()
@@ -432,7 +432,7 @@ class lunaTools {
 			$GLOBALS['HTTP_ENV_VARS'],
 			$GLOBALS['HTTP_POST_FILES']
 		);
-		if (strpos($_GET['path'], '?') !== false) {
+		if (isset($_GET['path']) && strpos($_GET['path'], '?') !== false) {
 			preg_match_all('@(\?|\&)(.*?)\=(.+)\&*@s', $_GET['path'], $matches);
 			if (isset($matches[2][0]) && isset($matches[3][0])) { $_GET[$matches[2][0]] = $matches[3][0]; }
 			$_GET['path'] = preg_replace('@(\?|\&)(.*?)\=(.+)\&*@s', '', $_GET['path']);
@@ -814,7 +814,7 @@ class lunaTools {
 	 */
 	public static function array_to_object($array = array()) {
 		if (!empty($array)) {
-			$data = false;
+			$data = new stdClass();
 			foreach ($array as $k => $v) { $data -> {$k} = $v; }
 			return $data;
 		}

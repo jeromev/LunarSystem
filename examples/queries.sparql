@@ -1,0 +1,85 @@
+# LunarSystem — example SPARQL queries
+#
+# These run against the triplestore the app reads from by default. With the Docker
+# stack up (`docker-compose up --build -d`), the endpoints are:
+#
+#   Oxigraph (materialised triplestore) : http://localhost:7879/query
+#   Ontop    (virtual SPARQL over MySQL): http://localhost:8081/sparql
+#
+# Run one with curl, e.g.:
+#
+#   curl -s http://localhost:7879/query \
+#     --data-urlencode 'query=SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }' \
+#     -H 'Accept: text/csv'
+#
+# Every query below works against EITHER endpoint (same data, same vocabulary) —
+# that is the whole point of the SPARQL seam. The results shown are from the seed
+# data; yours will match unless you've edited content.
+#
+# Namespaces (note: schema.org is https://, the app ontology is http://):
+#   schema: <https://schema.org/>
+#   foaf:   <http://xmlns.com/foaf/0.1/>
+#   luna:   <http://lunarsystem.org/ontology#>
+
+
+# 1) Census — count every content class in ONE query.
+#    (A vanilla SQL app needs a per-table UNION; here one triple pattern spans all.)
+#    → WebPage 14, Article 2, Person 2
+PREFIX schema: <https://schema.org/>
+SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type ORDER BY DESC(?n)
+
+
+# 2) Every page with the access level it requires — a graph join, no FK columns named.
+PREFIX schema: <https://schema.org/>
+PREFIX luna:   <http://lunarsystem.org/ontology#>
+SELECT ?page ?level WHERE {
+  ?page a schema:WebPage ; luna:level ?lvl .
+  ?lvl  schema:name ?level .
+} ORDER BY ?level ?page
+
+
+# 3) "Which pages share the same access level as `admin`?" — traverse a shared node.
+#    → 6 siblings (admin_groups, admin_levels, admin_mods, admin_pages, admin_users, journal)
+PREFIX schema: <https://schema.org/>
+PREFIX luna:   <http://lunarsystem.org/ontology#>
+SELECT ?sibling WHERE {
+  ?admin   schema:name "admin" ; luna:level ?lvl .
+  ?sib     luna:level ?lvl ; schema:name ?sibling .
+  FILTER (?sib != ?admin)
+} ORDER BY ?sibling
+
+
+# 4) Full ancestry of every page at any depth — one transitive clause.
+#    (Replaces the recursive PHP alias walk; `+` is a SPARQL property path.)
+PREFIX schema: <https://schema.org/>
+SELECT ?page ?ancestor WHERE { ?page schema:isPartOf+ ?ancestor } ORDER BY ?page
+
+
+# 5) Boolean check — is any admin-level page active? → true
+PREFIX schema: <https://schema.org/>
+PREFIX luna:   <http://lunarsystem.org/ontology#>
+ASK {
+  ?p luna:level <http://localhost:8080/id/level_admin> ; luna:isActive 1 .
+}
+
+
+# 6) CONSTRUCT — derive a NEW, reshaped graph (not a table): a clean article list.
+PREFIX schema: <https://schema.org/>
+CONSTRUCT { ?a schema:headline ?h ; schema:inLanguage ?l }
+WHERE     { ?a a schema:Article ; schema:headline ?h . OPTIONAL { ?a schema:inLanguage ?l } }
+
+
+# 7) Federation — join the triplestore against LIVE MySQL (via Ontop) in one query,
+#    on the shared /id/{slug} identity. No ETL, no shared schema.
+#    Run this against Oxigraph (:7879); it reaches Ontop over the Docker network.
+PREFIX schema: <https://schema.org/>
+SELECT ?name ?nid WHERE {
+  ?p a schema:WebPage ; schema:name ?name .          # from Oxigraph
+  SERVICE <http://ontop:8080/sparql> {               # from MySQL, live, via Ontop
+    ?p schema:identifier ?nid .
+  }
+} ORDER BY ?nid
+
+
+# 8) Describe one resource — everything the graph knows about the home page.
+DESCRIBE <http://localhost:8080/id/root>

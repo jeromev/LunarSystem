@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1-alpha] - 2026-06-19
+- Public-readiness, part 2 — make it a real teaching unit + open-source hygiene (docs/config only).
+  - **Hands-on lab:** [docs/try-it.md](docs/try-it.md) — a ~10-minute guided tour (data views → SPARQL → edit-and-read-back → swap the engine → federation), and [examples/queries.sparql](examples/queries.sparql) — copy-paste queries (census, graph traversal, `isPartOf+`, `ASK`, `CONSTRUCT`, `DESCRIBE`, cross-store `SERVICE` federation), all verified against the running stack.
+  - **OSS hygiene:** [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) (bundled libs + licenses), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and `.github/` (issue + PR templates; a CI workflow that runs `php -l` on the project code, validates `docker compose config`, and asserts every published port stays bound to `127.0.0.1`).
+  - **Checklist:** [docs/going-public.md](docs/going-public.md) records the five-dimension readiness audit, what's done, and the owner-only steps that remain (rotate the old DB credential; flip the repo to public; set description/topics).
+  - Wired the lab + checklist into the docs index and both READMEs.
+
 ## [0.4.0-alpha] - 2026-06-19
 - Public-readiness, part 1 — safety + trim (toward making the repo a public, minimal, safe semantic-web testing unit; the remaining git history was audited and confirmed clean — no secret was ever committed).
   - **Safety (blocker):** `docker-compose.yml` now binds **every** host port to `127.0.0.1` (loopback) — app `8080`, MySQL `3307`, Ontop `8081`, Oxigraph `7879`. Previously they published to `0.0.0.0`, exposing an **unauthenticated Oxigraph `/update`** (open graph-write) and the MySQL port to the whole network on a bare `docker-compose up`.

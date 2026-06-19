@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main, legacy]
+  pull_request:
+
+jobs:
+  php-lint:
+    name: PHP 5.6 lint (our code)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: php -l across project code (vendored libs excluded)
+        run: |
+          docker run --rm -v "$PWD":/app -w /app php:5.6-cli sh -c '
+            set -e
+            find index.php luna/luna.php luna/luna.classes luna/luna.mods \
+              -name "*.php" -print0 | xargs -0 -n1 php -l'
+
+  compose-validate:
+    name: docker-compose config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the Docker stack definition
+        run: docker compose config -q
+
+  ports-loopback:
+    name: ports are loopback-only
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if any published port is not bound to 127.0.0.1
+        run: |
+          # Every published host port must be loopback-bound (see SECURITY.md).
+          if grep -nE '^\s*-\s*"[0-9]+:[0-9]+"' docker-compose.yml; then
+            echo "::error::Found a published port not bound to 127.0.0.1"; exit 1
+          fi
+          echo "OK: all published ports are 127.0.0.1-bound"

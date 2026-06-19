@@ -1,7 +1,7 @@
 # LunarSystem Documentation
 
 Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS
-(v0.4.0-alpha, circa 2006–2010) that models all content as **RDF triples** and
+(v0.4.1-alpha, circa 2006–2010) that models all content as **RDF triples** and
 renders pages through **XSLT transformations**.
 
 This `docs/` folder is the canonical technical reference. The top-level
@@ -19,6 +19,7 @@ This `docs/` folder is the canonical technical reference. The top-level
 | Document | What it covers |
 |---|---|
 | [overview.md](overview.md) | What the project is, its core ideas, and a glossary |
+| [try-it.md](try-it.md) | A ~10-minute hands-on lab: data views, SPARQL, edit-and-read-back, swap the engine |
 | [architecture.md](architecture.md) | The request lifecycle, core classes, and how they fit together |
 | [rdf-model.md](rdf-model.md) | The in-memory triple store, namespaces, and SQL→RDF projection |
 | [database-schema.md](database-schema.md) | Every table, column, and the seed data |
@@ -30,8 +31,11 @@ This `docs/` folder is the canonical technical reference. The top-level
 | [linked-data.md](linked-data.md) | The semantic-web layer: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
 | [why-rdf.md](why-rdf.md) | The payoff in plain English: what you can do now that a vanilla PHP/MySQL app can't — queries, interop, engine-swap — and what's still roadmap |
 | [roadmap.md](roadmap.md) | Where the project is headed: finishing the RDF-native transition, then a data-first server (and why client-side/native-browser XSLT is a dead end, so P5 was dropped) |
+| [going-public.md](going-public.md) | Readiness checklist for publishing the repo as a teaching unit |
 
 ## Reading order
+
+**New here? Start with [try-it.md](try-it.md)** for a hands-on tour, then read on.
 
 If you are new to the codebase, read in this order:
 
@@ -48,6 +52,6 @@ If you are new to the codebase, read in this order:
 
 This started as a historical / archival codebase (the original, preserved on the
 `legacy` branch as `v0.2.14-alpha`) and is now an RDF-native Semantic Web CMS on
-`main` (`0.4.0-alpha`) — see [linked-data.md](linked-data.md). It still
+`main` (`0.4.1-alpha`) — see [linked-data.md](linked-data.md). It still
 runs only on **PHP 5.3–5.6**; see [security.md](security.md) before exposing it
 publicly.

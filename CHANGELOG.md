@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.5.9-alpha] - 2026-06-19
+- **Fixed: saving a text (or any logged admin action) showed a `DEBUGGING` dump instead of the page.** `lunaLog::log()` called `lunaTools::debug()` — which prints globals / included-files / DB-queries and `die()`s — on *every* log call whenever `DEBUG` is on and the user is an admin. Saving a text logs an INFO message ("…has been modified."), so the response terminated with the debug screen instead of returning to the editor. Removed that auto-dump; `log()` now just writes the row to `luna_logs`. Logs are inspected on the admin **journal** page, uncaught errors keep their own error page, and an explicit `lunaTools::debug()` call is still there for ad-hoc dev use. Saving now returns to the normal HTML editor with its success message, and the action is still logged.
+
 ## [0.5.8-alpha] - 2026-06-19
 - **Fixed: edited text lost its markup on render.** Text saved through the `edit_texts` module came back as plain text (`<p>`, `<strong>`, links… stripped) when displayed.
   - **Root cause:** the triplestore (the default read path) stored text content only as `schema:articleBody`, which the write-through deliberately runs through `strip_tags()` (correct — `articleBody` is plain text for schema.org). The read path (`load_texts_sparql`) then rebuilt the rendered `content_html` *from* that stripped `articleBody`. Un-edited texts looked fine because the R2RML mapping materialised `articleBody` un-stripped — markup was lost only once a text was **edited** (when the PHP write-through overwrote it with the stripped version), exactly matching the report.

@@ -33,7 +33,6 @@ class lunaLog {
 	 * @return boolean
 	 */
 	public static function log($e, $code = PEAR_LOG_ERR) {
-		if (defined('DEBUG') && DEBUG && defined('IS_ADMIN') && IS_ADMIN) { lunaTools::debug($e); }
 		if (!luna::get_ini('DBtables', 'LOGS')) { return false; }
 		if (is_object($e) && get_class($e) == 'lunaException') {
 			$e->session = luna::$session;

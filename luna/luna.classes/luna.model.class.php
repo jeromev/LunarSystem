@@ -118,7 +118,7 @@ class lunaModel {
 			'serializer_type_nodes' => 1,
 		);
 		$this->node_path = lunaTools::link('node', true);
-		if (luna::$cache) { $cache_obj =& new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($cache_rdf_name))) {
 			$array = unserialize($cache_str);
 			$this->index = $array['index'];
@@ -1068,7 +1068,7 @@ class lunaModel {
 	 * @return array
 	 */
 	public function load_users($user_nid = false, $group = false) { 
-		lunaTools::parse_sort_cookie(luna::$data['lid']);
+		lunaTools::parse_sort_cookie(luna::$data['lid'] ?? '');
 		$nodes = array();
 		$user_nid = intval($user_nid);
 		if (!empty($user_nid)) {
@@ -1357,7 +1357,7 @@ class lunaModel {
 		}
 		$res->free();
 		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_user($users)); 
-		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], luna::$data['lid']));
+		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), (luna::$data['lid'] ?? '')));
 		return $nodes;
 	}
 	// }}}
@@ -1426,7 +1426,7 @@ class lunaModel {
 	 * @return array
 	 */
 	public function load_texts($item_nid = false, $page_nid = false) {
-		lunaTools::parse_sort_cookie(luna::$data['lid']);
+		lunaTools::parse_sort_cookie(luna::$data['lid'] ?? '');
 		$cookie = array();
 		$nodes = array();
 		$item_nid = intval($item_nid);
@@ -1720,7 +1720,7 @@ class lunaModel {
 		}
 		$res->free();
 		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_text($texts)); 
-		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], luna::$data['lid']));
+		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), (luna::$data['lid'] ?? '')));
 		return $nodes;
 	}
 	// }}}
@@ -1836,8 +1836,9 @@ class lunaModel {
 		if (empty($var)) { return false; } 
 		if (empty($ns)) { $ns = 'luna'; }
 		$nid = lunaTools::request("$var"); 
+		$node = false;
 		if ($nid) { $node = luna::$model->get_node($nid, "$type", "$ns"); } 
-		if ($node) { 
+		if (!empty($node)) { 
 			$_POST["$var"] = $_REQUEST["$var"] = $nid; 
 			luna::$data['modify_item_nid'] = $nid;
 		} else {
@@ -1972,7 +1973,7 @@ class lunaModel {
 		if (isset($node['parent_nid']) && $node['parent_nid']) { 
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['parent_nid']; 
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
-		} else if ($node['parent_nid'] == 0 && $type1 == 'page') {
+		} else if (empty($node['parent_nid']) && $type1 == 'page') {
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['nid']; 
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
 		}
@@ -2119,7 +2120,6 @@ class lunaModel {
 	 * @return integer
 	 */
 	public function insert($type1 = false, $lid = false, $is_active = false, $parent_nid = false, $time = false) {
-		$db = lunaDB::get();
 		if (empty($type1) || !is_string($type1)) { return false; }
 		$time = intval($time);
 		if (empty($time)) { $time = NOW; }
@@ -2127,8 +2127,8 @@ class lunaModel {
 		$is_active = ($is_active == true)? true : false;
 		$parent_nid = intval($parent_nid);
 		if (empty($parent_nid)) { $parent_nid = false; }
-		$nextID = $db->nextID(luna::get_ini('DBtables', 'NODES'));
-		if (PEAR::isError($nextID) || empty($nextID)) { throw new lunaException($nextID->getUserInfo(), PEAR_LOG_ERR); }
+		$nextID = lunaDB::nextID(luna::get_ini('DBtables', 'NODES'));
+		if (empty($nextID)) { throw new lunaException(_('Error: cannot allocate a node id.'), PEAR_LOG_ERR); }
 		$res = lunaDB::query('
 			INSERT INTO
 				'.luna::get_ini('DBtables', 'NODES').'
@@ -2433,9 +2433,9 @@ class lunaModel {
 			// store the node’s uri, we’ll need it later
 			$node_uri = $this->node_path.'/'.$nid;
 			// do the same for its parent
-			$parent_uri = $nodes[$node_uri][$this->conf['ns']['owl'].'isChildOf'][0]['value']; 
+			$parent_uri = isset($nodes[$node_uri][$this->conf['ns']['owl'].'isChildOf'][0]['value'])? $nodes[$node_uri][$this->conf['ns']['owl'].'isChildOf'][0]['value'] : '';
 			// and also grab its nid, we might need it
-			$parent_nid = $nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'];
+			$parent_nid = isset($nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'])? $nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'] : '';
 			// if the node’s uri is the same as its parent’s, then we just hit the root page.
 			if ($parent_uri == $node_uri) { 
 				// that means: empty alias
@@ -2475,7 +2475,7 @@ class lunaModel {
 	 */
 	private function load_xsl($file = false) {
 		if (empty($file) || !is_string($file) || !file_exists($file)) { return false; }
-		$this->xsl =& new DomDocument;
+		$this->xsl = new DomDocument;
 		$this->xsl->load($file);
 		$this->xsl->preserveWhiteSpace = FALSE;
 		return true;
@@ -2488,7 +2488,7 @@ class lunaModel {
 	 */
 	public function transform($xslfile = false) {
 		$code_str = md5(serialize(array($this->conf, $this->index)));
-		if (luna::$cache) { $cache_obj =& new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($code_str))) {
 			$res = unserialize($cache_str);
 		} else { 
@@ -2497,7 +2497,7 @@ class lunaModel {
 			$ser = ARC2::getRDFXMLSerializer($this->conf);
 			$this->dom = new DomDocument; 
 			$this->dom->loadXML($ser->getSerializedIndex($this->index)); 
-			$this->xslprocessor =& new XsltProcessor();
+			$this->xslprocessor = new XsltProcessor();
 			$this->xslprocessor->importStyleSheet($this->xsl);
 			$res = $this->xslprocessor->transformToXML($this->dom);
 			if (luna::$cache) { $cache_obj->save(serialize($res)); }

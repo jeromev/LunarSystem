@@ -189,7 +189,7 @@ class mod_log {
 				WHERE
 					nid = '.lunaDB::quote($user->nid).'
 			');
-			luna::$session->user = lunaSession::get_user_data(luna::$session->user->session_id);
+			luna::$session->user = luna::$session->get_user_data(luna::$session->user->session_id);
 			luna::$model->purge_index();
 			$message = sprintf(_("You are now connected as %1\$s."), luna::$session->user->firstname.' '.luna::$session->user->lastname);
 			luna::$messages['okay'][] = $message;
@@ -216,7 +216,7 @@ class mod_log {
 				session_id = '.lunaDB::quote(luna::$session->user->session_id).'
 		');
 		   
-		luna::$session->user = lunaSession::get_user_data(luna::$session->user->session_id);
+		luna::$session->user = luna::$session->get_user_data(luna::$session->user->session_id);
 		return true;
 	}
 	// }}}

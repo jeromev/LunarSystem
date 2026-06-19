@@ -36,8 +36,12 @@ ini_set('arg_separator.output','&amp;');
 // code targets PHP 5.2/5.3 idioms (`=& new`, static-call style) that PHP 5.6
 // flags but which are harmless here.
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
-// Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
-if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); }
+// magic_quotes_runtime was removed in PHP 5.4 (functions removed entirely in PHP 8).
+// Polyfill the no-op getters/setters so era-2009 vendored libs (Cache_Lite) that call
+// them unguarded keep working; on PHP < 8 the real (no-op since 5.4) functions win.
+if (!function_exists('get_magic_quotes_runtime')) { function get_magic_quotes_runtime() { return 0; } }
+if (!function_exists('set_magic_quotes_runtime')) { function set_magic_quotes_runtime($v) { return false; } }
+set_magic_quotes_runtime(0);
 // SPARQL endpoint for the read path. Default = Oxigraph (the materialised, dual-write-synced
 // triplestore — RDF-native). Override to Ontop (virtual SPARQL over MySQL) to read live from
 // the relational store instead: SPARQL_ENDPOINT=http://ontop:8080/sparql. See docs/linked-data.md.
@@ -57,7 +61,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.4.1-alpha';
+	public static $lunaVersion = '0.5.0-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -393,7 +397,7 @@ class luna {
 	 */
 	public function load_mods() {
 		try {
-			if (self::$cache) { $cache_obj =& new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
+			if (self::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
 			if (self::$cache && ($cache_str = $cache_obj->get('node-'.PAGENID.'.mods'))) {
 				$nodes = unserialize($cache_str);
 			} else {

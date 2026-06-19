@@ -1,19 +1,13 @@
-FROM php:5.6-apache
+FROM php:8.3-apache
 
-# This image is based on the now-EOL Debian 9 "stretch", which has been moved
-# off the regular mirrors to archive.debian.org, so the stock apt sources 404.
-# Point apt at the archive and stop it rejecting the (long-expired) Release
-# files; the matching signing keys have also expired, so installs run with
-# --allow-unauthenticated below.
-RUN set -eux; \
-    echo 'deb http://archive.debian.org/debian stretch main' > /etc/apt/sources.list; \
-    echo 'deb http://archive.debian.org/debian-security stretch/updates main' >> /etc/apt/sources.list; \
-    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
-
-# Install system deps for xsl and gettext extensions
-RUN apt-get update && apt-get install -y --allow-unauthenticated \
+# System deps for the PHP extensions: libxslt1-dev (xsl), libonig-dev (mbstring),
+# gettext (i18n), and locales (see below). php:8.3-apache is Debian bookworm with
+# live mirrors, so no archive.debian.org pin is needed (unlike the old 5.6 image).
+RUN apt-get update && apt-get install -y --no-install-recommends \
         libxslt1-dev \
+        libonig-dev \
         gettext \
+        locales \
     && rm -rf /var/lib/apt/lists/*
 
 # gettext needs the OS locales generated; otherwise setlocale() fails and every
@@ -21,14 +15,14 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
 # nothing). Generate the locales lunaTools::format_language() maps to: fr_FR for
 # French, en_US, and the non-standard en_EN ('en' -> 'en_EN'), the latter aliased
 # to the en_US definition since glibc ships no en_EN source.
-RUN apt-get update && apt-get install -y --allow-unauthenticated locales \
-    && rm -rf /var/lib/apt/lists/* \
-    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 \
     && { localedef -i en_US -f UTF-8 en_EN.UTF-8 || true; }
 
-# Install required PHP extensions
-RUN docker-php-ext-install mysql mysqli xsl gettext
+# PHP extensions. pdo_mysql is the DB driver (replaced PEAR MDB2 + ext/mysql);
+# xsl drives the XSLT view layer; gettext is i18n; mbstring is required by the
+# vendored semsol/arc2 3.x RDF library.
+RUN docker-php-ext-install pdo_mysql xsl gettext mbstring
 
 # Enable Apache mod_rewrite (needed for clean URLs)
 RUN a2enmod rewrite

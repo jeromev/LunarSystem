@@ -120,7 +120,7 @@ class lunaTools {
 		$input_charset = mb_detect_encoding($str, 'UTF-8, ISO-8859-1');
 		if ($input_charset != 'UTF-8') {
 			$str = str_replace(chr(146), "'", $str);
-			$str = utf8_encode($str);
+			$str = mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1');
 		}
 		return $str;
 	}
@@ -458,7 +458,7 @@ class lunaTools {
 			$array = self::sanitize($array);
 			$stuff = self::array_to_object($array);
 		} else {
-			$safehtml =& new HTML_Safe();
+			$safehtml = new HTML_Safe();
 			if (!$stuff = $safehtml->parse($stuff)) { throw new lunaException(_('Error: cannot sanitize input.'), PEAR_LOG_CRIT); }
 		}
 		return $stuff;
@@ -492,7 +492,7 @@ class lunaTools {
 	 * @return mixed
 	 */
 	public static function load_config() {
-		if (luna::$cache) { $cache_obj =& new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get('Config'))) {
 			return unserialize($cache_str);
 		} else {
@@ -556,9 +556,9 @@ class lunaTools {
 						$qcandidat = 1;
 						$indicecandidat = $j;
 					} else {
-						$q = ereg_replace('.*;q=(.*)', '\\1', $http_accept_language);
+						$q = preg_replace('/.*;q=(.*)/', '$1', $http_accept_language);
 						if ($q > $qcandidat) {
-							$candidat = ereg_replace('(.*);.*', '\\1', $http_accept_language);
+							$candidat = preg_replace('/(.*);.*/', '$1', $http_accept_language);
 							$qcandidat = $q;
 							$indicecandidat = $j;     
 						}
@@ -622,7 +622,7 @@ class lunaTools {
 	 * @return boolean
 	 */
 	public static function purge_cache() {
-		$Cache_Lite =& new Cache_Lite(array('cacheDir' => CACHE_PATH));
+		$Cache_Lite = new Cache_Lite(array('cacheDir' => CACHE_PATH));
 		$Cache_Lite->clean();
 		luna::$cache = false;
 		return true;

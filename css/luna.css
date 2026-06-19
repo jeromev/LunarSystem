@@ -123,7 +123,26 @@ hr {
   --font: 16px/1.5rem Verdana, sans-serif;
 }
 
+/*
+  baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss
+  -----------------------------------------------------------------------------
+  A modern SCSS toolkit for aligning text and layout to a baseline grid.
+  Features responsive scaling, typographic precision, and utility mixins.
+  -----------------------------------------------------------------------------
+  USAGE:
+    @use 'path/to/_baselinegrid.scss' as *;
+    .my-class { @include set(20px); }
+    .container { @include pad-scale(); }
+    .element { @include respond-to('m') { font-size: 20px; } }
+  -----------------------------------------------------------------------------
+*/
 /* ////////////////////////////////////////////////////////////////////  TAGS */
+body *:before,
+body *:after {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -131,12 +150,64 @@ html, body {
   color: var(--ink);
 }
 
+html {
+  --base-font-size: 15px;
+  --base-line-height: 24px;
+}
+@media (min-width: 375px) {
+  html {
+    --base-font-size: 17px;
+    --base-line-height: 26px;
+  }
+}
+@media (min-width: 560px) {
+  html {
+    --base-font-size: 19px;
+    --base-line-height: 28px;
+  }
+}
+@media (min-width: 768px) {
+  html {
+    --base-font-size: 20px;
+    --base-line-height: 30px;
+  }
+}
+@media (min-width: 1024px) {
+  html {
+    --base-font-size: 21px;
+    --base-line-height: 32px;
+  }
+}
+@media (min-width: 1440px) {
+  html {
+    --base-font-size: 23px;
+    --base-line-height: 34px;
+  }
+}
+@media (min-width: 2004px) {
+  html {
+    --base-font-size: 25px;
+    --base-line-height: 36px;
+  }
+}
+html {
+  --base-unit: calc(var(--base-line-height) / 2);
+  --width-optical-adjustment: 1.1;
+  --right-side-optical-adjustment: 0.8;
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+}
+html {
+  /* responsive base font + the baseline unit (--base-unit) */
+  font-family: Verdana, sans-serif;
+}
+
 body {
   padding: 0 0.6875rem 0.6875rem;
 }
 
-html, body, input, textarea, button, select, optgroup, table {
-  font: var(--font);
+body, input, textarea, button, select, optgroup, table {
+  font: inherit;
 }
 
 table.zebra {
@@ -397,7 +468,15 @@ img {
   border: none;
 }
 
+p:before, p:after {
+  height: var(--base-line-height);
+  content: "";
+}
+p:after {
+  vertical-align: calc(var(--base-line-height) * -1);
+}
 p {
+  /* align body text to the baseline grid */
   margin: 0.34375rem 0;
   padding: 0;
   clear: both;

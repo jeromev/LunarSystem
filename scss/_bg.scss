@@ -1,0 +1,9 @@
+// Baseline-grid configuration.
+//
+// _baselinegrid.scss is vendored from https://github.com/jeromev/baselinegrid.scss
+// (v3.0.1, MIT © Jérôme Vogel). Configure it here once and `@use 'bg' as bg;`
+// from any partial that needs the grid mixins/functions.
+@forward 'baselinegrid' with (
+	$debug: 0
+	// override $scale here to tune the type scale for this app
+);

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0-alpha] - 2026-06-19
+- **Adopted a baseline grid for typography** — [baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) (v3.0.1, MIT © Jérôme Vogel), vendored under `scss/vendor/`:
+  - `scss/_bg.scss` configures it (`@forward 'baselinegrid'`); `_base.scss` calls `@include bg.begin()`, sets `html { @include bg.root(); font-family: Verdana, sans-serif; }` (a responsive base font + the `--base-unit` rhythm), reconciles form-control fonts (`font: inherit`), and aligns body text via `p { @include bg.set(); }`.
+  - The `Makefile` build passes `--load-path=scss/vendor --quiet-deps`, so the vendored lib stays pristine while its compile-time deprecation notices are silenced (luna's own warnings still show).
+  - Verified across content and admin (forms, tables, the bottom navbar) at the responsive scale: body text sits on a consistent baseline; the chrome is intact; clean compile; zero runtime warnings/fatals.
+  - Foundation only — content headings (via `bg.scale('font-size', …)`, scoped because `h1`/`h2` are chrome here) and tuning the type `$scale` are the obvious next steps.
+
 ## [0.5.9-alpha] - 2026-06-19
 - **Fixed: saving a text (or any logged admin action) showed a `DEBUGGING` dump instead of the page.** `lunaLog::log()` called `lunaTools::debug()` — which prints globals / included-files / DB-queries and `die()`s — on *every* log call whenever `DEBUG` is on and the user is an admin. Saving a text logs an INFO message ("…has been modified."), so the response terminated with the debug screen instead of returning to the editor. Removed that auto-dump; `log()` now just writes the row to `luna_logs`. Logs are inspected on the admin **journal** page, uncaught errors keep their own error page, and an explicit `lunaTools::debug()` call is still there for ad-hoc dev use. Saving now returns to the normal HTML editor with its success message, and the action is still logged.
 

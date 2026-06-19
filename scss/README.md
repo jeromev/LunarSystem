@@ -27,6 +27,10 @@ regenerated `css/luna.css`.
 | `_clearfix.scss` | float clearfix |
 | `_tinymce.scss`  | legacy editor styles |
 | `_treeview.scss` | jQuery TreeView nav (TVlists) |
+| `_bg.scss`       | baseline-grid config — `@forward`s the vendored toolkit |
+| `vendor/baselinegrid.scss` | [baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) (vendored, MIT) — the baseline-grid engine |
 
 The palette is CSS custom properties (runtime-themeable), not Sass `$` variables,
 so themes can override them without recompiling.
+
+The baseline grid is vendored under `vendor/` and loaded via `--load-path=scss/vendor` (already in the `Makefile`) so `--quiet-deps` can silence its compile-time deprecation notices while still surfacing luna's own.

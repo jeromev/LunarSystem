@@ -20,11 +20,11 @@ So the same model that drives the HTML page can be emitted verbatim as RDF/XML,
 JSON or N-Triples by appending `?output=xml|json|n3` to any URL. The CMS is, in
 effect, a semantic-web front end over a generic graph stored in MySQL.
 
-> **Where this is heading.** An active experiment on the `experiment/semantic-web`
-> branch turns this RDF-flavoured CMS into an RDF-native one — a JSON-LD
-> projection and a real SPARQL read path backed by Ontop and then Oxigraph. See
-> [linked-data.md](linked-data.md). The sections below describe the archival
-> baseline on `main`.
+> **Where this is heading.** The project now extends this RDF-flavoured CMS
+> toward an RDF-native one — a JSON-LD projection and a real SPARQL read path
+> backed by Ontop and then Oxigraph. See [linked-data.md](linked-data.md). The
+> sections below describe the archival baseline (preserved on the `legacy`
+> branch); the semantic-web layer is built on top of it.
 
 ## The core ideas
 
@@ -68,12 +68,11 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
 
 ## What it is *not*
 
-- The archival CMS is **not** a triplestore database. RDF lives only in memory
-  during a request; persistence is plain relational MySQL. *(The
-  `experiment/semantic-web` branch adds an Oxigraph triplestore — see
-  [linked-data.md](linked-data.md).)*
-- The archival CMS does **not** use a SPARQL engine. Graph queries are
-  hand-written SQL joins. *(On the experiment branch the read path runs through
-  SPARQL via Ontop/Oxigraph under `?sparql=1` — see [linked-data.md](linked-data.md).)*
+- The original CMS is **not** a triplestore database. RDF lives only in memory
+  during a request; persistence is plain relational MySQL. *(The semantic-web
+  layer adds an Oxigraph triplestore — see [linked-data.md](linked-data.md).)*
+- The original CMS does **not** use a SPARQL engine. Graph queries are
+  hand-written SQL joins. *(The read path now also runs through SPARQL via
+  Ontop/Oxigraph under `?sparql=1` — see [linked-data.md](linked-data.md).)*
 - It is **not** compatible with PHP 7+. See [security.md](security.md) and
   [installation.md](installation.md).

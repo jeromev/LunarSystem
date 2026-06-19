@@ -31,7 +31,7 @@ services:
       - ./luna/luna.sql/luna.mysql.sql:/docker-entrypoint-initdb.d/luna.mysql.sql
       - db_data:/var/lib/mysql
 
-  # Phase A (experiment/semantic-web): a real SPARQL endpoint over the existing
+  # Semantic-web layer (Phase A): a real SPARQL endpoint over the existing
   # MySQL via Ontop + an R2RML mapping. See docs/linked-data.md.
   ontop:
     build:
@@ -49,7 +49,7 @@ services:
     depends_on:
       - db
 
-  # Phase B (experiment/semantic-web): a real triplestore. Loaded by materialising
+  # Semantic-web layer (Phase B): a real triplestore. Loaded by materialising
   # the SAME R2RML mapping (semantic/ontop/dump.nt). Flip the app's SPARQL_ENDPOINT
   # here and the read path is served by the triplestore instead of MySQL — no app change.
   oxigraph:

@@ -2,7 +2,7 @@
 
 A PHP/MySQL CMS (v0.3.0-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
-> **Active experiment — Semantic Web CMS.** On the `experiment/semantic-web` branch (not merged to `main`) the archival CMS is being turned into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and a SPARQL read path served first by **Ontop** (a virtual SPARQL endpoint over the unchanged MySQL) and then by **Oxigraph** (a materialised triplestore) with no app code change. The archival release stays `0.2.14-alpha` on `main`. See **[docs/linked-data.md](docs/linked-data.md)** for the full design and phase-by-phase status.
+> **Now a Semantic Web CMS (in progress).** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and a SPARQL read path served first by **Ontop** (a virtual SPARQL endpoint over the unchanged MySQL) and then by **Oxigraph** (a materialised triplestore) with no app code change. This is the active direction on `main`; the SPARQL read path is still opt-in (`?sparql=1`) and maturing. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and phase-by-phase status.
 
 ## Quick start (Docker)
 
@@ -12,7 +12,7 @@ docker-compose up --build -d
 
 Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 
-> On the `experiment/semantic-web` branch the stack also starts a **SPARQL endpoint** (Ontop on host port `8081`) and a **triplestore** (Oxigraph on host port `7879`). The app's read path can be routed through SPARQL with `?sparql=1`; see [docs/linked-data.md](docs/linked-data.md).
+> The Docker stack also starts a **SPARQL endpoint** (Ontop on host port `8081`) and a **triplestore** (Oxigraph on host port `7879`). The app's read path can be routed through SPARQL with `?sparql=1`; see [docs/linked-data.md](docs/linked-data.md).
 
 Log in as **`admin@lunarsystem.local`** with password **`luna`**.
 
@@ -39,7 +39,7 @@ To add a site-specific config: create `luna/luna.domains/<hostname>/ini/luna.ini
 
 ## Output formats
 
-Append `?output=xml`, `?output=json`, `?output=n3`, or `?output=jsonld` to any page URL to receive the raw RDF model instead of HTML. (On the experiment branch a JSON-LD block is also embedded in every HTML page's `<head>`; see [docs/linked-data.md](docs/linked-data.md).)
+Append `?output=xml`, `?output=json`, `?output=n3`, or `?output=jsonld` to any page URL to receive the raw RDF model instead of HTML. (A JSON-LD block is also embedded in every HTML page's `<head>`; see [docs/linked-data.md](docs/linked-data.md).)
 
 ## Project structure
 
@@ -64,8 +64,8 @@ luna/
   luna.locale/                 gettext translations (en_EN, en_US, fr_FR)
 css/                           Stylesheets
 js/                            jQuery + CKEditor (rich-text editing)
-semantic/                      Semantic-web experiment (experiment/semantic-web branch)
-  ontop/                       R2RML mapping + Ontop image (virtual SPARQL over MySQL); Oxigraph dump
+semantic/                      Semantic-web layer (SPARQL over the unchanged MySQL)
+  ontop/                       R2RML mapping + Ontop image (virtual SPARQL); Oxigraph dump
 ```
 
 ## Known issues
@@ -93,7 +93,7 @@ Full technical documentation lives in [docs/](docs/):
 - [Configuration](docs/configuration.md) — domains, `luna.ini`, `db.ini`
 - [Installation](docs/installation.md) — Docker and manual setup
 - [Security](docs/security.md) — known issues and hardening
-- [Linked Data](docs/linked-data.md) — the Semantic Web experiment (URI policy, vocabularies, JSON-LD, SPARQL via Ontop & Oxigraph)
+- [Linked Data](docs/linked-data.md) — the Semantic Web layer (URI policy, vocabularies, JSON-LD, SPARQL via Ontop & Oxigraph)
 
 ## Changelog
 

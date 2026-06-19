@@ -111,7 +111,7 @@ with **ARC2** (RDF/XML, RDF/JSON, or N-Triples) and exits with the appropriate
 content type. This is the same model the HTML view consumes — so any page is also
 a machine-readable RDF endpoint. See [rdf-model.md](rdf-model.md).
 
-> **Linked Data (experiment/semantic-web, Phase 0):** a fifth format `?output=jsonld`
+> **Linked Data (Phase 0):** a fifth format `?output=jsonld`
 > is registered in `luna::$output_formats` and serialised by
 > `lunaModel::to_jsonld()` (a schema.org JSON-LD projection), *not* by ARC2. The
 > same JSON-LD is also embedded in every HTML page: after the XSLT transform,

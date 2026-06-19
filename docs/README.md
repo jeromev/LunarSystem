@@ -7,10 +7,10 @@ renders pages through **XSLT transformations**.
 This `docs/` folder is the canonical technical reference. The top-level
 [README.md](../README.md) is the quick-start; everything deeper lives here.
 
-> **Active experiment.** On the `experiment/semantic-web` branch this CMS is being
-> turned into a real Semantic Web system — a JSON-LD projection, a SPARQL read
-> path, and a swap from a virtual (Ontop) to a materialised (Oxigraph) endpoint.
-> See [linked-data.md](linked-data.md). The archival CMS on `main` is unchanged.
+> **Semantic Web layer.** This CMS has been extended into a real Semantic Web
+> system — a JSON-LD projection, a SPARQL read path, and a swap from a virtual
+> (Ontop) to a materialised (Oxigraph) endpoint. See [linked-data.md](linked-data.md).
+> The untouched archival CMS is preserved on the `legacy` branch (`v0.2.14-alpha`).
 
 ## Contents
 
@@ -25,7 +25,7 @@ This `docs/` folder is the canonical technical reference. The top-level
 | [configuration.md](configuration.md) | Domains, `luna.ini`, `db.ini`, and constants |
 | [installation.md](installation.md) | Docker and manual setup, requirements |
 | [security.md](security.md) | Known issues and hardening notes |
-| [linked-data.md](linked-data.md) | The active semantic-web experiment: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
+| [linked-data.md](linked-data.md) | The semantic-web layer: URI policy, vocabulary mapping, JSON-LD, and the SPARQL read path (Ontop → Oxigraph) |
 
 ## Reading order
 
@@ -36,9 +36,12 @@ If you are new to the codebase, read in this order:
 3. **[rdf-model.md](rdf-model.md)** + **[database-schema.md](database-schema.md)** — how data is stored and shaped.
 4. **[modules.md](modules.md)** + **[templating.md](templating.md)** — how a page is assembled and rendered.
 5. **[configuration.md](configuration.md)** + **[installation.md](installation.md)** — how to run it.
-6. **[linked-data.md](linked-data.md)** — the active semantic-web experiment layered on top.
+6. **[linked-data.md](linked-data.md)** — the semantic-web layer built on top.
 
 ## Status
 
-This is a historical / archival codebase. It runs only on **PHP 5.3–5.6** and is
-not maintained. See [security.md](security.md) before exposing it publicly.
+This started as a historical / archival codebase (the original, preserved on the
+`legacy` branch as `v0.2.14-alpha`) and is now being extended into a Semantic Web
+CMS on `main` (`0.3.0-alpha`) — see [linked-data.md](linked-data.md). It still
+runs only on **PHP 5.3–5.6**; see [security.md](security.md) before exposing it
+publicly.

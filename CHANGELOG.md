@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.3.6-alpha] - 2026-06-19
+- Docs: added **[docs/why-rdf.md](docs/why-rdf.md)** — a plain-English "so what?" doc explaining what the RDF-native app can do that a vanilla PHP/MySQL app can't (ad-hoc SPARQL across all content types, graph traversal, the app's own routing/ACL answered by SPARQL; schema.org JSON-LD + standards-based interop; storage as a swappable component), each capability tagged **live** / **one step away** / **roadmap** and grounded in queries run against the live stack. Wired into the docs index and READMEs. The doc's claims were adversarially fact-checked against the running Oxigraph/Ontop stack (zero inaccuracies found). No code change.
+
 ## [0.3.5-alpha] - 2026-06-19
 - Docs: full accuracy audit of every doc/readme against the current RDF-native code (multi-agent pass, each finding adversarially verified). No code change.
   - Fixed ~20 stale `luna.php`/`*.class.php` line-number anchors across `architecture.md`, `templating.md`, `configuration.md`, `modules.md`, and `security.md` that had drifted after the 0.3.3/0.3.4 code (the model gained ~280 lines, `luna.php` ~20). Constructor 199, `set_requested_path` 316, `set_site_path` 327, `load_mods` 394, `transform` 518, `load_ini` 641, the OPTIMIZE/dispatch/JSON-LD-head anchors, etc.

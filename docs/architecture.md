@@ -124,7 +124,7 @@ in [modules.md](modules.md).
 > ([luna.php:580](../luna/luna.php#L580)), if `AJAX` is true the request `die()`s
 > — XSLT is skipped and only the model-population side effects of `load_mods()`
 > persist. `load_mods()` itself only special-cases AJAX to skip the post-submit
-> `OPTIMIZE TABLE` ([luna.php:489](../luna/luna.php#L489)).
+> `OPTIMIZE TABLE` ([luna.php:490](../luna/luna.php#L490)).
 
 ## Phase 3 — Transform
 

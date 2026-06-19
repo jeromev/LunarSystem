@@ -233,7 +233,6 @@ class lunaTools {
 	 * @return void
 	 */
 	public static function insert_alphabet_nav($letters, $theletter = 'A', $tagname = 'alphabeticlist') {
-		// TODO: integrate with RAP RDF API
 		if (is_object($xml) && is_array($letters) && is_string($theletter) && is_string($tagname)) {
 			$parentnode = $xml->appendChild($xml->getItem($xml->query('/node')), $xml->createElement($tagname));
 			foreach ($letters as $letter) { 
@@ -504,7 +503,7 @@ class lunaTools {
 			$res->free();
 			// parse langs
 			$langs = explode(',', str_replace(' ', '', $config['langs'])); 
-			foreach($langs as $v) { $config['site_langs'][] = self::format_language($v); } //lunaTools::debug($config['site_langs']);
+			foreach($langs as $v) { $config['site_langs'][] = self::format_language($v); }
 			// unset($config['langs']);
 			if (luna::$cache) { $cache_obj->save(serialize($config)); }
 			return $config;
@@ -543,7 +542,7 @@ class lunaTools {
 		$lang = false;
 		$lang_requested = self::format_language(self::request('lang')); 
 		$site_langs = luna::get_ini('config', 'site_langs'); 
-		luna::$session->user->session_lang = self::format_language(luna::$session->user->session_lang); //lunaTools::debug($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		luna::$session->user->session_lang = self::format_language(luna::$session->user->session_lang);
 		$httplangs = array();
 		if (empty($lang_requested) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 			$http_accept_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']); 

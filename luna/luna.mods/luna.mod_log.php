@@ -217,7 +217,6 @@ class mod_log {
 		');
 		   
 		luna::$session->user = lunaSession::get_user_data(luna::$session->user->session_id);
-		//lunaTools::debug(luna::$session->user);
 		return true;
 	}
 	// }}}

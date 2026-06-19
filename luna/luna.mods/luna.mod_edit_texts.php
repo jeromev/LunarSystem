@@ -102,7 +102,6 @@ class mod_edit_texts {
 		if (!isset($_POST['add_text_lang']) || empty($_POST['add_text_lang']) || !in_array($_POST['add_text_lang'], $langs)) { $_POST['add_text_lang'] = isset($langs[0])? $langs[0] : 'en'; }
 		if (!isset($_POST['add_text_pages'])) { $_POST['add_text_pages'] = array(); }
 		if (!isset($_POST['add_text_title']) || empty($_POST['add_text_title'])) { $_POST['add_text_title'] = ''; }
-		// lunaTools::debug($_POST);
 		// check if identifier is already used
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['add_text_lid'])) { return false; }
 		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) { 

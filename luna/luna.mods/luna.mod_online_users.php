@@ -138,9 +138,7 @@ class mod_online_users {
 			$users[$row->nid]['session_ip'] = lunaTools::decode_ip($row->session_ip);
 		}
 		$res->free();
-		// lunaTools::debug($users);
 		luna::$model->merge_index(luna::$model->load_user($users)); 
-		// lunaTools::debug($nodes);
 		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], __CLASS__));
 		return true;
 	}

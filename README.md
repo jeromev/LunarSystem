@@ -1,6 +1,13 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.3.6-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.4.0-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+
+> ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
+> 2006–2010 code revived for learning, with known, unfixed issues (unsalted MD5
+> passwords, no CSRF on admin actions, and an **unauthenticated SPARQL write endpoint**).
+> The Docker stack binds every port to `127.0.0.1`; **do not change that or otherwise
+> expose `8080` / `7879` / `8081` / `3307` to a public or untrusted network.** It is not
+> hardened for any networked or production deployment. See [docs/security.md](docs/security.md).
 
 > **Now an RDF-native Semantic Web CMS.** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and — as of 0.3.3-alpha — a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
 
@@ -14,7 +21,7 @@ Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 
 > The Docker stack also starts a **triplestore** (Oxigraph on host port `7879`) and a virtual **SPARQL endpoint** (Ontop on host port `8081`). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
 
-Log in as **`admin@lunarsystem.local`** with password **`luna`**.
+Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are demo credentials shipped in the seed data — change them before exposing the app anywhere.)
 
 > MySQL is exposed on host port `3307` to avoid conflicts with a local MySQL on `3306`.
 
@@ -59,11 +66,10 @@ luna/
   luna.lib/                    Vendored libraries: PEAR MDB2, PEAR Log, Cache_Lite, ARC2
   luna.domains/
     luna.default/              Fallback site configuration (used for local/Docker)
-    lunarsystem.org/           Original production configuration
   luna.sql/luna.mysql.sql      Database schema + seed data
   luna.locale/                 gettext translations (en_EN, en_US, fr_FR)
 css/                           Stylesheets
-js/                            jQuery + CKEditor (rich-text editing)
+js/                            jQuery + luna.js (admin UI behaviours)
 semantic/                      Semantic-web layer (SPARQL over the unchanged MySQL)
   ontop/                       R2RML mapping + Ontop image (virtual SPARQL); Oxigraph dump
 ```
@@ -74,7 +80,6 @@ semantic/                      Semantic-web layer (SPARQL over the unchanged MyS
 |---|---|---|
 | **PHP 5.3–5.6 only** | Hard limit | `mysql_*` removed in PHP 7; PEAR MDB2 does not support PDO |
 | **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
-| **DB credentials on disk** | Security | `luna/luna.domains/lunarsystem.org/ini/db.ini` holds real credentials in the working tree. It's **gitignored and was never committed** — rotate the credentials; there's nothing to untrack |
 | **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs; no `session_regenerate_id()` on login (fixation) |
 | **No CSRF on admin actions** | Security | Admin forms still carry no anti-forgery token (the `mod_journal` SQLi, reflected XSS, login throttling, cookie object-injection and `$_SERVER` log leak were hardened in 0.2.14 — see [docs/security.md](docs/security.md)) |
 

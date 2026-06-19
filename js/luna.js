@@ -16,5 +16,5 @@ $(function(){
 		function(){ $(this).parent("li").removeClass("tvic").addClass("tvie").removeClass("tvilc").addClass("tvile").find(">ul").slideUp("normal"); },
 		function(){ $(this).parent("li").removeClass("tvic").addClass("tvie").removeClass("tvilc").addClass("tvile").find(">ul").slideDown("normal"); }
 	);
-	if (ckeditorconfig) { $('textarea.wysiwyg').ckeditor(ckeditorconfig); }
+	// (WYSIWYG editor removed in the minimal build — content textareas are plain)
 });

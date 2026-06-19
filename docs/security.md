@@ -19,7 +19,6 @@ public internet without significant hardening.
 |---|---|---|---|
 | **Unsalted MD5 passwords** | High | `luna_users.password` is a bare `md5()` hash. Trivially crackable; vulnerable to rainbow tables. | Do not reuse real passwords. Don't expose the site publicly. |
 | **Session ID in URL** | High | `session.use_trans_sid = 1` ([luna.php:33](../luna/luna.php#L33)) propagates the session ID through URLs, which leak via referrers, logs, and shared links — enabling session fixation/hijacking. | Disable trans_sid; require cookies. |
-| **Real DB credentials in the working tree** | High | `luna/luna.domains/lunarsystem.org/ini/db.ini` still contains real-looking production credentials **on disk**. It is **gitignored and was never committed** (`git log --all --full-history -- '*db.ini'` is empty), so the repository is not leaking it — but anyone with a working copy has the password. | Rotate the credentials regardless (they may have been exposed before this archival re-init). No `git rm --cached` is needed — `db.ini` was never tracked; `.gitignore` already covers `luna/luna.domains/*/ini/db.ini`. |
 | **Weak default admin** | Medium | Seed admin is `admin@lunarsystem.local` / `luna`. | Change immediately after install. |
 | **Old sanitisation stack** | Medium | Input cleaning leans on PEAR HTML_Safe and hand-rolled filters of its era. SQL is escaped via MDB2 `quote()`, but coverage should not be assumed complete against modern XSS/SQLi techniques. | Audit before any untrusted exposure. |
 | **`register_globals`-era assumptions** | Low | Code predates modern superglobal handling; it explicitly disables `register_globals` and guards `magic_quotes`, but the design assumptions are dated. | — |
@@ -45,7 +44,7 @@ against the running Docker stack.
 | **No login throttling** | Medium | ✅ fixed | `login()` now reads `login_attempts` and applies a capped per-account back-off (`sleep(min(attempts, 5))`); a correct password still resets the counter, so accounts are never permanently locked. | [luna.mod_log.php](../luna/luna.mods/luna.mod_log.php) |
 | **PHP object injection via `unserialize()`** | Medium | ✅ fixed | Sort cookies now use `json_encode`/`json_decode` (cannot instantiate objects); the `load_request()` path guards `unserialize()` against `O:`/`C:` object payloads. | [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php); [luna.model.class.php](../luna/luna.classes/luna.model.class.php) |
 | **Reflected XSS in the error page** | Medium | ✅ fixed | `raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the HTML response. | [luna.tools.class.php:295](../luna/luna.classes/luna.tools.class.php#L295) |
-| **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the era-2009 HTML_Safe filter applied on save. | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`, and the lunarsystem.org theme) |
+| **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the era-2009 HTML_Safe filter applied on save. | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`) |
 | **`purgelogs` wipes the audit log via GET** | Medium | ✅ fixed | The `DELETE FROM luna_logs` now requires `$_POST['purgelogs']`, so a forged link/`<img>` (GET) can no longer trigger it. | [luna.mod_journal.php:81](../luna/luna.mods/luna.mod_journal.php#L81) |
 | **Sensitive data written to `luna_logs`** | Low | ✅ fixed | `lunaLog::log()` now stores only a small `$_SERVER` whitelist (remote addr, method, URI, host, UA, referer) instead of the whole array (which carried the cookie header / session id). | [luna.log.class.php](../luna/luna.classes/luna.log.class.php) |
 | **Weak/bypassable session hijack guard** | Low | ◐ partial | `encode_ip()` no longer trusts `X-Forwarded-For` (it uses `REMOTE_ADDR`), closing the IP-spoof bypass. The guard is still bound to the client-controlled User-Agent, and still breaks users behind rotating IPs. | [luna.session.class.php:322](../luna/luna.classes/luna.session.class.php#L322); [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php) |
@@ -65,7 +64,11 @@ hardened.
   no authentication. Oxigraph's `/update` accepts arbitrary graph mutations, so it
   must stay on the internal Docker network and never be exposed publicly — the same
   posture as the MySQL port. Ontop (virtual SPARQL) is read-only but equally must
-  not be public.
+  not be public. **Mitigation in place:** `docker-compose.yml` publishes every host
+  port on `127.0.0.1` only (loopback) — app `8080`, Oxigraph `7879`, Ontop `8081`,
+  MySQL `3307` — so a default `docker-compose up` is unreachable from other machines.
+  Keep it that way: do not change the host bindings to `0.0.0.0`, and never put
+  Oxigraph's `/update` behind a public proxy.
 - **Hand-rolled SPARQL string assembly.** The write-through (`rdf_sync_node` /
   `rdf_delete_node`) builds updates by interpolation, escaping string literals via
   `sparql_literal()` and IRIs via `rdf_uri()` (rawurlencode'd lid); the read
@@ -95,8 +98,7 @@ This is strongly discouraged, but if a live instance is unavoidable:
 3. Disable `session.use_trans_sid` and force cookie-based sessions.
 4. Change the admin password and rotate all DB credentials.
 5. Restrict the MySQL user to the minimum required grants.
-6. Keep `DEBUG = 0` in production `luna.ini` (it is already `0` for
-   `lunarsystem.org`) so errors aren't displayed.
+6. Keep `DEBUG = 0` in any production `luna.ini` so errors aren't displayed.
 7. Firewall the database; never expose port 3306/3307 publicly.
 
 ## Scope of this assessment

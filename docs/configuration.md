@@ -34,12 +34,11 @@ luna.domains/<domain>/
   mods/               # per-domain mods (optional)
 ```
 
-Two domains ship in the repo:
+One domain ships in the repo:
 
 | Domain | Role |
 |---|---|
 | `luna.default/` | Fallback config, wired for local/Docker development |
-| `lunarsystem.org/` | The original production config (ships a full `xsl/` theme override) |
 
 ## `luna.ini`
 
@@ -79,14 +78,6 @@ The `[DBtables]` indirection is why the code never hard-codes table names — it
 calls `luna::get_ini('DBtables', 'NODES')` etc. You could repoint the CMS at
 differently-named tables without touching code.
 
-### Default vs production constants
-
-| Constant | `luna.default` | `lunarsystem.org` | Effect |
-|---|---|---|---|
-| `CACHE` | `0` | `1` | Output caching (off for dev, on for prod) |
-| `DEBUG` | `1` | `0` | Error display + log dumps to admins |
-| `CLEAN_URLS` | `1` | `1` | Clean URLs (both) |
-
 ## `db.ini`
 
 Read by `lunaDB::prepare()` ([luna.db.class.php](../luna/luna.classes/luna.db.class.php))
@@ -102,12 +93,6 @@ database = "database"
 
 The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 (`host = db`, user/pass/db = `luna`/`luna`/`lunadb`).
-
-> ⚠️ `lunarsystem.org/ini/db.ini` contains **real-looking production
-> credentials** in the working tree. It is **gitignored and was never committed**
-> (`.gitignore` covers `luna/luna.domains/*/ini/db.ini`), so the repo is not
-> leaking it — but rotate the credentials anyway; there is nothing to untrack.
-> See [security.md](security.md).
 
 ## `SPARQL_ENDPOINT` (semantic-web layer, optional)
 

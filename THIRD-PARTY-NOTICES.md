@@ -26,6 +26,11 @@ The **jQuery TreeView** navigation icons under `images/treeView/` (© 2006 Myles
 Angell, <http://be.twixt.us/jquery/>) are still bundled third-party assets; no
 explicit license was stated by the author.
 
+**Build-time (SCSS):** `scss/vendor/_baselinegrid.scss` is the
+[baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) toolkit (v3.0.1,
+MIT © Jérôme Vogel), vendored to compile the baseline-grid typography into
+`css/luna.css`. Build-time only — not shipped to the browser.
+
 ## Inlined third-party functions
 
 A few small utility functions were copied — with attribution in their

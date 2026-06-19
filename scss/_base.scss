@@ -1,12 +1,19 @@
+@use 'bg' as bg;
+
 /* ////////////////////////////////////////////////////////////////////  TAGS */
+@include bg.begin();
 html, body {
 	margin: 0;
 	padding: 0;
 	background: var(--bg);
 	color: var(--ink);
 }
+html {
+	@include bg.root(); /* responsive base font + the baseline unit (--base-unit) */
+	font-family: Verdana, sans-serif;
+}
 body { padding: 0 0.6875rem 0.6875rem; }
-html, body, input, textarea, button, select, optgroup, table { font: var(--font); }
+body, input, textarea, button, select, optgroup, table { font: inherit; }
 
 table.zebra {
 	border: none;
@@ -232,6 +239,7 @@ small {
 }
 img { border: none; }
 p {
+	@include bg.set(); /* align body text to the baseline grid */
 	margin: 0.34375rem 0;
 	padding: 0;
 	clear: both;

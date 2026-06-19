@@ -42,15 +42,14 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
   `/docker-entrypoint-initdb.d/`. Database `lunadb`, user/pass `luna`/`luna`.
   Published on host port **3307** (to avoid clashing with a local MySQL on 3306).
 
-> **Semantic-web experiment (optional).** On the `experiment/semantic-web`
-> branch, `docker-compose.yml` adds two more services — **ontop** (a virtual
-> SPARQL endpoint over the unchanged MySQL, host port **8081**) and **oxigraph**
-> (a triplestore, host port **7879**) — and the app gains a `SPARQL_ENDPOINT`
-> env var. They are **not needed** for a normal archival install: `docker-compose
-> up -d` will start them, but the CMS runs entirely on **app + db**. To run only
-> the archival stack, use `docker-compose up -d app db`. See
-> [linked-data.md](linked-data.md) for what the extra services do and how to use
-> them.
+> **Semantic-web services (optional).** Beyond the CMS itself, `docker-compose.yml`
+> defines two more services — **ontop** (a virtual SPARQL endpoint over the
+> unchanged MySQL, host port **8081**) and **oxigraph** (a triplestore, host port
+> **7879**) — and the app gains a `SPARQL_ENDPOINT` env var. They are **not needed**
+> to run the CMS itself: `docker-compose up -d` will start them, but the site runs
+> entirely on **app + db**. To run only the core stack, use `docker-compose up -d
+> app db`. See [linked-data.md](linked-data.md) for what the extra services do and
+> how to use them.
 
 The default domain's `luna.default/ini/db.ini` already points at the Docker
 `db` host, so no config editing is required.

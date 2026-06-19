@@ -145,8 +145,7 @@ view data and renders:
 The returned string is the HTTP response. See [templating.md](templating.md) for
 the stylesheet lookup order and the RDF/XML the templates expect.
 
-> **Semantic-web extension (experiment branch):** on this branch the model
-> additionally exposes a JSON-LD projection — `?output=jsonld` routes through
+> **Semantic-web layer:** the model additionally exposes a JSON-LD projection — `?output=jsonld` routes through
 > `lunaModel::to_jsonld()`, and the HTML `<head>` carries an embedded
 > `<script type="application/ld+json">` block. The read path can also flow
 > through a SPARQL endpoint under `?sparql=1` (routing, level-based ACL, and

@@ -1,11 +1,11 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: experiment.** This document and the code under it live on the
-> `experiment/semantic-web` branch (experiment line `0.3.0-alpha`). The archival
-> CMS release is `0.2.14-alpha` on `main`; nothing here changes that. The plan
-> below runs Phase 0 → A → B, and **all three are implemented on this branch**
-> (Phase 0 JSON-LD, Phase A virtual SPARQL + read-through-SPARQL, Phase B
-> triplestore swap).
+> **Status: the active direction (`main`, `0.3.0-alpha`).** The semantic-web work
+> described here is now the `main` line; the untouched archival CMS (`0.2.14-alpha`)
+> is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B, and
+> **all three are implemented** (Phase 0 JSON-LD, Phase A virtual SPARQL +
+> read-through-SPARQL, Phase B triplestore swap). The SPARQL read path is
+> currently opt-in (`?sparql=1`) and still maturing.
 
 ## The problem we're fixing
 

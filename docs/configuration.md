@@ -109,9 +109,9 @@ The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 > leaking it — but rotate the credentials anyway; there is nothing to untrack.
 > See [security.md](security.md).
 
-## `SPARQL_ENDPOINT` (semantic-web experiment, optional)
+## `SPARQL_ENDPOINT` (semantic-web layer, optional)
 
-On the `experiment/semantic-web` branch the app reads one extra setting — the
+The app reads one extra setting — the
 `SPARQL_ENDPOINT` environment variable — which selects the SPARQL endpoint used
 by the read-through-SPARQL path (`?sparql=1`). It is defined as a constant in
 [luna.php](../luna/luna.php) (`getenv('SPARQL_ENDPOINT')` falling back to

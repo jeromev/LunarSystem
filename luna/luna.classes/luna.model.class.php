@@ -134,7 +134,6 @@ class lunaModel {
 			if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); } 
 			if (luna::$cache) { $cache_obj->save(serialize(array('index' => $this->index, 'aliases' => $this->aliases))); }
 		}
-		// lunaTools::debug($this->index);
 		return true;
 	}
 	// }}}
@@ -715,7 +714,7 @@ class lunaModel {
 	 * @param boolean $is_current
 	 * @return mixed
 	 */
-	public function load_user($user = false, $is_current = false) { //lunaTools::debug($user);
+	public function load_user($user = false, $is_current = false) {
 		if (empty($user)) { return false; }
 		$nodes = array();
 		if (is_array($user) && !isset($user['nid'])) { 
@@ -893,7 +892,6 @@ class lunaModel {
 				$res->free(); 
 				$letters = array_unique($letters); 
 				sort($letters); 
-				// lunaTools::debug($letters);
 				if ($l = lunaTools::request('letter')) { $this->letter = substr($l, 0, 1); } else if (!empty($letters)) { $this->letter = $letters[0]; }
 				if (!in_array($this->letter, $letters)) { $this->letter = isset($letters[0])? $letters[0] : '' ; }
 				luna::$model->insert_alphabet_nav($letters, $this->letter);
@@ -928,7 +926,7 @@ class lunaModel {
 							AND '.$order_by_ok.' LIKE '.lunaDB::quote($this->letter.'%').'
 						ORDER BY
 							'.$order_by_ok.' '.$order_dir.'
-					'); //lunaTools::debug($res);
+					');
 					break;
 				*/
 				case 'nid':
@@ -1067,7 +1065,6 @@ class lunaModel {
 			$users[$row->nid]['is_current'] = ($row->nid == luna::$session->user->nid)? 1 : 0;
 		}
 		$res->free();
-		// lunaTools::debug($users);
 		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_user($users)); 
 		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], luna::$data['lid']));
 		return $nodes;
@@ -1084,7 +1081,7 @@ class lunaModel {
 		$nodes = array();
 		if (is_array($item) && !isset($item['nid'])) { 
 			foreach($item as $k => $v) { $nodes = $this->merge_nodes($nodes, $this->load_text($v)); }
-		} else { //lunaTools::debug($item);
+		} else {
 			if (is_object($item)) { $item = get_object_vars($item); }
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].'text';
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
@@ -1100,7 +1097,7 @@ class lunaModel {
 				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['type'] = 'literal';
 				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['lang'] = lunaTools::format_language($item['lang']);
 			}
-			if (isset($item['user']) && is_array($item['user'])) { //lunaTools::debug($item['user']);
+			if (isset($item['user']) && is_array($item['user'])) {
 				$nodes[$this->node_path.'/'.$item['user']['nid']][$this->conf['ns']['luna'].'nid'][0]['value'] = $item['user']['nid'];
 				$nodes[$this->node_path.'/'.$item['user']['nid']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['foaf'].'Person';
 				$nodes[$this->node_path.'/'.$item['user']['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
@@ -1143,7 +1140,6 @@ class lunaModel {
 		$nodes = array();
 		$item_nid = intval($item_nid);
 		$page_nid = intval($page_nid);
-		// lunaTools::debug($item_nid);
 		if (!empty($item_nid)) {
 			$res = lunaDB::query('
 				SELECT DISTINCT
@@ -1278,7 +1274,6 @@ class lunaModel {
 				$res->free(); 
 				$letters = array_unique($letters); 
 				sort($letters); 
-				// lunaTools::debug($letters);
 				if ($l = lunaTools::request('letter')) { $this->letter = substr($l, 0, 1); } else if (!empty($letters)) { $this->letter = $letters[0]; }
 				if (!in_array($this->letter, $letters)) { $this->letter = isset($letters[0])? $letters[0] : ''; }
 				lunaTools::insert_alphabet_nav(lunaTools::RDF, $letters, $this->letter);
@@ -1340,7 +1335,7 @@ class lunaModel {
 			}
 			$row = $res->fetchRow();
 			$res->free();
-			$total = empty($row)? 0 : $row->total; //lunaTools::debug($row);
+			$total = empty($row)? 0 : $row->total;
 			switch(luna::$data['order_by']) {
 				case 'lid':
 				case 'title':
@@ -1433,7 +1428,6 @@ class lunaModel {
 			if (isset($row->lang)) { $texts[$row->nid]['lang'] = $row->lang; }
 		}
 		$res->free();
-		// lunaTools::debug($texts);
 		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_text($texts)); 
 		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], luna::$data['lid']));
 		return $nodes;
@@ -1481,14 +1475,14 @@ class lunaModel {
 	 * @param string $label
 	 * @return boolean
 	 */
-	public function load_request($data = false, $label = false) { //lunaTools::debug($data);
+	public function load_request($data = false, $label = false) {
 		if (empty($label)) { return false; }
 		$nodes = array();
 		if (is_array($data)) { 
 			foreach($data as $k => $v) { 
-				if (is_array($v)) { //lunaTools::debug($v);
+				if (is_array($v)) {
 					$klabel = ($label == 'request')? "$k" : $label.'.'."$k"; 
-					$nodes = $this->merge_nodes($nodes, $this->load_request($v, $klabel)); // lunaTools::debug($nodes);
+					$nodes = $this->merge_nodes($nodes, $this->load_request($v, $klabel));
 				} else { 
 					if (empty($k)) { $k = "0"; }
 					if ($k != 'PHPSESSID') { 
@@ -1659,7 +1653,6 @@ class lunaModel {
 			}
 			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$var['type'];
 			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
-			// lunaTools::debug($nodes);
 			return $nodes;
 		}
 	}
@@ -1672,7 +1665,7 @@ class lunaModel {
 	 * @param mixed $type2
 	 * @return array
 	 */
-	public function load_node($node = false, $type1 = false, $type2 = false) { //lunaTools::debug($node);
+	public function load_node($node = false, $type1 = false, $type2 = false) {
 		if (empty($node)) { return false; }
 		if (is_object($node)) { $node = get_object_vars($node); } 
 		if (!isset($node['nid']) || empty($node['nid'])) { return false; }
@@ -2109,7 +2102,7 @@ class lunaModel {
 	 * @param integer $nid
 	 * @return array
 	 */
-	public function calculate_aliases($nodes = false, $nid = false) { //lunaTools::debug(func_get_args());
+	public function calculate_aliases($nodes = false, $nid = false) {
 		if (empty($nodes) || !is_array($nodes)) { return false; }
 		// if no nid is given
 		if ($nid < 1) { 

@@ -61,27 +61,6 @@ class lunaDB {
 		return (self::$queries);
 	}
 	// }}}
-	// {{{ dump_schema()
-	/**
-	 * dump database schema using pear MBD2 lib
-	 * @access	public
-	 * @return	boolean
-	 */
-	public static function dump_schema() {
-		if (!defined('DSN')) { return false; }
-		require_once 'MDB2/Schema.php';
-		$schema =& MDB2_Schema::singleton(DSN); 
-		if (PEAR::isError($db)) { throw new lunaException($db->getUserInfo(), PEAR_LOG_CRIT); }
-		if (!$definition = $schema->getDefinitionFromDatabase()) { return false; }
-		// lunaTools::debug($definition);
-		$dump_config = array(
-			'output_mode' => 'file',
-			'output' => RDF_PATH.'luna.schema.xml'
-		);
-		if (!$operation = $schema->dumpDatabase($definition, $dump_config, MDB2_SCHEMA_DUMP_STRUCTURE)) { return false; }
-		return true;
-	}
-	// }}}
 	// {{{ query()
 	/**
 	 * @param string sql

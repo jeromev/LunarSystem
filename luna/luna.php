@@ -214,7 +214,7 @@ class luna {
 			if (!require_once 'luna.classes/luna.session.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.session.class', PEAR_LOG_CRIT); } 
 			if (!require_once 'luna.classes/luna.model.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.model.class', PEAR_LOG_CRIT); } 
 			// clean $_GET, $_POST, $_COOKIE, $_SESSION & $_REQUEST
-			lunaTools::sanitize_inputs(); //lunaTools::debug();
+			lunaTools::sanitize_inputs();
 			// display errors if the DEBUG constant is set to 1.
 			if (self::get_ini('Constantes', 'DEBUG')) { ini_set('display_errors', 1); } 
 			// check cache
@@ -237,7 +237,7 @@ class luna {
 			// set output format
 			if (!self::$output_format = lunaTools::set_output_format()) { throw new lunaException(_('Error: cannot set output format.'), PEAR_LOG_CRIT); }
 			// build RDF model
-			if (!self::$model = lunaModel::singleton()) { throw new lunaException(_('Error: cannot create RDF object.'), PEAR_LOG_CRIT); } //lunaTools::debug(self::$model);
+			if (!self::$model = lunaModel::singleton()) { throw new lunaException(_('Error: cannot create RDF object.'), PEAR_LOG_CRIT); }
 			// if user is admin, disable cache
 			if (lunaTools::user_can_access_level(self::$session->user, 'level_admin')) { 
 				self::$cache = false; 
@@ -422,7 +422,6 @@ class luna {
 				$res->free();
 				if (self::$cache) { $cache_obj->save(serialize($nodes)); }
 			}
-			// lunaTools::debug($nodes);
 			// self::$model->merge_index($nodes);
 			foreach ($nodes as $mod_uri => $mod_node) {
 				$file = '';

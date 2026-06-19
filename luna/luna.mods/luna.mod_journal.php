@@ -111,7 +111,7 @@ class mod_journal {
 				if (!luna::$model->merge_index(luna::$model->load_var($var))) { throw new lunaException(_('Error: cannot load log entry.'), PEAR_LOG_CRIT); }
 			}
 			$res->free();
-		} else { //lunaTools::debug();
+		} else {
 			$cookie = array();
 			if (isset($_COOKIE[luna::$data['lid'].'_sort'])) {
 				// json_decode (not unserialize) to avoid PHP object injection from a crafted cookie.
@@ -145,7 +145,6 @@ class mod_journal {
 			luna::$data['start'] = $start;
 			$cookie['start'] = luna::$data['start'];
 			if (!lunaTools::set_cookie(luna::$data['lid'].'_sort', $cookie)) { throw new lunaException(_('Error: cannot set cookie.'), PEAR_LOG_CRIT); }
-			// lunaTools::debug(luna::$data);
 			$res = lunaDB::query('
 				SELECT
 					COUNT('."$order_by_ok".') as total

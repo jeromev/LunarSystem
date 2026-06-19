@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS `log_id_seq`;
 DROP TABLE IF EXISTS `luna_actions`;
 CREATE TABLE `luna_actions` (
   `id` int(11) unsigned NOT NULL auto_increment,

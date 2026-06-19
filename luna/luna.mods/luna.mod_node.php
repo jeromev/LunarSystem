@@ -62,10 +62,8 @@ class mod_node {
 	 */
 	public function load() { 
 		try {
-			// lunaTools::debug(luna::$data['subdir']);
 			if (!isset(luna::$data['subdir']) || empty(luna::$data['subdir'])) { throw new lunaException(_('Notice: node nid undefined.'), PEAR_LOG_NOTICE); }
 			luna::$model->merge_index($nodes = luna::$model->load_nodes(0, 'level', luna::$data['subdir']));
-			// lunaTools::debug($nodes);
 			$node = luna::$model->get_node(luna::$data['subdir']);
 			if (!$node) { throw new lunaException(_('Warning: requested node does not exist.'), PEAR_LOG_WARNING); } 
 			$node_level_node = luna::$model->get_level_node($node); 

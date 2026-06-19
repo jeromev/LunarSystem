@@ -40,6 +40,7 @@ services:
     environment:
       ONTOP_MAPPING_FILE: /opt/ontop/input/mapping.ttl
       ONTOP_PROPERTIES_FILE: /opt/ontop/input/ontop.properties
+      # CORS '*' and dev mode are for the local demo only — tighten/remove for any deploy.
       ONTOP_CORS_ALLOWED_ORIGINS: "*"
       ONTOP_DEV_MODE: "true"
     volumes:
@@ -49,9 +50,11 @@ services:
     depends_on:
       - db
 
-  # Semantic-web layer (Phase B): a real triplestore. Loaded by materialising
-  # the SAME R2RML mapping (semantic/ontop/dump.nt). Flip the app's SPARQL_ENDPOINT
-  # here and the read path is served by the triplestore instead of MySQL — no app change.
+  # Semantic-web layer (Phase B): a real triplestore. Loaded out-of-band by
+  # materialising the SAME R2RML mapping to N-Triples and POSTing them in (the
+  # ontop materialize + curl steps in docs/linked-data.md). Flip the app's
+  # SPARQL_ENDPOINT here and the read path is served by the triplestore instead
+  # of MySQL — no app change.
   oxigraph:
     image: oxigraph/oxigraph
     command: ["serve", "--location", "/data", "--bind", "0.0.0.0:7878"]

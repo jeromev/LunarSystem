@@ -161,12 +161,36 @@ external `owl:sameAs` to it) keeps working.
 > columns. Ontop is read-only (SPARQL `SELECT`/`CONSTRUCT`/`DESCRIBE`); writes
 > stay relational until Phase B.
 
+### Reading *through* SPARQL
+
+The app can now populate its model **from the SPARQL endpoint** instead of the
+hand-written joins. [`lunaModel::sparql_select()`](../luna/luna.classes/luna.model.class.php)
+queries Ontop, and `load_texts_sparql()` rebuilds a page's text blocks through
+the *same* `load_text()` index builder the SQL path uses. It's gated behind
+`?sparql=1`:
+
+```text
+/?output=jsonld            # page texts from the hand-written SQL joins
+/?output=jsonld&sparql=1   # page texts fetched from the SPARQL endpoint
+```
+
+Both produce a **byte-for-byte identical model** (verified — the JSON-LD output
+matches exactly, and the HTML page renders the same). The mapping gained a
+`schema:identifier` (the legacy `nid`) so the SPARQL loader can rebuild the exact
+`/node/{nid}` index the XSLT expects — `nid` as a *property*, not as identity.
+
+This is the move that makes SPARQL the **read boundary**: as each loader is
+migrated to read this way, swapping Ontop for a triplestore (Phase B) changes
+nothing in the application above the endpoint.
+
 ## Roadmap
 
-- **Phase A (done — prototype):** R2RML + Ontop virtual SPARQL endpoint over the
-  existing MySQL (above). Next within A: move the app's *read* path off the
-  hand-written joins in `lunaModel` onto SPARQL `CONSTRUCT`; expand the mapping
-  to `luna_actions` (PROV-O) and access levels; add an LDP-style API.
+- **Phase A (in progress — prototype):** R2RML + Ontop virtual SPARQL endpoint
+  over the existing MySQL (above), and the page-text **read path now flows
+  through SPARQL** (gated by `?sparql=1`). Next within A: migrate the remaining
+  loaders (page nodes, mods) the same way so SPARQL is the *only* read path;
+  expand the mapping to `luna_actions` (PROV-O) and access levels; add an
+  LDP-style API.
 - **Phase B:** materialise the same `mapping.ttl` into Oxigraph/Fuseki; point the
   endpoint at it (app read code unchanged); move writes to SPARQL `UPDATE`; turn
   on RDFS/OWL inference, SHACL validation, and named graphs for drafts/versions.

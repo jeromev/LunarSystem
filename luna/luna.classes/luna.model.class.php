@@ -541,6 +541,70 @@ class lunaModel {
 		die($json);
 	}
 	// }}}
+	// {{{ sparql_select()
+	/**
+	 * Run a SPARQL SELECT against the Ontop endpoint (Phase A) and return the
+	 * result bindings. The read path goes *through* SPARQL rather than the
+	 * hand-written joins — see docs/linked-data.md.
+	 *
+	 * @access public
+	 * @param string $query
+	 * @return array bindings (each a map of var => {type,value})
+	 */
+	public function sparql_select($query) {
+		if (!defined('SPARQL_ENDPOINT')) { return array(); }
+		$url = SPARQL_ENDPOINT.'?query='.rawurlencode($query);
+		$ctx = stream_context_create(array('http' => array(
+			'method' => 'GET',
+			'header' => "Accept: application/sparql-results+json\r\n",
+			'timeout' => 5
+		)));
+		$json = @file_get_contents($url, false, $ctx);
+		if ($json === false) { return array(); }
+		$data = json_decode($json, true);
+		return (isset($data['results']['bindings']))? $data['results']['bindings'] : array();
+	}
+	// }}}
+	// {{{ load_texts_sparql()
+	/**
+	 * SPARQL-backed replacement for load_texts(): fetches a page's text blocks
+	 * from the schema.org graph (via Ontop) and rebuilds them through the same
+	 * load_text() index builder, so the model — and therefore the HTML/JSON-LD
+	 * views — are populated identically whether sourced from SQL or SPARQL.
+	 *
+	 * @access public
+	 * @param integer $page_nid
+	 * @return array nodes
+	 */
+	public function load_texts_sparql($page_nid) {
+		$base = rtrim(luna::$site_uri, '/');
+		$pageuri = $base.'/id/'.rawurlencode(defined('PAGELID')? PAGELID : '');
+		$q = 'PREFIX schema: <https://schema.org/> '
+		   . 'SELECT ?text ?title ?body ?lang ?tident WHERE { '
+		   . '<'.$pageuri.'> schema:hasPart ?text . '
+		   . '?text a schema:Article ; schema:identifier ?tident ; '
+		   . 'schema:headline ?title ; schema:articleBody ?body . '
+		   . 'OPTIONAL { ?text schema:inLanguage ?lang } }';
+		$rows = $this->sparql_select($q);
+		$items = array();
+		foreach ($rows as $r) {
+			$texturi = isset($r['text']['value'])? $r['text']['value'] : '';
+			$lid = ($p = strrpos($texturi, '/id/')) !== false? substr($texturi, $p + 4) : $texturi;
+			$items[] = array(
+				'nid'          => isset($r['tident']['value'])? $r['tident']['value'] : '',
+				'lid'          => $lid,
+				'title'        => isset($r['title']['value'])? $r['title']['value'] : '',
+				'lang'         => isset($r['lang']['value'])? $r['lang']['value'] : luna::$lang,
+				'content_html' => isset($r['body']['value'])? $r['body']['value'] : '',
+				'is_active'    => 1,
+				'save_time'    => 0,
+				'pages'        => array($page_nid)
+			);
+		}
+		if (empty($items)) { return array(); }
+		return $this->load_text($items);
+	}
+	// }}}
 	// {{{ load_messages()
 	/** @access public
 	 * @param array $messages

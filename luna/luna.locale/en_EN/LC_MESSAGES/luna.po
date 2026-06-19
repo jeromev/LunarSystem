@@ -261,7 +261,7 @@ msgid "Texts"
 msgstr "Texts"
 
 msgid "Groups"
-msgstr "Groupes"
+msgstr "Groups"
 
 msgid "level_public"
 msgstr "Public level"
@@ -495,7 +495,7 @@ msgid "email"
 msgstr "email"
 
 msgid "Email"
-msgstr "Courriel"
+msgstr "Email"
 
 msgid "A user with the same email (%1$s) already exists."
 msgstr "A user with the same email (%1$s) already exists."

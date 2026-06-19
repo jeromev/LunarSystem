@@ -657,6 +657,76 @@ class lunaModel {
 		return $nodes;
 	}
 	// }}}
+	// {{{ sparql_update()
+	/**
+	 * Send a SPARQL UPDATE to the triplestore (Oxigraph) — the write counterpart
+	 * to sparql_select(). Best-effort: returns false (no exception) if the update
+	 * endpoint is unset or unreachable, so a failed mirror never breaks a save.
+	 * Pushing content writes into RDF is step 1 toward an RDF-native store; see
+	 * docs/linked-data.md.
+	 *
+	 * @access public
+	 * @param string $update a SPARQL UPDATE request
+	 * @return boolean true on a 2xx response
+	 */
+	public function sparql_update($update) {
+		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		$ctx = stream_context_create(array('http' => array(
+			'method'        => 'POST',
+			'header'        => "Content-Type: application/sparql-update\r\n",
+			'content'       => $update,
+			'timeout'       => 5,
+			'ignore_errors' => true
+		)));
+		$res = @file_get_contents(SPARQL_UPDATE_ENDPOINT, false, $ctx);
+		if (isset($http_response_header)) {
+			foreach ($http_response_header as $h) { if (preg_match('#^HTTP/\S+\s+2\d\d#', $h)) { return true; } }
+		}
+		return false;
+	}
+	// }}}
+	// {{{ sparql_literal()
+	/**
+	 * Escape a value for use inside a double-quoted SPARQL string literal.
+	 * @access public
+	 * @param string $s
+	 * @return string
+	 */
+	public static function sparql_literal($s) {
+		return str_replace(
+			array('\\', '"', "\n", "\r", "\t"),
+			array('\\\\', '\\"', '\\n', '\\r', '\\t'),
+			(string) $s
+		);
+	}
+	// }}}
+	// {{{ rdf_put_article()
+	/**
+	 * Write a text block's content into the triplestore as a schema:Article via
+	 * SPARQL UPDATE — the RDF-native mirror of an edit_texts save. Replaces the
+	 * article's headline / body / language for the resource <base/id/{lid}>,
+	 * leaving its other triples (isPartOf, identifier, …) intact. Best-effort.
+	 *
+	 * @access public
+	 * @param string $lid     the text's literal identifier (its URI slug)
+	 * @param string $title   schema:headline
+	 * @param string $content schema:articleBody (HTML stripped to text)
+	 * @param string $lang    schema:inLanguage
+	 * @return boolean
+	 */
+	public function rdf_put_article($lid, $title, $content, $lang) {
+		if (empty($lid) || !defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		$uri = '<'.rtrim(luna::$site_uri, '/').'/id/'.rawurlencode($lid).'>';
+		$h   = self::sparql_literal($title);
+		$b   = self::sparql_literal(trim(strip_tags($content)));
+		$l   = self::sparql_literal($lang);
+		$update = 'PREFIX schema: <https://schema.org/> '
+			. 'DELETE { '.$uri.' schema:headline ?h ; schema:articleBody ?b ; schema:inLanguage ?l } '
+			. 'INSERT { '.$uri.' a schema:Article ; schema:headline "'.$h.'" ; schema:articleBody "'.$b.'" ; schema:inLanguage "'.$l.'" } '
+			. 'WHERE  { OPTIONAL { '.$uri.' schema:headline ?h } OPTIONAL { '.$uri.' schema:articleBody ?b } OPTIONAL { '.$uri.' schema:inLanguage ?l } }';
+		return $this->sparql_update($update);
+	}
+	// }}}
 	// {{{ load_messages()
 	/** @access public
 	 * @param array $messages

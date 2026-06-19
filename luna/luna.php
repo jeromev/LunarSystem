@@ -40,6 +40,8 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); }
 // SPARQL endpoint for the experimental read-through-SPARQL path (Phase A; see docs/linked-data.md).
 if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://ontop:8080/sparql'); }
+// SPARQL UPDATE endpoint for content write-through to the triplestore (Oxigraph). Best-effort.
+if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', getenv('SPARQL_UPDATE_ENDPOINT') ?: 'http://oxigraph:7878/update'); }
 /**
  * luna Class
  */
@@ -50,7 +52,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.3.1-alpha';
+	public static $lunaVersion = '0.3.2-alpha';
 	/**
 	 * instance
 	 * @var object

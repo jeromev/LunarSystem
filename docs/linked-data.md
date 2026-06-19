@@ -197,6 +197,25 @@ This is the move that makes SPARQL the **read boundary**: with the loaders
 reading this way, swapping Ontop for a triplestore (Phase B) changes nothing in
 the application above the endpoint.
 
+### Writing *through* SPARQL
+
+The first content **writes** now flow into the triplestore too — the start of
+making it authoritative rather than a read-only mirror.
+[`lunaModel::sparql_update()`](../luna/luna.classes/luna.model.class.php) is the
+write counterpart to `sparql_select()`: it POSTs a SPARQL `UPDATE` to a
+`SPARQL_UPDATE_ENDPOINT` (Oxigraph, best-effort, so a failed mirror never breaks a
+save). On top of it, `rdf_put_article()` mirrors a text block as a
+`schema:Article`, and `mod_edit_texts` calls it whenever a text is **created or
+modified**. So editing page content in the admin UI now **dual-writes**: the
+existing SQL `UPDATE`/`INSERT` to MySQL, plus a SPARQL `DELETE`/`INSERT` to the
+graph for `<base/id/{lid}>`.
+
+Verified end-to-end: editing the page text in the admin form lands in **both**
+MySQL (default render) and Oxigraph; pointed at Oxigraph, the app reads the edited
+content straight back — content written *and* read through RDF, no MySQL in that
+loop. Dual-write keeps the two stores in sync while the write path migrates; once
+every write is mirrored and reads default to the graph, the MySQL write retires.
+
 ## Phase B — the swap (demonstrated)
 
 The point of the whole plan: **swap the engine, not the application.** The
@@ -239,9 +258,17 @@ part. The dump is generated (gitignored); regenerate it with the command above.
   SPARQL** under `?sparql=1`. Remaining: migrate the mod list; make `?sparql=1`
   the default; expand the mapping to `luna_actions` (PROV-O).
 - **Phase B (done — demonstrated):** materialised `mapping.ttl` into Oxigraph and
-  flipped the app at it by env var (above). Next: move writes to SPARQL `UPDATE`
-  (retire the relational write path), turn on RDFS/OWL inference and SHACL
-  validation, and use named graphs for drafts/versions.
+  flipped the app at it by env var (above).
+- **Phase C — make the triplestore authoritative (in progress):** content
+  **writes** now mirror to the graph via SPARQL `UPDATE` (text create/modify →
+  `schema:Article`; see *Writing through SPARQL*). Next: (1) generalise the
+  write-through across the model's CRUD (`insert`/`update`/`delete`/`link`/
+  `unlink`) so *every* content write hits the graph; (2) make reads default to the
+  graph and retire the MySQL content read; (3) retire the MySQL content write
+  (single source of truth), minting URIs from slugs not `nid` sequences; (4) turn
+  on RDFS/OWL inference + SHACL validation and named graphs for drafts/versions.
+  **Boundary:** sessions and cache stay relational/native — a triplestore is the
+  wrong tool for ephemeral, high-churn data.
 
 The cardinal rule across all phases: **freeze the URIs.** Same `/id/{slug}` in 0,
 A, and B, so every external link and `owl:sameAs` keeps working.

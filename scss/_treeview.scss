@@ -1,14 +1,16 @@
 /* ////////////////////////////////////////////////////////////////  TVlists */
 /* JQuery Tree View, @ 2006 Myles Angell <mangell@cronin-co.com> See: <http://be.twixt.us/jquery/treeViewCollapsed.php> */
-ul.tv, ul.tv ul { padding: 0; margin: 0; list-style: none; }
-ul.tv li { position: relative; margin: 0; padding: 0.125rem 0 0.125rem 0.625rem; z-index: 10; }
-ul.tv div.tvca { height: 0.9375rem; width: 0.9375rem; position: absolute; top: 0.0625rem; left: -0.25rem; cursor: pointer; z-index: 50; }
-ul.tv li, ul.tv .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat; }
-ul.tv .tvic /* Tree View Item, Collapsable */ { background-image: url(../images/treeView/tvie.png); }
-ul.tv .tvie /* Tree View Item, Expandable */ { background-image: url(../images/treeView/tvic.png); }
-ul.tv .tvil /* Tree View Last Item */ { background-image: url(../images/treeView/tvil.png); }
-ul.tv .tvilc /* Tree View Last Item, Collapsable */ { background-image: url(../images/treeView/tvile.png); }
-ul.tv .tvile /* Tree View Last Item, Expandable */ { background-image: url(../images/treeView/tvilc.png); }
-ul.tv .tvload /* Loading Icon */ { background-image: url(../images/treeView/tviload.gif); }
-ul.tv .tvclosed ul, ul.tv .tvclosed li.tvclosed ul { display: none; }
-ul.tv .tvclosed ul ul { display: block; }
+ul.tv {
+	&, ul { padding: 0; margin: 0; list-style: none; }
+	li { position: relative; margin: 0; padding: 0.125rem 0 0.125rem 0.625rem; z-index: 10; }
+	div.tvca { height: 0.9375rem; width: 0.9375rem; position: absolute; top: 0.0625rem; left: -0.25rem; cursor: pointer; z-index: 50; }
+	li, .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat; }
+	.tvic /* Tree View Item, Collapsable */ { background-image: url(../images/treeView/tvie.png); }
+	.tvie /* Tree View Item, Expandable */ { background-image: url(../images/treeView/tvic.png); }
+	.tvil /* Tree View Last Item */ { background-image: url(../images/treeView/tvil.png); }
+	.tvilc /* Tree View Last Item, Collapsable */ { background-image: url(../images/treeView/tvile.png); }
+	.tvile /* Tree View Last Item, Expandable */ { background-image: url(../images/treeView/tvilc.png); }
+	.tvload /* Loading Icon */ { background-image: url(../images/treeView/tviload.gif); }
+	.tvclosed ul, .tvclosed li.tvclosed ul { display: none; }
+	.tvclosed ul ul { display: block; }
+}

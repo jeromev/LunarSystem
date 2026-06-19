@@ -17,11 +17,10 @@ services:
       - db
 
   db:
-    image: mysql:5.7
-    # mysql:5.7 is amd64-only; force the platform so arm64 hosts emulate it.
-    platform: linux/amd64
-    # Disable strict mode for compatibility with legacy TYPE=MyISAM syntax
-    command: --sql_mode="" --character-set-server=utf8 --collation-server=utf8_general_ci
+    image: mysql:8.0
+    # Disable strict mode for the legacy MyISAM schema (pre-strict-mode column
+    # defaults); use utf8mb4 (full Unicode) as the server default.
+    command: --sql_mode="" --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: lunadb

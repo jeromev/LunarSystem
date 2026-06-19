@@ -43,7 +43,7 @@ require_once 'XML/HTMLSax3.php';
  *
  * <b>Example:</b>
  * <pre>
- * $parser =& new HTML_Safe();
+ * $parser = new HTML_Safe();
  * $result = $parser->parse($doc);
  * </pre>
  *
@@ -282,13 +282,13 @@ class HTML_Safe
      *
      * @access public
      */
-    function HTML_Safe() 
+    function __construct() 
     {
         //making regular expressions based on Proto & CSS arrays
         foreach ($this->blackProtocols as $proto) {
             $preg = "/[\s\x01-\x1F]*";
             for ($i=0; $i<strlen($proto); $i++) {
-                $preg .= $proto{$i} . "[\s\x01-\x1F]*";
+                $preg .= $proto[$i] . "[\s\x01-\x1F]*";
             }
             $preg .= ":/i";
             $this->_protoRegexps[] = $preg;
@@ -362,8 +362,8 @@ class HTML_Safe
                    }
                 }
 
-                $tempval = preg_replace('/&#(\d+);?/me', "chr('\\1')", $value); //"'
-                $tempval = preg_replace('/&#x([0-9a-f]+);?/mei', "chr(hexdec('\\1'))", $tempval);
+                $tempval = preg_replace_callback('/&#(\d+);?/m', function($m){ return chr((int)$m[1]); }, $value);
+                $tempval = preg_replace_callback('/&#x([0-9a-f]+);?/mi', function($m){ return chr(hexdec($m[1])); }, $tempval);
 
                 if ((in_array($name, $this->protocolAttributes)) && 
                     (strpos($tempval, ':') !== false)) 
@@ -603,7 +603,7 @@ class HTML_Safe
        $doc = $this->repackUTF7($doc);
 
        // Instantiate the parser
-       $parser=& new XML_HTMLSax3();
+       $parser= new XML_HTMLSax3();
 
        // Set up the parser
        $parser->set_object($this);

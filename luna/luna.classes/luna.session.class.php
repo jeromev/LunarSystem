@@ -186,11 +186,14 @@ class lunaSession {
 			');
 			$this->user = $this->get_user_data($sid); 
 		}
-		if (!isset($this->user->nid)) { 
+		if (!isset($this->user->nid)) {
 			$this->sessionDestroy($sid);
 			throw new lunaException(_('Error: cannot read session.'), PEAR_LOG_CRIT);
-			return false;
 		}
+		// PHP's session handler requires read() to return a STRING (PHP 8 rejects a
+		// non-string with "Failed to read session data"). luna keeps user state in
+		// $this->user + the DB, so there is no PHP-serialised session payload.
+		return '';
 	}
 	// }}}
 	// {{{ sessionWrite()
@@ -226,7 +229,7 @@ class lunaSession {
 					nid = '.lunaDB::quote($this->user->nid).'
 			');
 		}
-		return '';
+		return true;
 	}
 	// }}}
 	// {{{ sessionDestroy()

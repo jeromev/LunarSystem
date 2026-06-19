@@ -50,7 +50,7 @@ operational (open ports), now fixed.
 
 ## Remaining — owner-only (can't be done from inside the repo)
 
-- [ ] **Rotate the `dbuser@mysql.jeromev.net` database password.** It lived in a
+- [x] **Rotate the `dbuser@mysql.jeromev.net` database password.** It lived in a
       working tree for years (never in git, but presume it's exposed). The file is
       gone from the repo now; rotate the credential at the DB server regardless.
 - [ ] **On GitHub:** flip the repo to **public**; set a description and topics

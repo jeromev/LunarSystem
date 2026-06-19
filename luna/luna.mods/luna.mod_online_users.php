@@ -139,7 +139,7 @@ class mod_online_users {
 		}
 		$res->free();
 		luna::$model->merge_index(luna::$model->load_user($users)); 
-		luna::$model->merge_index(luna::$model->load_pager($total, $start, luna::$data['limit'], __CLASS__));
+		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), __CLASS__));
 		return true;
 	}
 	// }}}

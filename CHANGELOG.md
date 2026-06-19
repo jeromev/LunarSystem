@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.2-alpha] - 2026-06-18
+- Semantic web (Phase C, in progress — make the triplestore authoritative): content **writes** now flow into the graph via SPARQL `UPDATE`, the write counterpart to the read-through-SPARQL path.
+  - `lunaModel::sparql_update()` POSTs a SPARQL `UPDATE` to a new `SPARQL_UPDATE_ENDPOINT` (Oxigraph; best-effort, so a failed mirror never breaks a save), with `sparql_literal()` for safe string escaping.
+  - `lunaModel::rdf_put_article()` mirrors a text block as a `schema:Article` (headline/articleBody/inLanguage) for `<base/id/{lid}>`; `mod_edit_texts` calls it on text **create and modify**.
+  - Editing page content in the admin UI now **dual-writes** — the existing SQL write to MySQL *plus* a SPARQL `DELETE`/`INSERT` to the graph. Verified end-to-end on Docker: an admin text edit lands in both MySQL and Oxigraph, and the app reads it back from the triplestore. See [docs/linked-data.md](docs/linked-data.md) ("Writing through SPARQL").
+
 ## [0.3.1-alpha] - 2026-06-18
 - Fixed: **localisation did nothing.** The Docker image installed the `gettext` extension but never generated the OS locales, so `setlocale()` failed and every translation silently fell back to the source string. The image now generates `en_US.UTF-8`, `fr_FR.UTF-8` and an `en_EN.UTF-8` alias (the locales `lunaTools::format_language()` maps to). French (and any other catalog) now translates.
 - Fixed: the English message catalogs (`en_US`, `en_EN`) contained two stray **French** translations (`Email`→"Courriel", `Groups`→"Groupes"), so once the catalogs loaded the English UI showed French. Corrected to "Email"/"Groups" and recompiled the `.mo` files. (This was misdiagnosed at first as a gettext per-worker cache leak; it was purely bad catalog data.)

@@ -24,9 +24,9 @@ serialised directly by ARC2 rather than via XSLT — see below).
 
 ## Stylesheet selection (the cascade)
 
-`luna::transform()` ([luna.php:506](../luna/luna.php#L506)) picks a stylesheet by
+`luna::transform()` ([luna.php:512](../luna/luna.php#L512)) picks a stylesheet by
 trying paths in order, first hit wins (the cascade itself is
-[luna.php:575-607](../luna/luna.php#L575)). Roughly, for output format `html` and a
+[luna.php:580-613](../luna/luna.php#L580)). Roughly, for output format `html` and a
 page whose `lid` is `$lid`:
 
 1. `SITEPATH/xsl/html.xsl/<lid>.html.xsl` — domain, page-specific
@@ -110,6 +110,15 @@ Appending `?output=xml|json|n3` bypasses XSLT entirely:
 with **ARC2** (RDF/XML, RDF/JSON, or N-Triples) and exits with the appropriate
 content type. This is the same model the HTML view consumes — so any page is also
 a machine-readable RDF endpoint. See [rdf-model.md](rdf-model.md).
+
+> **Linked Data (experiment/semantic-web, Phase 0):** a fifth format `?output=jsonld`
+> is registered in `luna::$output_formats` and serialised by
+> `lunaModel::to_jsonld()` (a schema.org JSON-LD projection), *not* by ARC2. The
+> same JSON-LD is also embedded in every HTML page: after the XSLT transform,
+> `luna::transform()` injects a `<script type="application/ld+json">` block before
+> `</head>` ([luna.php:618](../luna/luna.php#L618)) — done in PHP post-processing,
+> not in the stylesheets, so `luna.header.html.xsl` is unchanged. See
+> [linked-data.md](linked-data.md).
 
 ## Caching
 

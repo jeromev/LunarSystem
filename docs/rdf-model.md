@@ -121,10 +121,11 @@ Serialises `$index` to one of:
 - **xml** → `ARC2::getRDFXMLSerializer()` (`application/rdf+xml`)
 - **json** → `ARC2::getRDFJSONSerializer()` (`application/rdf+json`)
 - **n3** → `ARC2::getNtriplesSerializer()`
-- **turtle** → `ARC2::getTurtleSerializer()`
+- **turtle** → `ARC2::getTurtleSerializer()` (present in `dump()` but not registered as an output format)
+- **jsonld** → `to_jsonld()` (compact schema.org JSON-LD — experiment branch; see [linked-data.md](linked-data.md))
 
-Triggered by `?output=xml|json|n3` on any URL. Sets the content-type header and
-exits.
+Triggered by `?output=xml|json|n3|jsonld` on any URL. Sets the content-type header
+and exits.
 
 ### `transform($xslfile)` — HTML output
 1. Check the Cache_Lite cache, keyed on `md5(serialize([$conf, $index]))`.
@@ -135,3 +136,11 @@ exits.
 
 See [templating.md](templating.md) for how the stylesheet is chosen and the
 RDF/XML shape the templates consume.
+
+> **Semantic-web extension (experiment branch):** beyond the ARC2 flavours
+> above, `lunaModel` also projects the current page to compact schema.org
+> JSON-LD via `to_jsonld()` (reached by `?output=jsonld` and embedded in every
+> HTML `<head>`), and can source the graph from a SPARQL endpoint rather than
+> MySQL — `sparql_select()`, `load_nodes_sparql()`, and `load_texts_sparql()`
+> run under `?sparql=1`. None of this changes the relational read path or the
+> serialisers described above. See [linked-data.md](linked-data.md).

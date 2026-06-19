@@ -1,8 +1,11 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
 > **Status: experiment.** This document and the code under it live on the
-> `experiment/semantic-web` branch. The archival CMS release is `0.2.14-alpha` on
-> `main`; nothing here changes that. This is Phase 0 of a staged plan.
+> `experiment/semantic-web` branch (experiment line `0.3.0-alpha`). The archival
+> CMS release is `0.2.14-alpha` on `main`; nothing here changes that. The plan
+> below runs Phase 0 → A → B, and **all three are implemented on this branch**
+> (Phase 0 JSON-LD, Phase A virtual SPARQL + read-through-SPARQL, Phase B
+> triplestore swap).
 
 ## The problem we're fixing
 
@@ -122,7 +125,7 @@ Files (all under [`semantic/ontop/`](../semantic/ontop/)):
 
 | File | Role |
 |---|---|
-| `mapping.ttl` | R2RML: `luna_nodes`/`luna_nodes_map`/`luna_texts`/`luna_users` → schema.org/FOAF, using the **same `/id/{lid}` URIs** as the JSON-LD |
+| `mapping.ttl` | R2RML: `luna_nodes`/`luna_nodes_map`/`luna_texts`/`luna_users` → schema.org/FOAF (incl. access **levels** → `luna:level`, which drive the SPARQL routing/ACL path), using the **same `/id/{lid}` URIs** as the JSON-LD |
 | `ontop.properties` | JDBC connection to the `db` service |
 | `Dockerfile` | `ontop/ontop` + the MySQL JDBC driver |
 

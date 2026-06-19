@@ -1,8 +1,8 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.3.2-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.3.3-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
-> **Now a Semantic Web CMS (in progress).** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and a SPARQL read path served first by **Ontop** (a virtual SPARQL endpoint over the unchanged MySQL) and then by **Oxigraph** (a materialised triplestore) with no app code change. This is the active direction on `main`; the SPARQL read path is still opt-in (`?sparql=1`) and maturing. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and phase-by-phase status.
+> **Now an RDF-native Semantic Web CMS.** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and — as of 0.3.3-alpha — a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
 
 ## Quick start (Docker)
 
@@ -12,7 +12,7 @@ docker-compose up --build -d
 
 Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 
-> The Docker stack also starts a **SPARQL endpoint** (Ontop on host port `8081`) and a **triplestore** (Oxigraph on host port `7879`). The app's read path can be routed through SPARQL with `?sparql=1`; see [docs/linked-data.md](docs/linked-data.md).
+> The Docker stack also starts a **triplestore** (Oxigraph on host port `7879`) and a virtual **SPARQL endpoint** (Ontop on host port `8081`). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
 
 Log in as **`admin@lunarsystem.local`** with password **`luna`**.
 

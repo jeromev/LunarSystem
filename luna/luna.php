@@ -38,10 +38,15 @@ ini_set('arg_separator.output','&amp;');
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 // Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
 if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); }
-// SPARQL endpoint for the experimental read-through-SPARQL path (Phase A; see docs/linked-data.md).
-if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://ontop:8080/sparql'); }
+// SPARQL endpoint for the read path. Default = Oxigraph (the materialised, dual-write-synced
+// triplestore — RDF-native). Override to Ontop (virtual SPARQL over MySQL) to read live from
+// the relational store instead: SPARQL_ENDPOINT=http://ontop:8080/sparql. See docs/linked-data.md.
+if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://oxigraph:7878/query'); }
 // SPARQL UPDATE endpoint for content write-through to the triplestore (Oxigraph). Best-effort.
 if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', getenv('SPARQL_UPDATE_ENDPOINT') ?: 'http://oxigraph:7878/update'); }
+// Read routing / ACL / texts through SPARQL by default (the triplestore is authoritative for the
+// read path; MySQL stays the system of record and a fallback). Set SPARQL_READS=0 to read from SQL.
+if (!defined('SPARQL_READS')) { define('SPARQL_READS', getenv('SPARQL_READS') === '0' ? false : true); }
 /**
  * luna Class
  */
@@ -52,7 +57,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.3.2-alpha';
+	public static $lunaVersion = '0.3.3-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -258,12 +263,12 @@ class luna {
 			// Check privileges. If user is unauthorized, send him to login
 			if (!lunaTools::check_privileges()) { lunaTools::go('login'); } 
 			if (!in_array(self::$output_format, self::$output_formats)) { self::$output_format = isset(self::$output_formats[0])? self::$output_formats[0] : 'html'; } 
-			// Load texts associated with the page
-			if (lunaTools::request('sparql')) {
-				self::$model->merge_index(self::$model->load_texts_sparql(PAGENID));
-			} else {
-				self::$model->merge_index(self::$model->load_texts(0, PAGENID));
-			}
+			// Load texts associated with the page — from the graph by default,
+			// falling back to SQL if the SPARQL path is off or yields nothing.
+			$texts = false;
+			if (lunaModel::sparql_reads()) { $texts = self::$model->load_texts_sparql(PAGENID); }
+			if (empty($texts)) { $texts = self::$model->load_texts(0, PAGENID); }
+			self::$model->merge_index($texts);
 			// Collect Data
 			if (!self::$data['lid'] = self::$model->get_lid(self::$page_node)) { throw new lunaException(_('Error: cannot find page lid.'), PEAR_LOG_CRIT); } 
 			self::$data['lunaversion'] = self::$lunaVersion;

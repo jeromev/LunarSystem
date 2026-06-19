@@ -5,12 +5,14 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
-    # Phase A/B: which SPARQL endpoint the read-through-SPARQL path (?sparql=1)
-    # hits. Default = Ontop (virtual, live over MySQL). Override to Oxigraph
-    # (the materialised triplestore) to demonstrate the A->B swap with no code change:
-    #   SPARQL_ENDPOINT=http://oxigraph:7878/query docker-compose up -d app
+    # The read path is RDF-native by default: routing / ACL / texts are read from
+    # Oxigraph (the materialised, dual-write-synced triplestore). Override to Ontop
+    # to read live from MySQL through virtual SPARQL instead (no app change):
+    #   SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app
+    # or set SPARQL_READS=0 to bypass SPARQL entirely and read from SQL.
     environment:
-      SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://ontop:8080/sparql}"
+      SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://oxigraph:7878/query}"
+      SPARQL_READS: "${SPARQL_READS:-1}"
     depends_on:
       - db
 

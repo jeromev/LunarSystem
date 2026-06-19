@@ -2,18 +2,20 @@
 
 Where LunarSystem is headed, and in what order. Two big arcs:
 
-1. **Finish the RDF-native transition** — make the triplestore the system of record for content and retire MySQL for it (phases **P0–P3**).
-2. **Become a data-first server with client-side rendering** — emit data (RDF/XML), move the XSLT transform into the browser (phases **P4–P5**).
+1. **Finish the RDF-native transition** — make the triplestore the system of record for content and retire MySQL for it (phases **P0–P3**; P0/P1 done).
+2. **Become a data-first server** — emit data (RDF/XML + JSON-LD) under content negotiation (phase **P4**). *(P5, moving the XSLT transform into the browser, was dropped — see below.)*
 
-Current state: **v0.3.2-alpha** on `main`. The triplestore (Oxigraph) is a live, queryable mirror; reads can flow through SPARQL (`?sparql=1`); and content **writes have just begun** dual-writing into the graph via SPARQL `UPDATE` (text create/modify). Everything below builds on that.
+Current state: **v0.3.3-alpha** on `main`. **P0 and P1 are done.** Every content write mirrors into Oxigraph through a generic write-through in the model's CRUD, the whole store can be rebuilt from MySQL with `rdf_resync_all()`, and the read path (routing, ACL, texts) is served from the triplestore **by default** — with MySQL as the system of record and an automatic SQL fallback (`?sparql=0`). What remains in Part 1 is **P2** (retire the MySQL content write — blocked on the rename/URI decision) and the optional **P3**. **Part 2's client-side-XSLT goal (P5) has been dropped** (see below); P4 — the data-first server — is where Part 2 now ends.
 
 > The cardinal rule across every phase: **freeze the URIs.** `/id/{slug}` is identity; it must not change, or external links and `owl:sameAs` break.
 
 ---
 
-## ⚠️ Reality check on the client-side-XSL plan (read this first)
+## ⚠️ Decision taken: client-side XSLT (P5) is dropped
 
-The stated Part-2 idea — *"PHP delivers XML, a JavaScript layer transforms it to HTML with XSL in the browser"* — runs into a hard, time-sensitive fact, confirmed by current vendor docs:
+**The "render XSL in the browser" goal has been abandoned** (decision #7, resolved June 2026: *"finish RDF and forget front-end XSLT"*). The reasoning below is kept as the record of *why*. The net: Part 2 now ends at **P4** — a clean, content-negotiated data-first server (RDF/XML + the JSON-LD already emitted) — and the server-side XSLTProcessor render stays the one and only renderer.
+
+The stated Part-2 idea — *"PHP delivers XML, a JavaScript layer transforms it to HTML with XSL in the browser"* — ran into a hard, time-sensitive fact, confirmed by current vendor docs:
 
 **Native browser XSLT is being removed, not just deprecated.** Chromium drops **both** the `<?xml-stylesheet?>` processing instruction **and** the JavaScript `XSLTProcessor` API on Stable in **Chrome 158 (~Nov 17 2026)** — deprecation began Chrome 143 (Dec 2025); Origin-Trial/Enterprise-Policy escape hatches end Chrome 176 (Aug 2027). The driver is memory-safety risk in the effectively-unmaintained `libxslt`/`libxml2` C code (incl. CVE-2025-7425) plus ~0.02% usage. **Firefox and WebKit have signalled the same intent** (WHATWG removal, stage 3).
 
@@ -30,26 +32,27 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 ## Part 1 — Finish the RDF-native transition
 
-### P0 — Generalise the dual-write (from where we are)
+### P0 — Generalise the dual-write ✅ done (0.3.3-alpha)
 **Goal:** make the graph a *complete* mirror of all content by centralising the SPARQL write-through inside the generic CRUD methods, so coverage is complete by construction — not wired in per-mod.
 
-- Move the SPARQL mirror **inside** `lunaModel::insert`/`update`/`delete`/`link`/`unlink`/`insert_action`, reusing the `sparql_update` + `sparql_literal` pattern — instead of the per-mod hooks in `mod_edit_texts`.
-- Map each op to the Decision-2 vocabulary against `<base/id/{lid}>`: `insert`→typed resource (`page`→`schema:WebPage`, `text`→`schema:Article`, `user`→`foaf:Person`, level/group/mod→`luna:`); `update`→`DELETE`/`INSERT` changed props; `delete`→remove outbound **and** inbound triples; `link`/`unlink`→typed edges (`schema:isPartOf`+`hasPart`, `luna:level`, …) resolving nids→slugs via `get_lid`; `insert_action`→a `prov:Activity`.
-- Migrate `load_mods` to SPARQL so no content read stays pinned to SQL.
-- **Verify:** after admin edits, diff the Oxigraph graph against the MySQL-derived Ontop graph; resolve every divergence before moving on.
+- **Done:** the SPARQL mirror lives **inside** `lunaModel::insert`/`update`/`delete`/`link`/`unlink` via two generic methods — `rdf_sync_node($nid)` (re-projects a node's whole description, matching the R2RML mapping) and `rdf_delete_node($nid)` (drops every triple mentioning the resource, as subject *and* object). The per-mod `rdf_put_article` hook in `mod_edit_texts` was replaced by `rdf_sync_node`.
+- **Done:** each op maps to the Decision-2 vocabulary against `<base/id/{lid}>`: `page`→`schema:WebPage`, `text`→`schema:Article`, `user`→`foaf:Person`, level/group/mod→`luna:`; edges resolve nids→slugs into `schema:isPartOf`/`hasPart` and `luna:level`; numeric columns are typed `xsd:integer` to match the materialisation.
+- **Done:** `rdf_resync_all()` re-projects every node from MySQL — the pure-PHP bootstrap/repair of the store, replacing the Ontop "materialise" step. Used to close a real drift gap (a page created before the dual-write existed) and verified by count parity (14 pages / 2 texts / 3 levels / 2 users) and a write→read round-trip.
+- **Deferred (not blocking):** `insert_action`→`prov:Activity` projection and migrating `load_mods` to SPARQL — mods and the audit trail still read/write SQL only.
 
-**Risks:** best-effort `sparql_update` masks coverage gaps (the Ontop-vs-Oxigraph diff is the only safety net); concurrent saves with unguarded `DELETE/INSERT WHERE` can interleave; `insert_action` volume may bloat the graph (decide default vs. a named audit graph).
+**Risks (carried):** best-effort `sparql_update` still masks coverage gaps — `rdf_resync_all()` is the reconciliation tool; concurrent saves with unguarded `DELETE/INSERT WHERE` can still interleave (addressed properly in P2 with optimistic concurrency).
 
-### P1 — Default reads to the graph; unify on Oxigraph
-**Goal:** make `?sparql=1` the default and point reads at the **same** store that receives writes.
+### P1 — Default reads to the graph; unify on Oxigraph ✅ done (0.3.3-alpha)
+**Goal:** make the SPARQL read path the default and point reads at the **same** store that receives writes.
 
-- Point `SPARQL_ENDPOINT` at **Oxigraph** (not Ontop — Ontop is read-only over MySQL and would diverge from graph writes).
-- Invert the constructor branch and `purge_index` to read from SPARQL by default, with a `?sql=1` escape hatch for instant flip-back.
-- Golden-diff server-rendered HTML (SQL path vs. graph path) across a representative page set; then delete the SQL page/text readers.
+- **Done:** `SPARQL_ENDPOINT` now defaults to **Oxigraph** (`http://oxigraph:7878/query`); Ontop becomes the opt-in override for reading live over MySQL.
+- **Done:** the model constructor (routing) and the `luna.php` text load read from SPARQL by default, gated by `lunaModel::sparql_reads()` (constant `SPARQL_READS`, default on; `?sparql=0` forces SQL for one request). Both keep an **automatic SQL fallback** when the SPARQL path is off or returns nothing — a routing safety net.
+- **Verified:** an Oxigraph-only sentinel rendered by default and vanished under `?sparql=0` (proving the source); routing (`/`, `/about`, `/login`), guest ACL (`/admin`→404), and admin multi-level ACL all resolve from the graph.
+- **Deliberate deviation:** the SQL page/text readers were **kept** (as the fallback), not deleted — MySQL is still the system of record until P2. (Gotcha found & documented: `sanitize_inputs()` turns `'0'`→`false`, so the opt-out is read straight from `$_GET` with a `(bool)` cast, not via `lunaTools::request()`.)
 
-**Risks:** if P0 is incomplete, reads show holes (P0 verification is the gate); `purge_index`/`load_mods` are easy-to-miss SQL holdouts; the Cache_Lite layer survives only if purge and constructor read the same default.
+**Risks (carried):** a *partial* mirror gap (some-but-not-all triples) is **not** caught by the empty-result fallback — run `rdf_resync_all()` after out-of-band changes; the dual-write is still best-effort, so reads can serve a stale mirror until the next successful sync (eliminated only by P2).
 
-### P2 — Retire the MySQL content write; triplestore = single source of truth
+### P2 — Retire the MySQL content write; triplestore = single source of truth ⬅ next, **blocked on decision #1**
 **Goal:** stop writing content to MySQL, mint identity from slugs, and harden the now-single write.
 
 - **First, harden the write:** promote the Oxigraph `UPDATE` from best-effort to **must-succeed** (fail the save on mirror failure) and add a relational **outbox** table for at-least-once replay/reconciliation — there is *no 2-phase commit* across MySQL and an HTTP SPARQL endpoint.
@@ -85,8 +88,10 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 **Risks:** cache-keying the XML wrong serves stale graphs; `xsl:include` resolution differs server (filesystem) vs. browser (URL) — the static `/xsl/` tree needs correct relative URLs and CORS care *now*; errors/404/redirect/auth must be expressible as a `luna:message` RDF graph a stylesheet can render.
 
-### P5 — Client-side XSL rendering (WASM libxslt), as progressive enhancement
-**Goal:** move the transform into the browser via the `xslt-polyfill` WASM engine, **with the server render kept as the permanent canonical fallback** — so the site never regresses and SEO/accessibility hold.
+### P5 — Client-side XSL rendering (WASM libxslt) — ❌ dropped
+**Decision #7, June 2026: not doing this.** With native browser XSLT being removed, the only path was a ~2.8 MB WASM polyfill bolted on top of a server render that must stay anyway — not worth the payload and complexity for this project. The plan is preserved below as a record of the analysis, should the trade-off ever change.
+
+**Original goal:** move the transform into the browser via the `xslt-polyfill` WASM engine, **with the server render kept as the permanent canonical fallback** — so the site never regresses and SEO/accessibility hold.
 
 - **Refactor first (server render unchanged):** extract the inline UI `<script>` blocks + bootstrap vars from `luna.header.html.xsl` into `js/` files and a JSON/`data-` config, so the loader has them before any XML arrives.
 - Ship a tiny static **shell** (doctype, `<head>` with title/meta + the schema.org **JSON-LD we already emit** for crawlers, `<body id=app>` + loader); parallel-fetch the page RDF/XML (`/data/{slug}`) and the winning `.xsl`.
@@ -108,14 +113,14 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 | 3 | **Keep or drop MySQL/Ontop** after P2 — retire entirely, or keep as a read-only SQL projection behind Ontop? | P2/P3 |
 | 4 | **Fate of `nid`** — drop the `/node/{nid}` identity once XSLT no longer needs it, or keep `nid` as a non-identifying `schema:identifier` indefinitely? | P2 |
 | 5 | **Triplestore for P3 semantics** — stay on Oxigraph + external SHACL/inference, or swap to Jena Fuseki / GraphDB for native support (endpoint swap)? | P3 |
-| 6 | **Client-XSLT engine** — commit to `xslt-polyfill` WASM (same engine as server) and accept the ~2.8 MB + service-worker cost, vs. lighter-but-riskier pure-JS engines. | P5 |
-| 7 | **Is P5 even worth it?** Given native XSLT is gone and the only client path is a heavy WASM polyfill *on top of a server render that must stay anyway*, does client rendering (SPA nav, offload) justify the payload/complexity — or is the **data-first server (P4) + JSON-LD** the right place to stop? | P5 |
+| 6 | ~~**Client-XSLT engine.**~~ Moot — P5 dropped. | ~~P5~~ |
+| 7 | ✅ **Resolved (June 2026): P5 is not worth it.** The data-first server (P4) + JSON-LD is where rendering stops; the server-side XSLTProcessor render stays canonical. | — |
 | 8 | **Draft/version model (P3)** — per-resource named graphs promoted on publish; PROV-O audit in the default graph or a dedicated audit graph? | P3 |
 
 ---
 
 ## Suggested sequencing
 
-P0 → P1 → P2 are the spine of "RDF as far as possible" and should go in order (each gates the next). P3 is optional polish you can defer. P4 is low-risk and valuable on its own (the server becomes a clean data API) — and it's the natural **decision point for #7**: ship P4, see how the JSON-LD + RDF endpoints feel, and only commit to P5 if browser rendering earns its weight. **My recommendation:** do P0–P2, then P4, then sit with decision #7 before touching P5.
+**P0 and P1 are done** (0.3.3-alpha). The remaining spine is **P2** — blocked only on decision #1 (the rename/URI-identity policy), which is the gate to make the triplestore the single source of truth and eliminate dual-write drift. **P3** is optional polish. **P4** (data-first server) is low-risk, valuable on its own, and is now the **end of Part 2** — P5 (client-side XSLT) has been dropped. **Recommended next:** settle decision #1, then P2; P4 whenever a clean RDF/data API is wanted.
 
-> Browser-XSLT facts in this doc were verified against Chrome's deprecation guidance, LWN, and WHATWG/Mozilla tracking bugs (mid-2026). They are time-sensitive — re-check before P5.
+> The browser-XSLT analysis in this doc was the basis for dropping P5; it was verified against Chrome's deprecation guidance, LWN, and WHATWG/Mozilla tracking bugs (mid-2026).

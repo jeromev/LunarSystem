@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.3-alpha] - 2026-06-19
+- Semantic web (Phase C complete — the triplestore is now authoritative for the read/write loop; MySQL stays the system of record). The RDF track is being finished; the client-side-XSLT idea (roadmap P5) has been **dropped**. See [docs/linked-data.md](docs/linked-data.md) and [docs/roadmap.md](docs/roadmap.md).
+  - **P0 — generic write-through.** Replaced the per-mod `rdf_put_article` hook with a generic projection wired into the model's CRUD, so *every* content write mirrors to the graph by construction:
+    - `lunaModel::rdf_sync_node($nid)` re-projects a node's whole description (`DELETE { <uri> ?p ?o } INSERT { … }`) to match the R2RML mapping — typing the resource (`page`→`schema:WebPage`, `text`→`schema:Article`, `user`→`foaf:Person`, level/group/mod→`luna:`) and its edges (`schema:isPartOf`/`hasPart`, `luna:level`), with numeric values typed `xsd:integer`. Called from `insert`/`update`/`link`/`unlink` (and by `mod_edit_texts` after a text-body write).
+    - `lunaModel::rdf_delete_node($nid)` removes every triple mentioning a resource (subject *and* object), inside `delete()`.
+    - `lunaModel::rdf_resync_all()` re-projects every node from MySQL — a pure-PHP bootstrap/repair of the store that replaces the Ontop "materialise" step. Used to close a real drift gap (a page that predated the dual-write) to exact count parity.
+  - **P1 — reads default to the graph.** The read path (routing, ACL, texts) is now served from the triplestore by default: `SPARQL_ENDPOINT` defaults to **Oxigraph** (Ontop becomes an opt-in override), gated by `lunaModel::sparql_reads()` (`SPARQL_READS`, default on). Both the routing and text loaders keep an automatic **SQL fallback**; `?sparql=0` forces the SQL path. (`sanitize_inputs()` turns `'0'`→`false`, so the opt-out is read from `$_GET` with a `(bool)` cast, not via `lunaTools::request()`.)
+  - Verified end-to-end on Docker: insert→link→delete of a throwaway page produced then fully removed its projection in Oxigraph; an Oxigraph-only sentinel rendered by default and vanished under `?sparql=0`; guest/admin routing + level-based ACL resolve from the graph.
+  - Still SQL-only (by design, for now): the mod list (`load_mods`) and the `luna_actions` audit trail. Retiring the MySQL content write (single source of truth) is **P2**, blocked on the rename/URI-identity decision.
+
 ## [0.3.2-alpha] - 2026-06-18
 - Semantic web (Phase C, in progress — make the triplestore authoritative): content **writes** now flow into the graph via SPARQL `UPDATE`, the write counterpart to the read-through-SPARQL path.
   - `lunaModel::sparql_update()` POSTs a SPARQL `UPDATE` to a new `SPARQL_UPDATE_ENDPOINT` (Oxigraph; best-effort, so a failed mirror never breaks a save), with `sparql_literal()` for safe string escaping.

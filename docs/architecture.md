@@ -79,10 +79,10 @@ with a message instead ([luna.php:205-215](../luna/luna.php#L205)):
     page node; a miss raises a **404**. Defines `PAGENID` and `PAGELID`.
 16. **Authorise** — `check_privileges()`; unauthorised users are redirected to
     `login`.
-17. **Load page texts** — `load_texts(0, PAGENID)` merges the page's content
-    blocks into the model. (Under `?sparql=1` this instead calls
-    `load_texts_sparql(PAGENID)`, fetching the same content over SPARQL —
-    [luna.php:260-263](../luna/luna.php#L260); see [linked-data.md](linked-data.md).)
+17. **Load page texts** — by default `load_texts_sparql(PAGENID)` fetches the
+    page's content blocks from the triplestore; `?sparql=0` (or an empty graph
+    result) falls back to `load_texts(0, PAGENID)`, the SQL path. Both merge the
+    same blocks into the model — see [linked-data.md](linked-data.md).
 18. **Collect page metadata** — site name, description, version, author, language,
     etc. into `luna::$data`.
 
@@ -147,10 +147,10 @@ the stylesheet lookup order and the RDF/XML the templates expect.
 
 > **Semantic-web layer:** the model additionally exposes a JSON-LD projection — `?output=jsonld` routes through
 > `lunaModel::to_jsonld()`, and the HTML `<head>` carries an embedded
-> `<script type="application/ld+json">` block. The read path can also flow
-> through a SPARQL endpoint under `?sparql=1` (routing, level-based ACL, and
-> page content), with no change to the archival path described above. See
-> [linked-data.md](linked-data.md).
+> `<script type="application/ld+json">` block. The read path now flows through a
+> SPARQL endpoint **by default** (routing, level-based ACL, and page content),
+> with `?sparql=0` to fall back to the archival SQL path described above, and
+> every content write mirrors into the triplestore. See [linked-data.md](linked-data.md).
 
 ## Request lifecycle diagram
 

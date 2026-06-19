@@ -125,12 +125,12 @@ class lunaModel {
 			$this->aliases = $array['aliases'];
 			unset($array);
 		} else { 
-			// load all the pages from the db into the model
-			if (lunaTools::request('sparql')) {
-				$this->merge_index($this->load_nodes_sparql('page'));
-			} else {
-				$this->merge_index($this->load_nodes('page', 'level'));
-			}
+			// load the page tree into the model — from the graph by default, falling
+			// back to SQL if the SPARQL path is off or yields nothing (routing safety net).
+			$nodes = false;
+			if (self::sparql_reads()) { $nodes = $this->load_nodes_sparql('page'); }
+			if (empty($nodes)) { $nodes = $this->load_nodes('page', 'level'); }
+			$this->merge_index($nodes);
 			if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); } 
 			if (luna::$cache) { $cache_obj->save(serialize(array('index' => $this->index, 'aliases' => $this->aliases))); }
 		}
@@ -700,31 +700,249 @@ class lunaModel {
 		);
 	}
 	// }}}
-	// {{{ rdf_put_article()
+	// {{{ rdf_sync_node()
 	/**
-	 * Write a text block's content into the triplestore as a schema:Article via
-	 * SPARQL UPDATE — the RDF-native mirror of an edit_texts save. Replaces the
-	 * article's headline / body / language for the resource <base/id/{lid}>,
-	 * leaving its other triples (isPartOf, identifier, …) intact. Best-effort.
+	 * Project a node's current relational state into the triplestore via a SPARQL
+	 * UPDATE — the generic, RDF-native write-through. Replaces the whole description
+	 * of <base/id/{lid}> with the triples the R2RML mapping (semantic/ontop/
+	 * mapping.ttl) derives for that node, so anything mutated through insert() /
+	 * update() / link() / unlink() is mirrored into Oxigraph in real time.
+	 * Best-effort: a missing or unreachable endpoint is a no-op, never a failure.
+	 * See docs/linked-data.md.
 	 *
 	 * @access public
-	 * @param string $lid     the text's literal identifier (its URI slug)
-	 * @param string $title   schema:headline
-	 * @param string $content schema:articleBody (HTML stripped to text)
-	 * @param string $lang    schema:inLanguage
+	 * @param integer $nid
 	 * @return boolean
 	 */
-	public function rdf_put_article($lid, $title, $content, $lang) {
-		if (empty($lid) || !defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
-		$uri = '<'.rtrim(luna::$site_uri, '/').'/id/'.rawurlencode($lid).'>';
-		$h   = self::sparql_literal($title);
-		$b   = self::sparql_literal(trim(strip_tags($content)));
-		$l   = self::sparql_literal($lang);
-		$update = 'PREFIX schema: <https://schema.org/> '
-			. 'DELETE { '.$uri.' schema:headline ?h ; schema:articleBody ?b ; schema:inLanguage ?l } '
-			. 'INSERT { '.$uri.' a schema:Article ; schema:headline "'.$h.'" ; schema:articleBody "'.$b.'" ; schema:inLanguage "'.$l.'" } '
-			. 'WHERE  { OPTIONAL { '.$uri.' schema:headline ?h } OPTIONAL { '.$uri.' schema:articleBody ?b } OPTIONAL { '.$uri.' schema:inLanguage ?l } }';
+	public function rdf_sync_node($nid = false) {
+		if (empty($nid) || !defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		$nid = intval($nid);
+		if (empty($nid)) { return false; }
+		// the node, its type slug and its parent slug (mirrors the mapping's joins)
+		$res = lunaDB::query('
+			SELECT n.lid AS lid, t.lid AS type1, n.is_active AS is_active, pn.lid AS parent_lid
+			FROM '.luna::get_ini('DBtables', 'NODES').' n
+			JOIN '.luna::get_ini('DBtables', 'CLASSES').' t ON t.id = n.tid
+			LEFT JOIN '.luna::get_ini('DBtables', 'NODES').' pn ON pn.nid = n.parent_nid
+			WHERE n.nid = '.lunaDB::quote($nid).'
+		');
+		if (!$res || !($row = $res->fetchRow())) { return false; }
+		$res->free();
+		$uri = self::rdf_uri($row->lid);
+		$po  = array();
+		switch ($row->type1) {
+			case 'page':
+				$po[] = 'a schema:WebPage';
+				$po[] = 'schema:name '.self::rdf_str($row->lid);
+				$po[] = 'schema:identifier '.self::rdf_int($nid);
+				$po[] = 'luna:isActive '.self::rdf_int($row->is_active);
+				if (!empty($row->parent_lid)) { $po[] = 'schema:isPartOf '.self::rdf_uri($row->parent_lid); }
+				foreach ($this->rdf_edges($nid, array('text', 'level')) as $e) {
+					if ($e->type1 == 'text')  { $po[] = 'schema:hasPart '.self::rdf_uri($e->lid); }
+					if ($e->type1 == 'level') { $po[] = 'luna:level '.self::rdf_uri($e->lid); }
+				}
+				break;
+			case 'text':
+				$po[] = 'a schema:Article';
+				$po[] = 'schema:identifier '.self::rdf_int($nid);
+				if ($t = $this->rdf_text_row($nid)) {
+					$po[] = 'schema:headline '.self::rdf_str($t->title);
+					$po[] = 'schema:articleBody '.self::rdf_str(trim(strip_tags($t->content_html)));
+					$po[] = 'schema:inLanguage '.self::rdf_str($t->lang);
+				}
+				foreach ($this->rdf_edges($nid, array('page')) as $e) { $po[] = 'schema:isPartOf '.self::rdf_uri($e->lid); }
+				break;
+			case 'level':
+				$po[] = 'schema:identifier '.self::rdf_int($nid);
+				$po[] = 'schema:name '.self::rdf_str($row->lid);
+				$po[] = 'luna:isActive '.self::rdf_int($row->is_active);
+				break;
+			case 'user':
+				$po[] = 'a foaf:Person';
+				if ($u = $this->rdf_user_row($nid)) { $po[] = 'foaf:name '.self::rdf_str(trim($u->firstname.' '.$u->lastname)); }
+				break;
+			default:
+				// group, mod, … — a minimal generic projection
+				$po[] = 'schema:name '.self::rdf_str($row->lid);
+				$po[] = 'schema:identifier '.self::rdf_int($nid);
+				$po[] = 'luna:isActive '.self::rdf_int($row->is_active);
+		}
+		$update = self::rdf_prefixes()
+			. 'DELETE { '.$uri.' ?p ?o } '
+			. 'INSERT { '.$uri.' '.implode(' ; ', $po).' } '
+			. 'WHERE  { OPTIONAL { '.$uri.' ?p ?o } }';
 		return $this->sparql_update($update);
+	}
+	// }}}
+	// {{{ rdf_delete_node()
+	/**
+	 * Remove a node from the triplestore: drop every triple that mentions its
+	 * resource URI, as subject or as object. Call it *before* the relational
+	 * delete, while the lid can still be resolved. Best-effort. See rdf_sync_node().
+	 *
+	 * @access public
+	 * @param integer $nid
+	 * @return boolean
+	 */
+	public function rdf_delete_node($nid = false) {
+		if (empty($nid) || !defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		$nid = intval($nid);
+		if (empty($nid)) { return false; }
+		$res = lunaDB::query('SELECT lid FROM '.luna::get_ini('DBtables', 'NODES').' WHERE nid = '.lunaDB::quote($nid));
+		if (!$res || !($row = $res->fetchRow())) { return false; }
+		$res->free();
+		$uri = self::rdf_uri($row->lid);
+		$update = 'DELETE WHERE { '.$uri.' ?p ?o } ; DELETE WHERE { ?s ?p '.$uri.' }';
+		return $this->sparql_update($update);
+	}
+	// }}}
+	// {{{ rdf_resync_all()
+	/**
+	 * Re-project every node from MySQL into the triplestore — the pure-PHP
+	 * bootstrap / repair of the graph, replacing the Ontop "materialise" step.
+	 * Reconciles MySQL → graph (every relational node is upserted); it does not
+	 * remove graph-only orphans. Run it once to seed Oxigraph, or any time the
+	 * best-effort dual-write may have drifted. See rdf_sync_node().
+	 *
+	 * @access public
+	 * @return integer the number of nodes synced
+	 */
+	public function rdf_resync_all() {
+		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return 0; }
+		$nids = array();
+		$res = lunaDB::query('SELECT nid FROM '.luna::get_ini('DBtables', 'NODES').' ORDER BY nid');
+		if ($res) { while ($row = $res->fetchRow()) { $nids[] = intval($row->nid); } $res->free(); }
+		$n = 0;
+		foreach ($nids as $nid) { if ($this->rdf_sync_node($nid)) { $n++; } }
+		return $n;
+	}
+	// }}}
+	// {{{ rdf_prefixes()
+	/**
+	 * The SPARQL PREFIX preamble shared by every write-through update.
+	 * @access public
+	 * @return string
+	 */
+	public static function rdf_prefixes() {
+		return 'PREFIX schema: <https://schema.org/> '
+			. 'PREFIX foaf: <http://xmlns.com/foaf/0.1/> '
+			. 'PREFIX luna: <http://lunarsystem.org/ontology#> '
+			. 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> ';
+	}
+	// }}}
+	// {{{ sparql_reads()
+	/**
+	 * Whether the read path (routing / ACL / texts) should be served from SPARQL.
+	 * Defaults to the SPARQL_READS constant; `?sparql=1` forces it on for a single
+	 * request and `?sparql=0` forces it off (the SQL path), regardless of default.
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public static function sparql_reads() {
+		// per-request override read straight from $_GET: ?sparql=1 forces SPARQL,
+		// ?sparql=0 forces SQL. The (bool) cast copes both with the raw '0' string
+		// and with the boolean false that sanitize_inputs() turns '0' into (PHP's
+		// empty('0') is true, so lunaTools::request() can't see the opt-out at all).
+		if (isset($_GET['sparql'])) { return (bool) $_GET['sparql']; }
+		return defined('SPARQL_READS') ? (bool) SPARQL_READS : false;
+	}
+	// }}}
+	// {{{ rdf_uri()
+	/**
+	 * Build a resource URI <base/id/{lid}> — the same identity scheme as the
+	 * JSON-LD projection and the R2RML mapping.
+	 * @access public
+	 * @param string $lid
+	 * @return string an angle-bracketed absolute IRI
+	 */
+	public static function rdf_uri($lid) {
+		return '<'.rtrim(luna::$site_uri, '/').'/id/'.rawurlencode($lid).'>';
+	}
+	// }}}
+	// {{{ rdf_str()
+	/**
+	 * A node value as a SPARQL string literal.
+	 * @access public
+	 * @param string $s
+	 * @return string
+	 */
+	public static function rdf_str($s) {
+		return '"'.self::sparql_literal($s).'"';
+	}
+	// }}}
+	// {{{ rdf_int()
+	/**
+	 * A node value as a typed SPARQL integer literal, matching the datatype the
+	 * R2RML mapping infers for numeric columns (nid, is_active).
+	 * @access public
+	 * @param mixed $v
+	 * @return string
+	 */
+	public static function rdf_int($v) {
+		return '"'.intval($v).'"^^xsd:integer';
+	}
+	// }}}
+	// {{{ rdf_edges()
+	/**
+	 * The slugs and type-slugs of the nodes linked from $nid (as nid1) whose type
+	 * is one of $types — the edge rows the mapping turns into hasPart / level /
+	 * isPartOf triples.
+	 * @access public
+	 * @param integer $nid
+	 * @param array $types
+	 * @return array rows of array('lid' => ..., 'type1' => ...)
+	 */
+	public function rdf_edges($nid, array $types) {
+		if (empty($types)) { return array(); }
+		$in = array();
+		foreach ($types as $t) { $in[] = lunaDB::quote($t); }
+		$res = lunaDB::query('
+			SELECT DISTINCT n2.lid AS lid, t2.lid AS type1
+			FROM '.luna::get_ini('DBtables', 'NODES_MAP').' m
+			JOIN '.luna::get_ini('DBtables', 'NODES').' n2 ON n2.nid = m.nid2
+			JOIN '.luna::get_ini('DBtables', 'CLASSES').' t2 ON t2.id = n2.tid
+			WHERE m.nid1 = '.lunaDB::quote($nid).' AND t2.lid IN ('.implode(', ', $in).')
+		');
+		$out = array();
+		if ($res) { while ($r = $res->fetchRow()) { $out[] = $r; } $res->free(); }
+		return $out;
+	}
+	// }}}
+	// {{{ rdf_text_row()
+	/**
+	 * One luna_texts row for a text node — the current request language if present,
+	 * else the first available. (The graph holds a single article per text, as the
+	 * SPARQL read path in load_texts_sparql() expects.)
+	 * @access public
+	 * @param integer $nid
+	 * @return mixed the row array, or false
+	 */
+	public function rdf_text_row($nid) {
+		$res = lunaDB::query('SELECT title, lang, content_html FROM '.luna::get_ini('DBtables', 'TEXTS').' WHERE nid = '.lunaDB::quote($nid));
+		if (!$res) { return false; }
+		$pick = false;
+		while ($r = $res->fetchRow()) {
+			if ($pick === false) { $pick = $r; }
+			if (isset($r->lang) && $r->lang == luna::$lang) { $pick = $r; break; }
+		}
+		$res->free();
+		return $pick;
+	}
+	// }}}
+	// {{{ rdf_user_row()
+	/**
+	 * The firstname/lastname row for a user node, or false.
+	 * @access public
+	 * @param integer $nid
+	 * @return mixed
+	 */
+	public function rdf_user_row($nid) {
+		$res = lunaDB::query('SELECT firstname, lastname FROM '.luna::get_ini('DBtables', 'USERS').' WHERE nid = '.lunaDB::quote($nid));
+		if (!$res) { return false; }
+		$r = $res->fetchRow();
+		$res->free();
+		return $r;
 	}
 	// }}}
 	// {{{ load_messages()
@@ -1932,6 +2150,7 @@ class lunaModel {
 				)
 		');
 		$this->insert_action($nextID, $time);
+		$this->rdf_sync_node($nextID);
 		return $nextID;
 	}
 	// }}}
@@ -1961,6 +2180,7 @@ class lunaModel {
 				nid = '.lunaDB::quote($nid).'
 		');
 		$this->insert_action($nid);
+		$this->rdf_sync_node($nid);
 		return $nid;
 	}
 	// }}}
@@ -1972,6 +2192,7 @@ class lunaModel {
 	 */
 	public function delete($nid = false) { 
 		if (empty($nid) || !is_integer(intval($nid))) { return false; }
+		$this->rdf_delete_node($nid);
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'NODES').'
@@ -2025,6 +2246,10 @@ class lunaModel {
 					'.$sql.'
 			');
 		}
+		// RDF write-through: re-project both endpoints of the new edge(s).
+		$rdf_sync = array(intval($nodeid1));
+		if (is_array($nodeid2)) { foreach ($nodeid2 as $rdf_nid) { $rdf_sync[] = intval($rdf_nid); } } else { $rdf_sync[] = intval($nodeid2); }
+		foreach (array_unique($rdf_sync) as $rdf_nid) { $this->rdf_sync_node($rdf_nid); }
 		return true;
 	}
 	// }}}
@@ -2038,6 +2263,10 @@ class lunaModel {
 	public function unlink($nodeid = false, $type1 = false) {
 		if (empty($nodeid) || !is_integer(intval($nodeid))) { return false; }
 		if (empty($type1) || !is_string($type1)) { return false; }
+		// the nodes about to be unlinked, captured before the edges go (to re-sync after)
+		$rdf_targets = array();
+		$rdf_res = lunaDB::query('SELECT DISTINCT n2.nid AS nid FROM '.luna::get_ini('DBtables', 'NODES_MAP').' m JOIN '.luna::get_ini('DBtables', 'NODES').' n2 ON n2.nid = m.nid2 JOIN '.luna::get_ini('DBtables', 'CLASSES').' t2 ON t2.id = n2.tid WHERE m.nid1 = '.lunaDB::quote($nodeid).' AND t2.lid = '.lunaDB::quote($type1));
+		if ($rdf_res) { while ($rdf_r = $rdf_res->fetchRow()) { $rdf_targets[] = intval($rdf_r->nid); } $rdf_res->free(); }
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'NODES_MAP').'
@@ -2074,6 +2303,8 @@ class lunaModel {
 						)
 				)
 		');
+		foreach (array_unique($rdf_targets) as $rdf_nid) { $this->rdf_sync_node($rdf_nid); }
+		$this->rdf_sync_node(intval($nodeid));
 		return true;
 	}
 	// }}}

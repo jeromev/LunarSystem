@@ -1,11 +1,14 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.3.0-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.3.3-alpha`).** The semantic-web work
 > described here is now the `main` line; the untouched archival CMS (`0.2.14-alpha`)
-> is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B, and
-> **all three are implemented** (Phase 0 JSON-LD, Phase A virtual SPARQL +
-> read-through-SPARQL, Phase B triplestore swap). The SPARQL read path is
-> currently opt-in (`?sparql=1`) and still maturing.
+> is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
+> **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
+> triplestore swap, and **Phase C — the triplestore is now authoritative for the
+> read path by default**. Every content write mirrors into Oxigraph through a
+> generic write-through in the model's CRUD; routing, ACL and texts are read from
+> the triplestore by default (`?sparql=0` falls back to SQL). MySQL remains the
+> system of record until the rename/URI decision unblocks P2 (see [roadmap.md](roadmap.md)).
 
 ## The problem we're fixing
 
@@ -168,13 +171,14 @@ external `owl:sameAs` to it) keeps working.
 
 The app can now populate its model **from the SPARQL endpoint** instead of the
 hand-written joins. [`lunaModel::sparql_select()`](../luna/luna.classes/luna.model.class.php)
-queries Ontop, and `load_texts_sparql()` rebuilds a page's text blocks through
-the *same* `load_text()` index builder the SQL path uses. It's gated behind
-`?sparql=1`:
+queries the endpoint, and `load_texts_sparql()` rebuilds a page's text blocks
+through the *same* `load_text()` index builder the SQL path uses. **As of
+0.3.3-alpha this is the default** (`lunaModel::sparql_reads()`, constant
+`SPARQL_READS`); `?sparql=0` forces the SQL path for one request:
 
 ```text
-/?output=jsonld            # page texts from the hand-written SQL joins
-/?output=jsonld&sparql=1   # page texts fetched from the SPARQL endpoint
+/?output=jsonld            # page texts from the SPARQL endpoint (default)
+/?output=jsonld&sparql=0   # page texts from the hand-written SQL joins
 ```
 
 Both produce a **byte-for-byte identical model** (verified — the JSON-LD output
@@ -186,12 +190,17 @@ matches exactly, and the HTML page renders the same). The mapping gained a
 loads the whole page tree — scoped to the levels the current user holds — and
 rebuilds it through the same `load_node()` + `calculate_aliases()` the SQL path
 uses, so URL→page resolution *and* the level-based ACL are driven by the graph.
-Verified: as a guest, `/?sparql=1` renders the public home but `/admin?sparql=1`
-is **404** (admin pages aren't in a guest's level-filtered alias table); as
-admin, the deep alias `/admin/journal?sparql=1` resolves and renders. Under
-`?sparql=1` the page's **routing and content** are built from SPARQL; the only
-remaining SQL read on the page path is the mod list (`load_mods`) — infrastructure,
-not content.
+Verified by default: as a guest, `/` renders the public home but `/admin`
+is **404** (admin pages aren't in a guest's level-filtered alias table); an
+admin's levels resolve every protected page from the graph. The page's
+**routing and content** are built from SPARQL; the only remaining SQL read on the
+page path is the mod list (`load_mods`) — infrastructure, not content.
+
+Both the routing loader and the text loader keep an **automatic SQL fallback**:
+if the SPARQL path is off (`?sparql=0` / `SPARQL_READS=0`) or returns nothing,
+they fall back to the hand-written joins, so a cold or unreachable endpoint can
+never brick routing. (A *partial* mirror gap is not caught by the empty-result
+fallback — reconcile with `rdf_resync_all()`; see below.)
 
 This is the move that makes SPARQL the **read boundary**: with the loaders
 reading this way, swapping Ontop for a triplestore (Phase B) changes nothing in
@@ -199,22 +208,37 @@ the application above the endpoint.
 
 ### Writing *through* SPARQL
 
-The first content **writes** now flow into the triplestore too — the start of
-making it authoritative rather than a read-only mirror.
-[`lunaModel::sparql_update()`](../luna/luna.classes/luna.model.class.php) is the
-write counterpart to `sparql_select()`: it POSTs a SPARQL `UPDATE` to a
-`SPARQL_UPDATE_ENDPOINT` (Oxigraph, best-effort, so a failed mirror never breaks a
-save). On top of it, `rdf_put_article()` mirrors a text block as a
-`schema:Article`, and `mod_edit_texts` calls it whenever a text is **created or
-modified**. So editing page content in the admin UI now **dual-writes**: the
-existing SQL `UPDATE`/`INSERT` to MySQL, plus a SPARQL `DELETE`/`INSERT` to the
-graph for `<base/id/{lid}>`.
+**Every** content write now flows into the triplestore, through a generic
+write-through wired into the model's CRUD (no longer a per-mod hook).
+[`lunaModel::sparql_update()`](../luna/luna.classes/luna.model.class.php) POSTs a
+SPARQL `UPDATE` to `SPARQL_UPDATE_ENDPOINT` (Oxigraph, best-effort, so a failed
+mirror never breaks a save). On top of it:
 
-Verified end-to-end: editing the page text in the admin form lands in **both**
-MySQL (default render) and Oxigraph; pointed at Oxigraph, the app reads the edited
-content straight back — content written *and* read through RDF, no MySQL in that
-loop. Dual-write keeps the two stores in sync while the write path migrates; once
-every write is mirrored and reads default to the graph, the MySQL write retires.
+- **`rdf_sync_node($nid)`** re-projects a node's *whole* description into the
+  graph — `DELETE { <uri> ?p ?o } INSERT { …the triples the R2RML mapping derives… }`
+  — typing the resource (`page`→`schema:WebPage`, `text`→`schema:Article`,
+  `user`→`foaf:Person`, level/group/mod→`luna:`) and emitting its edges
+  (`schema:isPartOf`/`hasPart`, `luna:level`) with numeric values typed
+  `xsd:integer` to match the materialisation. `insert`/`update`/`link`/`unlink`
+  all call it; `mod_edit_texts` calls it after writing a text body (it replaced
+  the old `rdf_put_article`).
+- **`rdf_delete_node($nid)`** drops every triple mentioning the resource — as
+  subject *and* as object — and runs inside `delete()` before the rows go.
+- **`rdf_resync_all()`** re-projects *every* node from MySQL: the pure-PHP
+  bootstrap/repair of the store, replacing the Ontop "materialise" step. Run it
+  to seed Oxigraph or to reconcile after any out-of-band change (it upserts
+  MySQL→graph; it does not remove graph-only orphans).
+
+So any content change in the admin UI **dual-writes**: the existing SQL to MySQL,
+plus a SPARQL `DELETE`/`INSERT` to the graph for `<base/id/{lid}>`.
+
+Verified end-to-end through the real CRUD: insert→link→delete of a throwaway page
+produced and then fully removed its `schema:WebPage` + `luna:level` projection in
+Oxigraph; an Oxigraph-only sentinel on a text rendered by default and disappeared
+under `?sparql=0`; `rdf_resync_all()` closed a real drift gap (a page that
+predated the dual-write) to exact count parity with MySQL. Dual-write keeps the
+two stores in sync while the write path migrates; once the MySQL write retires
+(P2), the graph is the single source of truth and the drift window closes.
 
 ## Phase B — the swap (demonstrated)
 
@@ -232,19 +256,24 @@ docker-compose up -d oxigraph
 curl -X POST 'http://localhost:7879/store?default' \
   -H 'Content-Type: application/n-triples' --data-binary @semantic/ontop/dump.nt
 
-# 3. flip the app at the triplestore — NO code change, just an env var
-SPARQL_ENDPOINT=http://oxigraph:7878/query docker-compose up -d app
+# 3. point the app at the triplestore — NO code change. This is now the DEFAULT
+#    (SPARQL_ENDPOINT defaults to Oxigraph); the override goes the other way:
+#    SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app   # read via Ontop
 ```
 
-After the flip, `?sparql=1` is served by Oxigraph. The proof it's genuinely the
+> Since 0.3.3-alpha the Ontop materialise above is optional: `rdf_resync_all()`
+> re-projects the whole store from MySQL in pure PHP (see *Writing through SPARQL*),
+> which is how Oxigraph is now seeded and reconciled.
+
+The default read path is served by Oxigraph. The proof it's genuinely the
 triplestore and not MySQL-via-Ontop: **stop Ontop** and the read path keeps
 working —
 
 ```text
 docker stop lunarsystem-ontop-1
-guest  /?sparql=1            -> 200   (home renders from the triplestore)
-guest  /admin?sparql=1       -> 404   (level-based ACL preserved in the graph)
-admin  /admin/journal?sparql=1 -> 200 (deep alias resolved from the graph)
+guest  /              -> 200   (home renders from the triplestore)
+guest  /admin         -> 404   (level-based ACL preserved in the graph)
+admin  /admin/journal -> 200   (deep alias resolved from the graph)
 ```
 
 Routing, access control, and content — all served by the triplestore, with the
@@ -254,21 +283,24 @@ part. The dump is generated (gitignored); regenerate it with the command above.
 ## Roadmap
 
 - **Phase A (done — prototype):** R2RML + Ontop virtual SPARQL endpoint over the
-  existing MySQL; the page **read path (routing, ACL, text content) flows through
-  SPARQL** under `?sparql=1`. Remaining: migrate the mod list; make `?sparql=1`
-  the default; expand the mapping to `luna_actions` (PROV-O).
+  existing MySQL; the page read path (routing, ACL, text content) flows through
+  SPARQL. Ontop is now the *opt-in* override (`SPARQL_ENDPOINT=…/sparql`).
 - **Phase B (done — demonstrated):** materialised `mapping.ttl` into Oxigraph and
-  flipped the app at it by env var (above).
-- **Phase C — make the triplestore authoritative (in progress):** content
-  **writes** now mirror to the graph via SPARQL `UPDATE` (text create/modify →
-  `schema:Article`; see *Writing through SPARQL*). Next: (1) generalise the
-  write-through across the model's CRUD (`insert`/`update`/`delete`/`link`/
-  `unlink`) so *every* content write hits the graph; (2) make reads default to the
-  graph and retire the MySQL content read; (3) retire the MySQL content write
-  (single source of truth), minting URIs from slugs not `nid` sequences; (4) turn
-  on RDFS/OWL inference + SHACL validation and named graphs for drafts/versions.
-  **Boundary:** sessions and cache stay relational/native — a triplestore is the
-  wrong tool for ephemeral, high-churn data.
+  flipped the app at it by env var (above) — now the default endpoint.
+- **Phase C — triplestore authoritative for the read/write loop (done, 0.3.3-alpha):**
+  *every* content write mirrors to the graph via the generic `rdf_sync_node` /
+  `rdf_delete_node` write-through (see *Writing through SPARQL*), and reads default
+  to the graph with a SQL fallback (see *Reading through SPARQL*). MySQL is still
+  the system of record.
+
+What remains is tracked in **[roadmap.md](roadmap.md)**: **P2** — retire the MySQL
+content write so the triplestore is the *single* source of truth (blocked on the
+rename/URI decision; needs must-succeed writes + an outbox since there's no 2PC),
+minting URIs from slugs not `nid` sequences; and the optional **P3** — RDFS/OWL
+inference, SHACL validation, and named graphs for drafts/versions. Still-SQL
+holdouts: the mod list (`load_mods`) and the `luna_actions` audit trail (PROV-O).
+**Boundary:** sessions and cache stay relational/native — a triplestore is the
+wrong tool for ephemeral, high-churn data.
 
 The cardinal rule across all phases: **freeze the URIs.** Same `/id/{slug}` in 0,
-A, and B, so every external link and `owl:sameAs` keeps working.
+A, B, and C, so every external link and `owl:sameAs` keeps working.

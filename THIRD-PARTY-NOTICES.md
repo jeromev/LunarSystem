@@ -1,8 +1,8 @@
 # Third-party notices
 
 LunarSystem itself is licensed under the **GNU GPL v2** (see [LICENSE](LICENSE)).
-It bundles the following third-party libraries under `luna/luna.lib/` and
-`js/`. Each retains its own license and copyright; the per-file headers are the
+It bundles the following third-party libraries under `luna/luna.lib/`.
+Each retains its own license and copyright; the per-file headers are the
 authoritative statement. They are vendored (committed in-tree, no Composer/PEAR
 install) because the app originated in the 2006–2010 PHP 5.x era; it now runs on
 PHP 8.3 / MySQL 8.0 (the database layer was migrated from PEAR MDB2 to PDO in
@@ -16,11 +16,15 @@ PHP 8.3 / MySQL 8.0 (the database layer was migrated from PEAR MDB2 to PDO in
 | **XML_HTMLSax3** (HTML SAX parser; HTML_Safe's dependency) | `luna/luna.lib/XML/` | pear.php.net/package/XML_HTMLSax3 | PHP License v3.0 (© 1997–2002 The PHP Group; A. Zhukov, H. Fuecks) |
 | **HTML_Safe** (input sanitiser) | `luna/luna.lib/HTML/Safe.php` | pear.php.net/package/HTML_Safe | BSD License (3-Clause, © Roman Ivanov) |
 | **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
-| **jQuery** 1.4.1 | `js/jquery/` | jquery.com | MIT or GPL v2 (dual-licensed) |
+
+**jQuery is not bundled.** It is loaded at runtime from **cdnjs** — jQuery 3.7.1,
+pinned with an SRI `integrity` hash — in
+[luna.header.html.xsl](luna/luna.xsl/luna.html.xsl/luna.header.html.xsl). (MIT
+licensed.) Releases before 0.5.7-alpha vendored jQuery 1.4.1 under `js/jquery/`.
 
 The **jQuery TreeView** navigation icons under `images/treeView/` (© 2006 Myles
-Angell, <http://be.twixt.us/jquery/>) are also third-party; no explicit license
-was stated by the author.
+Angell, <http://be.twixt.us/jquery/>) are still bundled third-party assets; no
+explicit license was stated by the author.
 
 ## Inlined third-party functions
 

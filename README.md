@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.5.6-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.5.7-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning, with known, unfixed issues (unsalted MD5
@@ -71,7 +71,7 @@ luna/
   luna.sql/luna.mysql.sql      Database schema + seed data
   luna.locale/                 gettext translations (en_EN, en_US, fr_FR)
 css/                           Stylesheets
-js/                            jQuery + luna.js (admin UI behaviours)
+js/                            luna.js (admin UI behaviours; jQuery from cdnjs)
 semantic/                      Semantic-web layer (SPARQL over the unchanged MySQL)
   ontop/                       R2RML mapping + Ontop image (virtual SPARQL); Oxigraph dump
 ```

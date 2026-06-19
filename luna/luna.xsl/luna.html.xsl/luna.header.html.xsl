@@ -102,9 +102,10 @@ var ckeditorconfig = 0;
 					</xsl:comment>
 				</script>
 				<script type="text/javascript">
-					<xsl:attribute name="src">
-						<xsl:value-of select="$site_relative_url"/><xsl:text>js/jquery/jquery.js</xsl:text>
-					</xsl:attribute>
+					<xsl:attribute name="src">https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js</xsl:attribute>
+					<xsl:attribute name="integrity">sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==</xsl:attribute>
+					<xsl:attribute name="crossorigin">anonymous</xsl:attribute>
+					<xsl:attribute name="referrerpolicy">no-referrer</xsl:attribute>
 				</script>
 				<script type="text/javascript">
 					<xsl:attribute name="src">

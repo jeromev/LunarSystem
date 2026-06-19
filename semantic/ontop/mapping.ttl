@@ -2,6 +2,7 @@
 @prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix schema: <https://schema.org/> .
 @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix luna:   <http://lunarsystem.org/ontology#> .
 
 # ---------------------------------------------------------------------------
 # R2RML mapping: the luna_* relational schema (MySQL) projected to schema.org /
@@ -18,7 +19,7 @@
 # Pages -> schema:WebPage
 <#PageMap>
   rr:logicalTable [ rr:sqlQuery """
-      SELECT n.nid AS nid, n.lid AS lid, pn.lid AS parent_lid
+      SELECT n.nid AS nid, n.lid AS lid, n.is_active AS active, pn.lid AS parent_lid
       FROM luna_nodes n
       LEFT JOIN luna_nodes pn ON pn.nid = n.parent_nid
       WHERE n.tid = 5
@@ -34,6 +35,10 @@
   rr:predicateObjectMap [
       rr:predicate schema:identifier ;
       rr:objectMap [ rr:column "nid" ]
+  ] ;
+  rr:predicateObjectMap [
+      rr:predicate luna:isActive ;
+      rr:objectMap [ rr:column "active" ]
   ] ;
   rr:predicateObjectMap [
       rr:predicate schema:isPartOf ;
@@ -94,4 +99,29 @@
   rr:predicateObjectMap [
       rr:predicate foaf:name ;
       rr:objectMap [ rr:template "{fn} {ln}" ; rr:termType rr:Literal ]
+  ] .
+
+# Access levels (needed to reproduce the routing/ACL read path in SPARQL)
+<#LevelMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT n.nid AS nid, n.lid AS lid, n.is_active AS active
+      FROM luna_nodes n WHERE n.tid = 3
+  """ ] ;
+  rr:subjectMap [ rr:template "http://localhost:8080/id/{lid}" ] ;
+  rr:predicateObjectMap [ rr:predicate schema:identifier ; rr:objectMap [ rr:column "nid" ] ] ;
+  rr:predicateObjectMap [ rr:predicate schema:name ;       rr:objectMap [ rr:column "lid" ] ] ;
+  rr:predicateObjectMap [ rr:predicate luna:isActive ;     rr:objectMap [ rr:column "active" ] ] .
+
+# Page -> required access level (luna_nodes_map edge)
+<#PageLevelMap>
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT p.lid AS page_lid, l.lid AS level_lid
+      FROM luna_nodes_map m
+      JOIN luna_nodes p ON p.nid = m.nid1 AND p.tid = 5
+      JOIN luna_nodes l ON l.nid = m.nid2 AND l.tid = 3
+  """ ] ;
+  rr:subjectMap [ rr:template "http://localhost:8080/id/{page_lid}" ] ;
+  rr:predicateObjectMap [
+      rr:predicate luna:level ;
+      rr:objectMap [ rr:template "http://localhost:8080/id/{level_lid}" ]
   ] .

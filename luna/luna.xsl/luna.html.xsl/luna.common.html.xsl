@@ -648,7 +648,7 @@
 
 	<xsl:template name="sitemap">
 		<div id="SiteMap" class="box">
-			<h2 class="box-handle expanded"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Sitemap']/luna:value"/></h2>
+			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Sitemap']/luna:value"/></h2>
 			<div class="box-content">
 				<ul class="tv">
 					<xsl:for-each select="/rdf:RDF/luna:page[luna:lid = 'root']">

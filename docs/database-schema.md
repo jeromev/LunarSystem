@@ -123,7 +123,7 @@ Read at bootstrap by `lunaTools::load_config()` and editable from the admin UI.
 
 Seeded keys include: `sitename`, `site_desc`, `author`, `general_email`,
 `version`, `keywords`, `timezone`, `langs` (a single comma-separated string,
-seeded as `en, fr` — split on `,` by `lunaTools::set_language`), `session_length`
+seeded as `en, fr` — split on `,` by `lunaTools::load_config`), `session_length`
 (`604800` = 7 days), `cache_timeout` (`3600`), `startdate`, `root_module`,
 `disable` / `disable_txt`.
 

@@ -57,7 +57,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.3.4-alpha';
+	public static $lunaVersion = '0.3.5-alpha';
 	/**
 	 * instance
 	 * @var object

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.5-alpha] - 2026-06-19
+- Docs: full accuracy audit of every doc/readme against the current RDF-native code (multi-agent pass, each finding adversarially verified). No code change.
+  - Fixed ~20 stale `luna.php`/`*.class.php` line-number anchors across `architecture.md`, `templating.md`, `configuration.md`, `modules.md`, and `security.md` that had drifted after the 0.3.3/0.3.4 code (the model gained ~280 lines, `luna.php` ~20). Constructor 199, `set_requested_path` 316, `set_site_path` 327, `load_mods` 394, `transform` 518, `load_ini` 641, the OPTIMIZE/dispatch/JSON-LD-head anchors, etc.
+  - `docs/README.md`: dropped "client-side rendering" from the roadmap summary (P5 was dropped).
+  - `docs/modules.md` + `docs/rdf-model.md`: the CRUD methods now mirror writes into the triplestore via `rdf_sync_node()`; scoped the "RDF is not a storage engine" claim to the archival model.
+  - `docs/templating.md`: corrected `forminput` attribution (it lives in `luna.common.html.xsl`, not `_admin`); added `jsonld` to the output-format list in `architecture.md`.
+  - `docs/database-schema.md`: the `langs` string is split by `lunaTools::load_config()`, not `set_language()`.
+  - `docs/linked-data.md`: clarified that level/group/mod nodes are projected untyped (no `rdf:type`), and that edges are `/id/{lid}` URIs while scalars carry `xsd:integer`.
+  - `docs/security.md`: fixed remediation anchors and added a **"Triplestore / SPARQL surface"** section (unauthenticated Oxigraph endpoints must stay internal; hand-rolled SPARQL string assembly; best-effort write-through).
+
 ## [0.3.4-alpha] - 2026-06-19
 - Semantic web (P2, first step — URI-identity policy). Resolved roadmap decision #1 as **"forbid slug edits"** and enforced it: `lunaModel::update()` now refuses any change to a node's `lid`, since `<base/id/{lid}>` *is* the resource's identity and the cardinal rule is "freeze the URIs." A rename is create-new + delete-old. This applies to every node type (page slugs, user emails, …), as all share the `/id/{lid}` scheme. Normal edits (same lid) are unaffected; a true rename returns `false` and logs a warning. Verified on Docker. The rest of P2 — retiring the MySQL *content write* itself — remains a larger, deliberate migration (see [docs/roadmap.md](docs/roadmap.md)).
 

@@ -552,7 +552,7 @@ body div#Page div#Top {
 body div#Page div#Top div.box {
   float: left;
   display: inline;
-  width: 66%;
+  width: 66.667%;
   margin: 0;
   padding: 0.125rem 0 0;
   background: var(--chrome);
@@ -560,7 +560,7 @@ body div#Page div#Top div.box {
   border-top-right-radius: 0;
 }
 body div#Page div#Top div.box:first-child {
-  width: 33%;
+  width: 33.333%;
   margin: 0 0.6875rem 0 0;
 }
 body div#Page div#Top h1 {

@@ -2,8 +2,8 @@
 HTML, BODY {
 		margin: 0;
 		padding: 0;
-		background: #cce9b1; 
-		color: #333;
+		background: #e2e2e2;
+		color: #1d1d1d;
 	}
 	BODY {
 			padding: 0 11px 11px;
@@ -26,9 +26,9 @@ HTML, BODY {
 							margin: 2px 0 0 0;
 							color: #999;
 						}
-						TABLE.zebra THEAD DIV.pagination A.prev, 
+						TABLE.zebra THEAD DIV.pagination A.prev,
 						TABLE.zebra THEAD DIV.pagination A.next,
-						TABLE.zebra THEAD DIV.pagination A.first, 
+						TABLE.zebra THEAD DIV.pagination A.first,
 						TABLE.zebra THEAD DIV.pagination A.last {
 								-moz-border-radius:3px;
 								-webkit-border-radius:3px;
@@ -36,9 +36,9 @@ HTML, BODY {
 								border:2px solid #CCCCCC;
 								padding: 0 5px 1px 5px;
 							}
-							TABLE.zebra THEAD DIV.pagination A.prev:hover, 
+							TABLE.zebra THEAD DIV.pagination A.prev:hover,
 							TABLE.zebra THEAD DIV.pagination A.next:hover,
-							TABLE.zebra THEAD DIV.pagination A.first:hover, 
+							TABLE.zebra THEAD DIV.pagination A.first:hover,
 							TABLE.zebra THEAD DIV.pagination A.last:hover { border-color: #09f; }
 						TABLE.zebra THEAD DIV.alphabetic { border-bottom: none; }
 							TABLE.zebra THEAD DIV.alphabetic STRONG.on {
@@ -54,7 +54,7 @@ HTML, BODY {
 							font-weight: normal;
 							border-bottom: solid 1px #bbb;
 							white-space: nowrap;
-							text-shadow:1px 1px 8px #555555;
+							text-shadow:1px 1px .5em rgba(0, 0, 0, 0.5);
 						}
 						TABLE.zebra THEAD TH:first-child {
 								-moz-border-radius:5px 0 0 0;
@@ -96,9 +96,9 @@ HTML, BODY {
 									padding: 3px;
 								}
 								TABLE.zebra TBODY TR.odd:hover, TABLE.zebra TBODY TR.odd.hover { background: url("../images/background/black10.png") repeat scroll 0 0 transparent; }
-							TABLE.zebra TBODY TR.active:hover, TABLE.zebra TBODY TR.active.hover { 
-								background: #cdedef; 
-								cursor: pointer; 
+							TABLE.zebra TBODY TR.active:hover, TABLE.zebra TBODY TR.active.hover {
+								background: #cdedef;
+								cursor: pointer;
 							}
 							TABLE.zebra TBODY TR.info, BODY DIV#Page DIV.message.info { background: #D6FFE0; }
 							TABLE.zebra TBODY TR.notice, BODY DIV#Page DIV.message.notice { background: #FFE5C1; }
@@ -106,8 +106,8 @@ HTML, BODY {
 							TABLE.zebra TBODY TR.warning, BODY DIV#Page DIV.message.warning { background: #FFC6C6; }
 							TABLE.zebra TBODY TR.error, BODY DIV#Page DIV.message.error { background: #FF8680; }
 							TABLE.zebra TBODY TR.deleted, TABLE.zebra TBODY TR.deleted A, TABLE.zebra TBODY TR.inactive, TABLE.zebra TBODY TR.inactive A { font-style: italic; color: #999 !important; }
-						TABLE.zebra TBODY TD { 
-							padding: 5px 6px; 
+						TABLE.zebra TBODY TD {
+							padding: 5px 6px;
 							margin: 0;
 						}
 			FORM {
@@ -141,8 +141,8 @@ HTML, BODY {
 							margin: 0;
 							display: block;
 						}
-						FORM FIELDSET LABEL SPAN.label { 
-							display: block; 
+						FORM FIELDSET LABEL SPAN.label {
+							display: block;
 							color: #666;
 							padding: 0 0 3px 0;
 						}
@@ -170,7 +170,7 @@ HTML, BODY {
 						}
 
 						FORM FIELDSET INPUT.submit {
-								background:url("../images/background/black20.png") repeat scroll 0 0 transparent;
+								background: rgb(36, 36, 36);
 								color:#FFFFFF;
 								font-size:11px;
 								letter-spacing:1px;
@@ -203,9 +203,9 @@ HTML, BODY {
 							-moz-border-radius:3px;
 							-webkit-border-radius:3px;
 						}
-					FORM FIELDSET INPUT:hover, 
-					FORM FIELDSET INPUT:focus, 
-					FORM FIELDSET SELECT:hover, 
+					FORM FIELDSET INPUT:hover,
+					FORM FIELDSET INPUT:focus,
+					FORM FIELDSET SELECT:hover,
 					FORM FIELDSET SELECT:focus,
 					FORM FIELDSET TEXTAREA:hover,
 					FORM FIELDSET TEXTAREA:focus  { border: solid 2px #938379; }
@@ -245,8 +245,8 @@ HTML, BODY {
 			margin: 0;
 			padding: 0 0 0 11px;
 		}
-		DL { 
-				margin: 0; 
+		DL {
+				margin: 0;
 				padding: 0;
 			}
 			DT { clear: both; }
@@ -255,8 +255,8 @@ HTML, BODY {
 					padding: 0;
 				}
 			DL.analyse { margin: 11px 0; background: transparent; }
-				DL.analyse DT { 
-					color: #999; 
+				DL.analyse DT {
+					color: #999;
 					padding: 5px 0;
 					background: url("../images/background/black05.png") repeat scroll 0 0 transparent;
 				}
@@ -312,9 +312,9 @@ HTML, BODY {
 		-moz-border-radius:5px;
 		-webkit-border-radius:5px;
 		border-radius:5px;
-		-webkit-box-shadow: 1px 1px 1.5em #ff99bf;
-		-moz-box-shadow: 1px 1px 1.5em #ff99bf;
-		box-shadow: 1px 1px 1.5em #ff99bf;
+		-webkit-box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
+		-moz-box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
+		box-shadow: 1px 1px 1em rgba(0, 0, 0, 0.1);
 	}
 	.box-content{
 			-moz-border-radius:3px;
@@ -323,26 +323,26 @@ HTML, BODY {
 			padding:0;
 		}
 	.box-handle { }
-		.box-handle.collapsed { 
-				padding-left: 22px; 
-				cursor: pointer; 
-				background: url("../images/menu-collapsed.png") no-repeat 0 50%; 
+		.box-handle.collapsed {
+				padding-left: 22px;
+				cursor: pointer;
+				background: url("../images/menu-collapsed.png") no-repeat 0 50%;
 			}
-		.box-handle.expanded { 
-				padding-left: 22px; 
-				cursor: pointer; 
-				background: url("../images/menu-expanded.png") no-repeat 0 50%; 
+		.box-handle.expanded {
+				padding-left: 22px;
+				cursor: pointer;
+				background: url("../images/menu-expanded.png") no-repeat 0 50%;
 				color:#744D4C;
 			}
 /* ////////////////////////////////////////////////////////////////////  PAGE */
-BODY DIV#Page { 
+BODY DIV#Page {
 		margin: 0 auto;
 		width: 833px;
 		background: transparent;
 		position: relative;
 	}
-	BODY DIV#Page DIV#Top { 
-			background: transparent; 
+	BODY DIV#Page DIV#Top {
+			background: transparent;
 		}
 		BODY DIV#Page DIV#Top DIV.box {
 				float: left;
@@ -350,14 +350,14 @@ BODY DIV#Page {
 				width: 622px;
 				margin: 0;
 				padding: 2px 0 0 0;
-				background: url("../images/background/black30.png") repeat scroll 0 0 transparent;
+				background: rgb(36, 36, 36);
 				-moz-border-radius-topleft:0;
 				-moz-border-radius-topright:0;
 				-webkit-border-top-left-radius: 0px 0px;
 				-webkit-border-top-right-radius: 0px 0px;
 			}
-			BODY DIV#Page DIV#Top DIV.box:first-child { 
-					width: 200px; 
+			BODY DIV#Page DIV#Top DIV.box:first-child {
+					width: 200px;
 					margin: 0 11px 0 0;
 				}
 			BODY DIV#Page DIV#Top H1 {
@@ -368,7 +368,7 @@ BODY DIV#Page {
 						color: #fff;
 						display: block;
 						padding: 11px;
-						text-shadow:1px 1px 6px #555555;
+						text-shadow:1px 1px .5em rgba(0, 0, 0, 0.5);
 					}
 	BODY DIV#Page DIV#Content {
 				background: transparent;
@@ -389,27 +389,27 @@ BODY DIV#Page {
 						background: #0066CC;
 					}
 			BODY DIV#Page DIV#Content DIV#Content-header SELECT#quickjump { }
-			BODY DIV#Page DIV#Content DIV#Bottom { 
-					padding: 6px 11px; 
-					margin: 0; 
+			BODY DIV#Page DIV#Content DIV#Bottom {
+					padding: 6px 11px;
+					margin: 0;
 					background: url("../images/background/white10.png") repeat scroll 0 0 transparent;
 					color: #666;
 				}
 				BODY DIV#Page DIV#Content DIV#Bottom DIV.box-content {  }
-		BODY DIV#Page DIV#Content DIV#Content-main {  
-				padding: 0; 
+		BODY DIV#Page DIV#Content DIV#Content-main {
+				padding: 0;
 				background: transparent;
 			}
-			BODY DIV#Page DIV#Content DIV#Content-main DIV.box { 
+			BODY DIV#Page DIV#Content DIV#Content-main DIV.box {
 					margin:0 0 11px;
 					padding:0 11px;
 					background: url("../images/background/white60.png") repeat scroll 0 0 transparent;
 				}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text { 
-						padding: 11px 22px 22px; 
+				BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text {
+						padding: 11px 22px 22px;
 						background: url("../images/background/white90.png") repeat scroll 0 0 transparent;
 					}
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text H2 { 
+					BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text H2 {
 							font-size:155%;
 						}
 					BODY DIV#Page DIV#Content DIV#Content-main DIV.box.text .box-content{
@@ -439,34 +439,34 @@ BODY DIV#Page {
 					padding: 11px 0 11px 11px;
 					width: 185px;
 				}
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.col INPUT, 
-				BODY DIV#Page DIV#Content DIV#Content-main DIV.col TEXTAREA, 
+				BODY DIV#Page DIV#Content DIV#Content-main DIV.col INPUT,
+				BODY DIV#Page DIV#Content DIV#Content-main DIV.col TEXTAREA,
 				BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL SPAN.label {  }
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth INPUT, 
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth TEXTAREA, 
+					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth INPUT,
+					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth TEXTAREA,
 					BODY DIV#Page DIV#Content DIV#Content-main DIV.col.autowidth LABEL SPAN.label { width: auto !important; }
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big INPUT, 
-					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big TEXTAREA, 
+					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big INPUT,
+					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big TEXTAREA,
 					BODY DIV#Page DIV#Content DIV#Content-main DIV.col LABEL.big SPAN.label { width: 564px; }
-				BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET { background: transparent; } 
+				BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET { background: transparent; }
 				BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content { padding-bottom:11px; }
 					BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col {  }
-						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col INPUT, 
+						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col INPUT,
 						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col TEXTAREA,
 						BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL SPAN.label {  }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth INPUT, 
+							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth INPUT,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth TEXTAREA,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col.autowidth LABEL SPAN.label { width: auto !important; }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big INPUT, 
+							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big INPUT,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big TEXTAREA,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.big SPAN.label { width: 564px; }
-							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large INPUT, 
+							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large INPUT,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large TEXTAREA,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large SELECT,
 							BODY DIV#Page DIV#Content DIV#Content-main FORM FIELDSET DIV.box-content DIV.col LABEL.large SPAN.label { width: 382px; }
-				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big INPUT, 
+				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big INPUT,
 				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big SPAN.label { width: 564px; }
-				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big TEXTAREA { 
+				BODY DIV#Page DIV#Content-main FORM FIELDSET LABEL.big TEXTAREA {
 					width: 564px;
 					height: 200px;
 				}
@@ -503,12 +503,12 @@ BODY DIV#Page {
 				}
 
 	BODY DIV#Page DIV#AnalyseLog { padding: 0 11px 11px 0; }
-		BODY DIV#Page DIV#AnalyseLog DIV.message { 
-			padding: 5px 11px; 
-			width: 564px; 
+		BODY DIV#Page DIV#AnalyseLog DIV.message {
+			padding: 5px 11px;
+			width: 564px;
 		}
 	BODY DIV#Page DIV#Messages { }
-		BODY DIV#Page DIV#Messages P { 
+		BODY DIV#Page DIV#Messages P {
 				color: #f9f9f9;
 				padding: 6px 11px 7px;
 				margin: 0 0 11px;
@@ -522,8 +522,8 @@ BODY DIV#Page {
 			BODY DIV#Page DIV#Messages P.okay { background: #007b5e; }
 
 	BODY DIV#Page DIV#Nav { padding: 11px 0 0 0; }
-	
-		BODY DIV#Page DIV#Nav DIV.box { 
+
+		BODY DIV#Page DIV#Nav DIV.box {
 			padding:0 11px;
 			width:178px;
 		}
@@ -584,10 +584,10 @@ BODY DIV#Page DIV#Content DIV#Content-main:after,
 BODY DIV#Page DIV#Top:after,
 BODY DIV#Page DIV#Content DIV#Content-main DIV.box-content:after,
 BODY DIV#Page DIV#Content DIV#Content-main DIV.fields:after {
-    content: "."; 
-    display: block; 
-    height: 0; 
-    clear: both; 
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
     visibility: hidden;
 }
 

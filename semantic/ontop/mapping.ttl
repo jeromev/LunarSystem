@@ -18,7 +18,7 @@
 # Pages -> schema:WebPage
 <#PageMap>
   rr:logicalTable [ rr:sqlQuery """
-      SELECT n.lid AS lid, pn.lid AS parent_lid
+      SELECT n.nid AS nid, n.lid AS lid, pn.lid AS parent_lid
       FROM luna_nodes n
       LEFT JOIN luna_nodes pn ON pn.nid = n.parent_nid
       WHERE n.tid = 5
@@ -32,6 +32,10 @@
       rr:objectMap [ rr:column "lid" ]
   ] ;
   rr:predicateObjectMap [
+      rr:predicate schema:identifier ;
+      rr:objectMap [ rr:column "nid" ]
+  ] ;
+  rr:predicateObjectMap [
       rr:predicate schema:isPartOf ;
       rr:objectMap [ rr:template "http://localhost:8080/id/{parent_lid}" ]
   ] .
@@ -39,7 +43,7 @@
 # Text blocks -> schema:Article, attached to their page
 <#TextMap>
   rr:logicalTable [ rr:sqlQuery """
-      SELECT n.lid AS lid, t.title AS title, t.content_html AS body,
+      SELECT n.nid AS nid, n.lid AS lid, t.title AS title, t.content_html AS body,
              t.lang AS lang, p.lid AS page_lid
       FROM luna_nodes n
       JOIN luna_texts t     ON t.nid = n.nid
@@ -51,6 +55,7 @@
       rr:template "http://localhost:8080/id/{lid}" ;
       rr:class schema:Article
   ] ;
+  rr:predicateObjectMap [ rr:predicate schema:identifier ; rr:objectMap [ rr:column "nid" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:headline ;    rr:objectMap [ rr:column "title" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:articleBody ; rr:objectMap [ rr:column "body" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:inLanguage ;  rr:objectMap [ rr:column "lang" ] ] ;

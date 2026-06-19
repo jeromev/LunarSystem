@@ -37,7 +37,9 @@ ini_set('arg_separator.output','&amp;');
 // flags but which are harmless here.
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 // Disable magic_quotes_runtime (removed in PHP 5.4, guard for compatibility)
-if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); } 
+if (function_exists('set_magic_quotes_runtime')) { set_magic_quotes_runtime(0); }
+// SPARQL endpoint for the experimental read-through-SPARQL path (Phase A; see docs/linked-data.md).
+if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT')? getenv('SPARQL_ENDPOINT') : 'http://ontop:8080/sparql'); }
 /**
  * luna Class
  */
@@ -255,7 +257,11 @@ class luna {
 			if (!lunaTools::check_privileges()) { lunaTools::go('login'); } 
 			if (!in_array(self::$output_format, self::$output_formats)) { self::$output_format = isset(self::$output_formats[0])? self::$output_formats[0] : 'html'; } 
 			// Load texts associated with the page
-			self::$model->merge_index(self::$model->load_texts(0, PAGENID));
+			if (lunaTools::request('sparql')) {
+				self::$model->merge_index(self::$model->load_texts_sparql(PAGENID));
+			} else {
+				self::$model->merge_index(self::$model->load_texts(0, PAGENID));
+			}
 			// Collect Data
 			if (!self::$data['lid'] = self::$model->get_lid(self::$page_node)) { throw new lunaException(_('Error: cannot find page lid.'), PEAR_LOG_CRIT); } 
 			self::$data['lunaversion'] = self::$lunaVersion;

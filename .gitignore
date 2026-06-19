@@ -11,3 +11,6 @@ luna/luna.domains/*/cache/*
 # macOS
 .DS_Store
 Thumbs.db
+
+# Materialised triplestore dump (regenerate with `ontop materialize`)
+semantic/ontop/dump.nt

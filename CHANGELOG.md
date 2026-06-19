@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.6-alpha] - 2026-06-19
+- **New fixed bottom toolbar.** All site tools now live in one bar pinned to the bottom of every page:
+  - a **hamburger** (`☰ Site map`) on the left that pops the sitemap tree up as a panel above the bar — it reuses the existing `box-handle` jQuery toggle, and the sitemap now defaults to **collapsed**;
+  - the **language** switches and **output-format** switches (html / xml / json / n3 / jsonld) on the right.
+  - The left nav column is gone, so page content is now **full-width**; the top header (logo + page title) stays. `div#Page` is a single-column grid with bottom padding so content clears the fixed bar.
+  - XSL: the sitemap `box-handle` now defaults to `collapsed` ([luna.common.html.xsl](luna/luna.xsl/luna.html.xsl/luna.common.html.xsl)); no JS change — the existing toggle drives the hamburger.
+  - Verified with headless-Chrome screenshots (home, login, authenticated admin) and a live click-test (the tree's `display` flips `none` → `block` on click); zero warnings/fatals.
+
 ## [0.5.5-alpha] - 2026-06-19
 - **Replaced every CSS float with Grid / Flexbox** (`grep float css/luna.css` → 0):
   - **Page macro-layout → CSS Grid.** `body div#Page` now uses `grid-template-areas` ("top" spanning the full width, then `nav` + `content`), placing the header, left nav and right content by area regardless of DOM order — replacing the old `div#Content { float: right }` + full-width-`div#Nav` float trick.

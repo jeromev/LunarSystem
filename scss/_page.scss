@@ -1,14 +1,14 @@
 /* ////////////////////////////////////////////////////////////////////  PAGE */
 body div#Page {
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1fr;
 	grid-template-areas:
-		"top top"
-		"nav content";
-	column-gap: 0.6875rem;
+		"top"
+		"content";
 	align-items: start;
 	margin: 0 auto;
 	width: 100%;
+	padding-bottom: 3rem; /* clear the fixed bottom toolbar (div#Nav) */
 	background: transparent;
 	position: relative;
 
@@ -197,32 +197,72 @@ body div#Page {
 	div#Messages p.notice { background: #c99; }
 	div#Messages p.okay { background: var(--ok); }
 
+	/* Fixed bottom toolbar: hamburger-revealed sitemap + language / format switches */
 	div#Nav {
-		grid-area: nav;
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000;
 		display: flex;
-		flex-direction: column;
-		padding: 0.6875rem 0 0;
+		align-items: center;
+		gap: 0.6875rem;
+		padding: 0.25rem 0.6875rem;
+		background: var(--chrome);
+		box-shadow: 0 -0.0625rem 0.5em rgba(0, 0, 0, .4);
 
-		div.box {
-			padding: 0 0.6875rem;
-		}
 		div#SiteMap {
-			background: rgba(255, 255, 255, .50);
+			position: relative;
+			background: transparent;
 
+			/* the box-handle <h2> is the hamburger button */
+			h2.box-handle {
+				margin: 0;
+				padding: 0.25rem 0.5rem;
+				color: #fff;
+				font-size: 0.8125rem;
+				font-weight: normal;
+				white-space: nowrap;
+				cursor: pointer;
+				background: none; /* drop the +/- png icon */
+
+				&::before {
+					content: "\2630"; /* ☰ hamburger */
+					margin-right: 0.4rem;
+					font-size: 1rem;
+					vertical-align: -0.05rem;
+				}
+			}
+			/* the sitemap tree pops UP above the bar; hidden until the hamburger is clicked */
 			div.box-content {
-				margin-bottom: 0.6875rem;
+				display: none;
+				position: absolute;
+				bottom: 100%;
+				left: 0;
+				margin-bottom: 0.4375rem;
+				min-width: 14rem;
+				max-height: 70vh;
+				overflow: auto;
+				padding: 0.6875rem 0.875rem;
+				background: rgba(255, 255, 255, .97);
+				border-radius: 0.3125rem;
+				box-shadow: 0 0.0625rem 0.75em rgba(0, 0, 0, .5);
+
 				li { font-size: 97%; }
 			}
 		}
+
 		div#Options {
-			position: absolute;
-			top: 0.5rem;
-			right: 0.6875rem;
+			margin-left: auto; /* push the switches to the right edge */
 			display: flex;
+			align-items: center;
+			gap: 0.6875rem;
 
 			ul {
 				list-style: none;
 				display: flex;
+				margin: 0;
+				padding: 0;
 
 				li {
 					list-style: none;
@@ -234,7 +274,6 @@ body div#Page {
 						display: block;
 						padding: 0.1875rem 0.3125rem 0.125rem;
 						background: rgba(255, 255, 255, .20);
-						z-index: 100;
 						margin-left: -0.0625rem;
 					}
 					&:first-child a { border-radius: 0.1875rem 0 0 0.1875rem; }

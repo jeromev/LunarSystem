@@ -64,6 +64,7 @@
   rr:predicateObjectMap [ rr:predicate schema:identifier ; rr:objectMap [ rr:column "nid" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:headline ;    rr:objectMap [ rr:column "title" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:articleBody ; rr:objectMap [ rr:column "body" ] ] ;
+  rr:predicateObjectMap [ rr:predicate luna:content ;       rr:objectMap [ rr:column "body" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:inLanguage ;  rr:objectMap [ rr:column "lang" ] ] ;
   rr:predicateObjectMap [
       rr:predicate schema:isPartOf ;

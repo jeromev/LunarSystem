@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.3-alpha] - 2026-06-19
+- **Added an SCSS build apparatus for the stylesheet.** `css/luna.css` is now a *generated* file compiled from a new `scss/` source tree with [Dart Sass](https://sass-lang.com/dart-sass):
+  - `scss/luna.scss` is the entry point; the previous single stylesheet is split into partials along its existing sections — `_tokens.scss` (the `:root` palette), `_base.scss`, `_classes.scss`, `_page.scss`, `_clearfix.scss`, `_tinymce.scss`, `_treeview.scss` — wired with `@use`.
+  - A root `Makefile` drives it: `make css` (one-off), `make css-watch` (live rebuild on save), `make css-min` (minified). `sass` must be on `PATH`.
+  - `.gitignore` now ignores Sass artifacts (`.sass-cache/`, `*.css.map`); `scss/README.md` documents the workflow.
+  - The regenerated `css/luna.css` is CSS-equivalent to the previous hand-written file — verified by normalised comparison; the only differences are whitespace (the generated file is 2-space indented) and Sass number-normalisation (e.g. `.90` → `0.9`). The palette stays as CSS custom properties (runtime-themeable), not Sass variables.
+  - **Workflow going forward:** edit the partials under `scss/`, run `make css`, and commit both the partial(s) and the regenerated `css/luna.css`. Do not hand-edit `css/luna.css`.
+
 ## [0.5.2-alpha] - 2026-06-19
 - **Vendor-code audit + minimal cleanup.** A multi-agent audit inventoried every piece of third-party code still in the tree (each tagged used/dead and cross-checked against the notices). Acted on the safe findings:
   - **Corrected [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)**, which the recent migrations had made inaccurate: dropped the **PEAR MDB2** row (removed in 0.5.0-alpha), replaced the wrong **XML_Util** row with the **XML_HTMLSax3** that is actually bundled (HTML_Safe's SAX parser), refreshed the stale "targets PHP 5.3–5.6" line and a few license/version details (ARC2 → semsol/arc2 3.1.0 GPL-2/W3C; jQuery 1.4.1 dual MIT/GPL), and added an **"Inlined third-party functions"** section documenting the small credited snippets copied into app code (phpBB `encode_ip`/`decode_ip`, WordPress `remove_accents`, Drupal `conf_path`/`conf_init`, the lost-in-code `array_to_object`).

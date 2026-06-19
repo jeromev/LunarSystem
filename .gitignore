@@ -14,3 +14,7 @@ Thumbs.db
 
 # Materialised triplestore dump (regenerate with `ontop materialize`)
 semantic/ontop/dump.nt
+
+# Sass build artifacts
+.sass-cache/
+*.css.map

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.7-alpha] - 2026-06-20
+- **Docs — consistency pass (all 24 doc files + codebase audited against the 0.8.x state).** A multi-agent audit (8 areas; each finding verified against the code to separate genuine staleness from correct historical references) surfaced 11 real inconsistencies, now fixed:
+  - `README.md` — the warning box and "Known issues" table no longer claim unsalted-MD5 / no-CSRF / `use_trans_sid=1` / missing `session_regenerate_id` (all fixed in 0.7.x); they now list the real residuals (unauthenticated SPARQL endpoint, no per-target admin authz, per-IP-only throttle). The directory tree drops the "jQuery from cdnjs" note and marks `en_EN` as a legacy locale.
+  - `SECURITY.md` — reframed from "hardened in 0.2.14-alpha" to the 0.6.9–0.8.6 pass with residuals.
+  - `CONTRIBUTING.md` + `docs/installation.md` — corrected PHP 5.6 / `php:5.6-apache` / `php:5.6-cli` → PHP 8.3 / `php:8.3-apache` / `php:8.3-cli` (matching the actual Dockerfile and lint).
+  - `docs/going-public.md` — no longer lists CSRF / bcrypt / session-rotation as "deliberately not done" (they were done).
+  - `docs/roadmap.md` + `docs/linked-data.md` — current-version bumped 0.5.0-alpha → 0.8.6.
+  - `THIRD-PARTY-NOTICES.md` — records jQuery as removed (0.6.8-alpha); the front-end is now dependency-free vanilla JS.
+  - `scss/README.md` — the partials table matches the actual tree (drops deleted `_clearfix`/`_tinymce`, adds `_init`/`_scales`/`_mixins`, de-jQuery's `_treeview`).
+
 ## [0.8.6-alpha] - 2026-06-20
 - **Docs — second adversarial review results.** `docs/security.md` now records the post-0.8.4 multi-agent review (8 dimensions, two skeptics per finding): verdict **ship-with-low-risk**, the two real defects fixed in 0.8.5, and the documented residuals — chiefly that the admin modules perform no per-target authorization (safe as shipped because every admin page/mod is bound to the sole `level_admin` tier, but a latent privilege-escalation gap if admin is ever delegated to a lower level), plus the per-IP throttle's IP-rotation limitation and the unchanged UA-binding / `'unsafe-inline'` CSP.
 

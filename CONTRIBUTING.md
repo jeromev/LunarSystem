@@ -37,9 +37,9 @@ See the top-level [README](README.md) and [docs/](docs/) — start with
 
 ## Before you open a PR
 
-- **Lint the PHP** (the project runs on PHP 5.6):
+- **Lint the PHP** (the project runs on PHP 8.3):
   ```bash
-  docker run --rm -v "$PWD":/app -w /app php:5.6-cli sh -c \
+  docker run --rm -v "$PWD":/app -w /app php:8.3-cli sh -c \
     'find index.php luna/luna.php luna/luna.classes luna/luna.mods -name "*.php" -print0 | xargs -0 -n1 php -l'
   ```
   (CI runs the same check plus `docker compose config`.)

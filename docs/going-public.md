@@ -61,10 +61,12 @@ operational (open ports), now fixed.
 
 ## Deliberately *not* done (and why)
 
-- **Hardening the app itself** (CSRF tokens, salted passwords, session rotation).
-  This is an archival teaching artifact; the honest, documented weaknesses are part
-  of its value. The fix for safety is "run it on localhost," not "make it
-  production-grade." See [security.md](security.md).
+- **Production-grade hardening beyond the 2026 pass.** The 0.6.9–0.8.6 pass added
+  CSRF tokens, bcrypt passwords, session rotation, SQLi/header fixes and a per-IP login
+  throttle (see [security.md](security.md)) — but this stays a localhost teaching
+  artifact: the admin modules still lack per-target authorization and the SPARQL
+  endpoint is unauthenticated. The fix for safety is "run it on localhost," not
+  "make it production-grade." 
 - **Authenticating the SPARQL endpoints.** Mitigated by loopback binding; real auth
   belongs to the P2/P4 work if the store is ever exposed. See [roadmap.md](roadmap.md).
 - **Removing the dual Ontop + Oxigraph stack.** It's the core lesson (virtual vs

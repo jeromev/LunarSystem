@@ -20,14 +20,15 @@ regenerated `css/luna.css`.
 | File | What |
 |---|---|
 | `luna.scss`      | entry point — `@use`s the partials in cascade order |
+| `_bg.scss`       | baseline-grid config — `@forward`s the vendored toolkit |
+| `_init.scss`     | global CSS reset / normalised element defaults |
 | `_tokens.scss`   | the `:root` custom-property palette + base font |
 | `_base.scss`     | element/tag styles (TAGS) |
-| `_classes.scss`  | utility / class styles |
+| `_classes.scss`  | utility / class styles (CLASSES) |
 | `_page.scss`     | layout: `#Page`, `#Content`, widths (PAGE) |
-| `_clearfix.scss` | float clearfix |
-| `_tinymce.scss`  | legacy editor styles |
-| `_treeview.scss` | jQuery TreeView nav (TVlists) |
-| `_bg.scss`       | baseline-grid config — `@forward`s the vendored toolkit |
+| `_treeview.scss` | TreeView nav icons (TVlists; CSS only) |
+| `_mixins.scss`   | shared Sass helpers / mixins |
+| `_scales.scss`   | responsive typography / layout / spacing scales (used by the partials above) |
 | `vendor/baselinegrid.scss` | [baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) (vendored, MIT) — the baseline-grid engine |
 
 The palette is CSS custom properties (runtime-themeable), not Sass `$` variables,

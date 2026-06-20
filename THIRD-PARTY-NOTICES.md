@@ -17,10 +17,10 @@ PHP 8.3 / MySQL 8.0 (the database layer was migrated from PEAR MDB2 to PDO in
 | **HTML_Safe** (input sanitiser) | `luna/luna.lib/HTML/Safe.php` | pear.php.net/package/HTML_Safe | BSD License (3-Clause, © Roman Ivanov) |
 | **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
 
-**jQuery is not bundled.** It is loaded at runtime from **cdnjs** — jQuery 3.7.1,
-pinned with an SRI `integrity` hash — in
-[luna.header.html.xsl](luna/luna.xsl/luna.html.xsl/luna.header.html.xsl). (MIT
-licensed.) Releases before 0.5.7-alpha vendored jQuery 1.4.1 under `js/jquery/`.
+**jQuery has been removed** (0.6.8-alpha). The front-end is now dependency-free
+vanilla JavaScript ([js/luna.js](js/luna.js)) — no CDN dependency, no animation. For
+the record: releases 0.5.7–0.6.7 loaded jQuery 3.7.1 from cdnjs (pinned with an SRI
+`integrity` hash); releases before 0.5.7-alpha vendored jQuery 1.4.1 under `js/jquery/`.
 
 The **jQuery TreeView** navigation icons under `images/treeView/` (© 2006 Myles
 Angell, <http://be.twixt.us/jquery/>) are still bundled third-party assets; no

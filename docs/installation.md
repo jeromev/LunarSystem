@@ -31,11 +31,10 @@ Log in as **`admin@lunarsystem.local`** / password **`luna`**.
 What the stack does (see [docker-compose.yml](../docker-compose.yml) and
 [Dockerfile](../Dockerfile)):
 
-- **app** — builds `php:5.6-apache`, installs the `mysql`, `mysqli`, `xsl`, and
-  `gettext` extensions, enables `mod_rewrite`, and sets `AllowOverride All`.
-  Mounts the repo at `/var/www/html` and publishes port **8080 → 80**. (The
-  Dockerfile repoints apt at `archive.debian.org` because the base image's
-  Debian 9 "stretch" repos are no longer on the main mirrors.)
+- **app** — builds `php:8.3-apache`, installs the `pdo_mysql`, `xsl`, `gettext`, and
+  `mbstring` extensions, enables `mod_rewrite`, and sets `AllowOverride All`.
+  Mounts the repo at `/var/www/html` and publishes port **8080 → 80** (bound to
+  `127.0.0.1` only).
 - **db** — `mysql:8.0` started with `--sql_mode=""` (so the legacy column
   defaults import cleanly), seeded automatically by mounting
   [luna.mysql.sql](../luna/luna.sql/luna.mysql.sql) into

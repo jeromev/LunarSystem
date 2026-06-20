@@ -1,10 +1,14 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.6-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.7-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
-> 2006–2010 code revived for learning, with known, unfixed issues (unsalted MD5
-> passwords, no CSRF on admin actions, and an **unauthenticated SPARQL write endpoint**).
+> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.6) closed the
+> major issues — bcrypt passwords, CSRF tokens, session-fixation defence, SQLi fixes,
+> security headers, a per-IP login throttle — but residual gaps remain (the admin
+> modules have no per-target authorization, and the **SPARQL write endpoint is
+> unauthenticated**), so keep it on `localhost` and off the public internet. See
+> [docs/security.md](docs/security.md).
 > The Docker stack binds every port to `127.0.0.1`; **do not change that or otherwise
 > expose `8080` / `7879` / `8081` / `3307` to a public or untrusted network.** It is not
 > hardened for any networked or production deployment. See [docs/security.md](docs/security.md).
@@ -69,20 +73,25 @@ luna/
   luna.domains/
     luna.default/              Fallback site configuration (used for local/Docker)
   luna.sql/luna.mysql.sql      Database schema + seed data
-  luna.locale/                 gettext translations (en_EN, en_US, fr_FR)
+  luna.locale/                 gettext translations (en_US, fr_FR; en_EN is a legacy locale)
 css/                           Stylesheets
-js/                            luna.js (admin UI behaviours; jQuery from cdnjs)
+js/                            luna.js (admin UI behaviours; dependency-free, no jQuery)
 semantic/                      Semantic-web layer (SPARQL over the unchanged MySQL)
   ontop/                       R2RML mapping + Ontop image (virtual SPARQL); Oxigraph dump
 ```
 
 ## Known issues
 
+A 2026 hardening pass (0.6.9–0.8.7-alpha) closed the major security issues; a second
+adversarial review graded the result *ship-with-low-risk*. See [docs/security.md](docs/security.md)
+for the full timeline and verdict. The residual, by-design limitations:
+
 | Issue | Impact | Notes |
 |---|---|---|
-| **MD5 passwords** | Security | `luna_users.password` is unsalted MD5 — do not expose publicly |
-| **Session ID in URL** | Security | `session.use_trans_sid = 1` leaks session IDs into URLs; no `session_regenerate_id()` on login (fixation) |
-| **No CSRF on admin actions** | Security | Admin forms still carry no anti-forgery token (the `mod_journal` SQLi, reflected XSS, login throttling, cookie object-injection and `$_SERVER` log leak were hardened in 0.2.14 — see [docs/security.md](docs/security.md)) |
+| **Unauthenticated SPARQL endpoint** | Security | Oxigraph/Ontop expose an unauthenticated SPARQL write endpoint; it is bound to `127.0.0.1` only — keep it internal |
+| **No per-target admin authz** | Security | Admin modules don't re-check per-target access; safe as shipped (single `level_admin` tier) but unsafe if admin is delegated to a lower level |
+| **Per-IP login throttle** | Security | Per-IP only (no per-account lockout, to avoid account enumeration); bypassable by IP rotation |
+| **Legacy model / hardening residue** | Design | Unsalted MD5 hashes upgrade to bcrypt transparently on next login; flat group→level authz; the CSP still allows `'unsafe-inline'` |
 
 The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (0.5.0-alpha migrated the DB layer from PEAR MDB2 to PDO; an earlier pass had fixed the schema's obsolete `TYPE=MyISAM` → `ENGINE=MyISAM`). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 

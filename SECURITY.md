@@ -4,15 +4,16 @@
 
 LunarSystem is **alpha-grade software from 2006–2010**, revived as an educational
 exploration of the Semantic Web. It reflects the security practices of its era and
-has **known, unfixed weaknesses** (unsalted MD5 passwords, no CSRF tokens on admin
-actions, session handling that predates modern hardening, and an **unauthenticated
-SPARQL write endpoint**). It is meant to be **studied and run on `localhost`**, not
-deployed.
+underwent a 2026 hardening pass (0.6.9–0.8.6-alpha) that closed the major weaknesses —
+bcrypt passwords with upgrade-on-login, CSRF tokens, session-fixation defence, SQLi
+and header fixes, a per-IP login throttle — but **residual issues remain** (the admin
+modules perform no per-target authorization, and the **SPARQL write endpoint is
+unauthenticated**). It is meant to be **studied and run on `localhost`**, not deployed.
 
 - The Docker stack binds every port to `127.0.0.1` (loopback). **Do not** change
   that or otherwise expose `8080` / `7879` / `8081` / `3307` to a public or
   untrusted network.
-- The full, honest list of known issues — and what was hardened in 0.2.14-alpha —
+- The full, honest list of issues — and the 2026 hardening pass (0.6.9–0.8.6-alpha) —
   lives in **[docs/security.md](docs/security.md)**. It is intentionally public:
   the weaknesses are part of what makes this a useful teaching artifact.
 

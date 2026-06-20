@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.6-alpha] - 2026-06-20
+- **Docs — second adversarial review results.** `docs/security.md` now records the post-0.8.4 multi-agent review (8 dimensions, two skeptics per finding): verdict **ship-with-low-risk**, the two real defects fixed in 0.8.5, and the documented residuals — chiefly that the admin modules perform no per-target authorization (safe as shipped because every admin page/mod is bound to the sole `level_admin` tier, but a latent privilege-escalation gap if admin is ever delegated to a lower level), plus the per-IP throttle's IP-rotation limitation and the unchanged UA-binding / `'unsafe-inline'` CSP.
+
 ## [0.8.5-alpha] - 2026-06-20
 - **Security — second-review follow-ups (throttle race + journal deserialization).** A fresh 8-dimension adversarial review (each finding double-checked by an exploitability verifier and a refuter) graded the post-0.8.4 tree **ship-with-low-risk**. Two real defects fixed:
   - **Login-throttle TOCTOU (the one live finding).** The per-IP back-off read the attempt count, slept, *then* incremented — so N parallel requests from one IP read the same stale count and all slept the same short time, collapsing the escalation. The attempt is now counted **first** with an atomic `INSERT … ON DUPLICATE KEY UPDATE` (the MyISAM table lock serialises concurrent requests), and the sleep is based on the post-increment count (`attempts-1`, so a clean first login stays instant). Verified live: 5 parallel wrong-password logins reach counter=5 and take ~4.2s (escalating) instead of collapsing to ~0.2s; sequential attempts escalate 0→1→2s; the counter still resets on success.

@@ -46,7 +46,13 @@ class lunaTools {
 	public static function set_cookie($label = false, $data = false, $time = false) {
 		if (empty($label)) { return false; }
 		if (empty($time)) { $time = NOW + lunaSession::$time_out; }
-		if (!setcookie("$label", json_encode($data), $time, luna::$site_relative_url)) { return false; }
+		if (!setcookie((string) $label, json_encode($data), array(
+			'expires'  => $time,
+			'path'     => luna::$site_relative_url ?: '/',
+			'httponly' => true,
+			'samesite' => 'Lax',
+			'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+		))) { return false; }
 		return true;
 	}
 	// }}}
@@ -306,7 +312,6 @@ class lunaTools {
 	 */
 	public static function go($where = 'root', $is_alias = false) {
 		$url = self::link("$where");
-		if ($sid = self::request('PHPSESSID', array($_GET, $_POST))) { $url = self::append_to_link('PHPSESSID', $sid, $url); }
 		header("location: ".$url);
 		exit;
 	}

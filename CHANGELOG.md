@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.7-alpha] - 2026-06-20
+- **Docs: recorded the 0.6.9–0.7.6 security hardening pass in [docs/security.md](docs/security.md)** — a status table of the nine areas closed (SQLi, disclosure, headers, session/cookie, passwords, session fixation, CSRF, stored XSS, IDOR) and the remaining partial items (content-level authz, logout GET, UA-bound guard).
+
 ## [0.7.6-alpha] - 2026-06-20
 - **Security — per-page authorization in edit_texts (IDOR hardening).** Two fixes to `mod_edit_texts`: (1) `submit_modify` validated `add_text_pages` (empty on a modify) while actually linking `modify_text_pages`, so an editor could link a text to **any** page id with no check — it now validates the array it links. (2) Added `lunaTools::user_can_access_page()` (resolves the page's level via `get_level_node` and checks `user_can_access_level`, fail-closed) and applies it to every page a text is linked to in both `submit_add` and `submit_modify` — content can no longer be attached to a page above the user's level. Verified live: admin linking still works; a non-existent/forbidden page id is rejected. Residual (flagged): modify/delete of the *content* of a text already living on a higher-level page is not yet gated on the text's existing pages — a follow-up needing a non-admin editor account to test.
 

@@ -137,22 +137,24 @@ class mod_log {
 			// Throttle: back off on accounts with prior failed attempts. Capped, and a
 			// correct password resets login_attempts below, so this never locks an account.
 			if (!empty($user) && !empty($user->login_attempts)) { sleep(min(intval($user->login_attempts), 5)); }
-			if (empty($user)) { 
-				$inerror++; 
-				$message = sprintf(_("Unknown user %1\$s."), $_POST['email']);
-				luna::$messages['warning'][] = $message;
-				lunaLog::log($message, PEAR_LOG_NOTICE); 
-			} else if (!$user->is_active) { 
-				$inerror++; 
-				$message = sprintf(_("User “%1\$s” is deactivated."), $user->firstname.' '.$user->lastname); 
-				luna::$messages['warning'][] = $message;
-				lunaLog::log($message, PEAR_LOG_WARNING);
-			} else if (md5($_POST['password']) != $user->password) { 
-				$inerror++; 
-				$message = sprintf(_("Wrong password for user “%1\$s”."), $user->email); 
-				luna::$messages['warning'][] = $message;
-				lunaLog::log($message, PEAR_LOG_WARNING);
-
+			// Generic client message for every failure (no account enumeration); the specific
+			// reason is logged server-side only. A dummy verify on the non-password paths
+			// flattens timing so a missing/inactive account isn't distinguishable.
+			$generic = _("Invalid email or password.");
+			if (empty($user)) {
+				lunaTools::verify_password($_POST['password'], lunaTools::DUMMY_PASSWORD_HASH);
+				$inerror++;
+				luna::$messages['warning'][] = $generic;
+				lunaLog::log('Login failed: unknown user '.$_POST['email'], PEAR_LOG_NOTICE);
+			} else if (!$user->is_active) {
+				lunaTools::verify_password($_POST['password'], lunaTools::DUMMY_PASSWORD_HASH);
+				$inerror++;
+				luna::$messages['warning'][] = $generic;
+				lunaLog::log('Login failed: deactivated user '.$user->email, PEAR_LOG_WARNING);
+			} else if (!lunaTools::verify_password($_POST['password'], $user->password)) {
+				$inerror++;
+				luna::$messages['warning'][] = $generic;
+				lunaLog::log('Login failed: wrong password for '.$user->email, PEAR_LOG_WARNING);
 				$res = lunaDB::query('
 					UPDATE 
 						'.luna::get_ini('DBtables', 'USERS').' 
@@ -189,6 +191,10 @@ class mod_log {
 				WHERE
 					nid = '.lunaDB::quote($user->nid).'
 			');
+			// Upgrade a legacy MD5 / outdated hash to the current algorithm on login.
+			if (lunaTools::password_is_legacy($user->password) || password_needs_rehash($user->password, PASSWORD_DEFAULT)) {
+				lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'USERS').' SET password = '.lunaDB::quote(lunaTools::hash_password($_POST['password'])).' WHERE nid = '.lunaDB::quote($user->nid).'');
+			}
 			luna::$session->user = luna::$session->get_user_data(luna::$session->user->session_id);
 			luna::$model->purge_index();
 			$message = sprintf(_("You are now connected as %1\$s."), luna::$session->user->firstname.' '.luna::$session->user->lastname);

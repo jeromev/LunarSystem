@@ -48,7 +48,11 @@ class lunaTools {
 		return (strlen((string) $hash) === 32 && ctype_xdigit((string) $hash));
 	}
 	public static function verify_password($plain, $hash) {
-		if (self::password_is_legacy($hash)) { return hash_equals((string) $hash, md5((string) $plain)); }
+		if (self::password_is_legacy($hash)) {
+			$ok = hash_equals((string) $hash, md5((string) $plain));
+			password_verify((string) $plain, self::DUMMY_PASSWORD_HASH); // spend ~bcrypt time so legacy accounts aren't faster (no enumeration)
+			return $ok;
+		}
 		return password_verify((string) $plain, (string) $hash);
 	}
 	// }}}
@@ -601,7 +605,7 @@ class lunaTools {
 			if (!$dir = mkdir(SITEPATH.'cache', 0700)) { return false; }
 			define('CACHE_PATH', SITEPATH.'cache/');
 		}
-		if (($purge = self::request('purge_cache') || $purge = self::request('purge')) && $_SERVER['REQUEST_METHOD'] === 'POST') { self::purge_cache(); }
+		// (Request-driven ?purge removed: it ran pre-session so no CSRF token was available, and every mutating mod already calls purge_cache() internally after its gated action.)
 		return true;
 	}
 	// }}}
@@ -752,19 +756,20 @@ class lunaTools {
 		$text_nid = intval($text_nid);
 		if (empty($text_nid)) { return false; }
 		$nodes = luna::get_ini('DBtables', 'NODES'); $map = luna::get_ini('DBtables', 'NODES_MAP'); $types = luna::get_ini('DBtables', 'CLASSES');
+		$levels = implode(',', array_map('intval', (array) luna::$session->user->levels)) ?: '0';
+		// Fail closed: deny unless EVERY distinct page the text links to has a level the
+		// user holds (a page with no resolvable level counts as inaccessible).
 		$res = lunaDB::query('
-			SELECT DISTINCT l.nid AS level_nid
+			SELECT COUNT(DISTINCT p.nid) AS total,
+			       COUNT(DISTINCT CASE WHEN l.nid IN ('.$levels.') THEN p.nid END) AS allowed
 			FROM '.$map.' tp
 			JOIN '.$nodes.' p ON p.nid = tp.nid2 AND p.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('page').')
-			JOIN '.$map.' pl ON pl.nid1 = p.nid
-			JOIN '.$nodes.' l ON l.nid = pl.nid2 AND l.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('level').')
+			LEFT JOIN '.$map.' pl ON pl.nid1 = p.nid
+			LEFT JOIN '.$nodes.' l ON l.nid = pl.nid2 AND l.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('level').')
 			WHERE tp.nid1 = '.lunaDB::quote($text_nid).'
 		');
-		while ($row = $res->fetchRow()) {
-			if (!isset(luna::$session->user->levels[$row->level_nid])) { $res->free(); return false; }
-		}
-		$res->free();
-		return true;
+		$row = $res->fetchRow(); $res->free();
+		return ($row && intval($row->total) === intval($row->allowed));
 	}
 	// }}}
 	// {{{ remove_accents()

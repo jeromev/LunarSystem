@@ -97,7 +97,7 @@ class mod_journal {
 					id = '.lunaDB::quote(intval($log_id)).'
 			');
 			while ($row = $res->fetchRow()) { 
-				$row->message = unserialize($row->message); 
+				$row->message = unserialize($row->message, array('allowed_classes' => array('lunaException'))); 
 				$message = get_class($row->message) == 'lunaException'? $row->message->getMessage() : lunaTools::display_string($row->message->message);
 				$var = array(
 					'type' => 'log',

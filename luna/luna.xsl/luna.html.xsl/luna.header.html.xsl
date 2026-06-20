@@ -136,23 +136,29 @@
 									<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'You are logged in as']/luna:value"/><xsl:text> </xsl:text>
 									<strong><xsl:value-of select="/rdf:RDF/foaf:Person[luna:is_current = '1']/foaf:name"/></strong>
 									<xsl:text> [</xsl:text>
-									<a>
-										<xsl:choose>
-											<xsl:when test="$guest = '1'">
+									<xsl:choose>
+										<xsl:when test="$guest = '1'">
+											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'login']/luna:alias"/></xsl:call-template>
 												</xsl:attribute>
 												<xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'login']/rdfs:label"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:attribute name="href">
+											</a>
+										</xsl:when>
+										<xsl:otherwise>
+											<!-- Logout is a state change: POST form (not a GET link) so the CSRF token
+											     never lands in a URL, browser history, or the server access log. -->
+											<form method="post" class="logout-form">
+												<xsl:attribute name="action">
 													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'logout']/luna:alias"/></xsl:call-template>
-													<xsl:text>?csrf_token=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/>
 												</xsl:attribute>
-												<xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'logout']/rdfs:label"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</a>
+												<input type="hidden" name="csrf_token">
+													<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/></xsl:attribute>
+												</input>
+												<button type="submit" class="linkbutton"><xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'logout']/rdfs:label"/></button>
+											</form>
+										</xsl:otherwise>
+									</xsl:choose>
 									<xsl:text>] </xsl:text>
 									<br/>
 									<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Site powered by']/luna:value"/><xsl:text> </xsl:text><a href="http://lunarsystem.org">lunarSystem</a><xsl:text> </xsl:text><xsl:value-of select="luna:data[luna:lid = 'lunaversion']/luna:value"/>

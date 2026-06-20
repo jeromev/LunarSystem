@@ -94,8 +94,11 @@ class mod_log {
 	 * @return boolean
 	 */
 	public function logout() {
-		// Logout is a state change: require a valid CSRF token (blocks forged GET /logout).
-		if (!hash_equals((string) luna::$session->user->csrf_token, (string) lunaTools::request('csrf_token'))) { return false; }
+		// Logout is a state change: require POST + a valid CSRF token. The nav renders
+		// logout as a POST form, so the token is never exposed in a URL/history/log,
+		// and a forged GET /logout (wrong method) or tokenless cross-site POST is rejected.
+		if ($_SERVER['REQUEST_METHOD'] !== 'POST'
+			|| !hash_equals((string) luna::$session->user->csrf_token, (string) ($_POST['csrf_token'] ?? ''))) { return false; }
 		luna::$model->purge_index();
 		$_SESSION = array();
 		lunaTools::set_cookie(session_name(), '', NOW - 42000);

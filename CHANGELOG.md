@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.8-alpha] - 2026-06-20
+- **Security — completed the edit_texts IDOR fix: content modify/delete is now gated on the text's pages.** Added `lunaTools::user_can_act_on_text()` (one query resolving the level of every page a text is linked to; the user must hold **all** of them, fail-closed) and call it at the top of `submit_modify` and `submit_delete`. A logged-in editor can no longer modify or delete a text that lives on a page above their level. Verified live with a real `group_edition` editor: **denied** on a text bound to an admin-level page (content left intact, delete refused), **allowed** on a public text (no over-restriction); admin unaffected. This closes the residual flagged in 0.7.6.
+
 ## [0.7.7-alpha] - 2026-06-20
 - **Docs: recorded the 0.6.9–0.7.6 security hardening pass in [docs/security.md](docs/security.md)** — a status table of the nine areas closed (SQLi, disclosure, headers, session/cookie, passwords, session fixation, CSRF, stored XSS, IDOR) and the remaining partial items (content-level authz, logout GET, UA-bound guard).
 

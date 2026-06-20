@@ -874,3 +874,7 @@ msgstr "Items list"
 
 msgid "Texts to load with this page"
 msgstr "Texts to load with this page"
+
+# page label
+msgid "about"
+msgstr "About"

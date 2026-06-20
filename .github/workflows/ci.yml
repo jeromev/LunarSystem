@@ -44,8 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Boot the stack
-        run: docker compose up -d
+      - name: Boot the stack (SQL reads; no triplestore needed)
+        run: SPARQL_READS=0 docker compose up -d app db
       - name: Wait for the app to render
         run: |
           for i in $(seq 1 90); do

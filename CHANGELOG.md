@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.3-alpha] - 2026-06-20
+- **Security — logout is now a POST form, not a token-in-URL GET (review MEDIUM).** The nav rendered logout as `GET /logout?csrf_token=<token>`, leaking the per-session CSRF token into browser history and the server access log (and, on some setups, the Referer). The nav now renders a POST `<form>` with the token in a hidden field, and `logout()` requires `POST` + a matching `$_POST` token. Verified live: a forged `GET /logout?csrf_token=<valid>` no longer logs the user out (wrong method), a tokenless cross-site POST is rejected, and the legitimate POST form logs out cleanly; no `?csrf_token=` appears in any rendered URL.
+
 ## [0.8.2-alpha] - 2026-06-20
 - **Security — login throttle is now per-IP, closing an account-enumeration channel (review HIGH).** The previous back-off slept only for *existing* accounts with prior failures, so an attacker could tell a real account (induces a delay) from an unknown one (no delay). The throttle is now keyed on the client IP in a new `luna_login_throttle` table: every failed login — unknown account, deactivated, or wrong password — counts against the IP and incurs the same escalating sleep (capped 5s, 15-minute window); a successful login clears the IP's counter. Verified live: a 4th failed login on an existing account (~3s) and a 5th on an unknown account (~4s) both sleep (escalation only, existence no longer observable); a correct password resets the counter to zero.
 

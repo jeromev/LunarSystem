@@ -201,6 +201,7 @@ class HTML_Safe
      */
     var $protocolAttributes = array(
         'action', 'background', 'codebase', 'dynsrc', 'href', 'lowsrc', 'src', 
+        'formaction', 'poster', 'ping', 'srcset', 'xlink:href', 
         );
 
     /**

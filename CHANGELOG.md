@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.1-alpha] - 2026-06-20
+- **Security — review follow-ups (timing, deserialization, sanitizer, authz, purge).** From the adversarial re-review: (1) the legacy-MD5 login branch now also runs a throwaway bcrypt `password_verify` so legacy accounts aren't ~3x faster than the unknown-user path (closes a timing-enumeration channel); (2) `lunaTools::user_can_act_on_text()` now fails **closed** — a text linked to a page with no resolvable level is denied (was fail-open), via a `total == accessible` page-count comparison; (3) HTML_Safe now protocol-filters `formaction`/`poster`/`ping`/`srcset`/`xlink:href` (a `javascript:` formaction/poster survived before); (4) the journal log-message `unserialize()` is guarded with `['allowed_classes' => ['lunaException']]`; (5) the request-driven `?purge` cache flush is removed (it ran pre-session so could never carry a CSRF token, and every mutating mod already purges internally). Verified live.
+
 ## [0.8.0-alpha] - 2026-06-20
 - **Security — post-review release-blockers (two criticals + audit-log CSRF).** An adversarial re-review found three issues the first pass missed:
   - **Critical: a second blind/stacked SQLi** in `load_texts()` (the twin of the `load_users` fix) — `start`/`limit` reached the `LIMIT` clause raw and were exploitable by any logged-in editor (`limit=20;SELECT SLEEP(5)`). Now `intval`-clamped like `load_users` ([luna.model.class.php](luna/luna.classes/luna.model.class.php)).

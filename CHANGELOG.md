@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.3-alpha] - 2026-06-19
+- **Localised the `/about` page label.** Page labels are produced by `_($lid)` (gettext) → the node's `rdfs:label` ([luna.model.class.php:1970](luna/luna.classes/luna.model.class.php)), so a lid with no catalog entry renders verbatim. Added `msgid "about"` → `"About"` (`en_EN`) / `"À propos"` (`fr_FR`) to the gettext catalogs and recompiled the `.mo`s, so the page name now localises in the header, sitemap and breadcrumb. (`en_US` is unused — not in the language switcher — so left as-is.)
+
 ## [0.6.2-alpha] - 2026-06-19
 - **Source maps now on every dev build** (`make css` and `make css-watch`), not just the watch loop — the earlier split meant a plain `make css` produced a map-less `css/luna.css`, so dev tools still showed `luna.css` line numbers. `make css-min` remains the clean, minified production build with no map. The `.map` stays gitignored.
 

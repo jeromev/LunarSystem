@@ -18,3 +18,7 @@ semantic/ontop/dump.nt
 # Sass build artifacts
 .sass-cache/
 *.css.map
+
+# site-specific page-label catalogs (local gettext domain, not part of the engine)
+luna/luna.locale/*/LC_MESSAGES/local.po
+luna/luna.locale/*/LC_MESSAGES/local.mo

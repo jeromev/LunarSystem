@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.7-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.8-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.6) closed the
@@ -73,7 +73,7 @@ luna/
   luna.domains/
     luna.default/              Fallback site configuration (used for local/Docker)
   luna.sql/luna.mysql.sql      Database schema + seed data
-  luna.locale/                 gettext translations (en_US, fr_FR; en_EN is a legacy locale)
+  luna.locale/                 gettext translations (en_US, fr_FR)
 css/                           Stylesheets
 js/                            luna.js (admin UI behaviours; dependency-free, no jQuery)
 semantic/                      Semantic-web layer (SPARQL over the unchanged MySQL)
@@ -82,7 +82,7 @@ semantic/                      Semantic-web layer (SPARQL over the unchanged MyS
 
 ## Known issues
 
-A 2026 hardening pass (0.6.9–0.8.7-alpha) closed the major security issues; a second
+A 2026 hardening pass (0.6.9–0.8.8-alpha) closed the major security issues; a second
 adversarial review graded the result *ship-with-low-risk*. See [docs/security.md](docs/security.md)
 for the full timeline and verdict. The residual, by-design limitations:
 

@@ -157,7 +157,7 @@ class HTML_Safe
      * @var array
      * @access public
      */
-    var $deleteTagsContent = array('script', 'style', 'title', 'xml', );
+    var $deleteTagsContent = array('script', 'style', 'title', 'xml', 'svg', 'math', 'animate', 'animatetransform', 'animatemotion', 'set', 'foreignobject', );
 
     /**
      * Type of protocols filtering ('white' or 'black')
@@ -267,7 +267,7 @@ class HTML_Safe
      * @var array
      * @access public
      */
-    var $attributes = array('dynsrc', 'id', 'name', );
+    var $attributes = array('dynsrc', 'id', 'name', 'attributename', 'from', 'to', 'values', 'begin', 'dur', 'by', );
 
     /**
      * List of allowed "namespaced" attributes

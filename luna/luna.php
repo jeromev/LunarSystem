@@ -63,7 +63,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.7.4-alpha';
+	public static $lunaVersion = '0.7.5-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -404,7 +404,7 @@ class luna {
 		try {
 			if (self::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
 			if (self::$cache && ($cache_str = $cache_obj->get('node-'.PAGENID.'.mods'))) {
-				$nodes = unserialize($cache_str);
+				$nodes = unserialize($cache_str, array('allowed_classes' => false));
 			} else {
 				// load mods from db
 				$res = lunaDB::query('

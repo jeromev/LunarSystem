@@ -120,7 +120,7 @@ class lunaModel {
 		$this->node_path = lunaTools::link('node', true);
 		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($cache_rdf_name))) {
-			$array = unserialize($cache_str);
+			$array = unserialize($cache_str, array('allowed_classes' => false));
 			$this->index = $array['index'];
 			$this->aliases = $array['aliases'];
 			unset($array);
@@ -2479,7 +2479,7 @@ class lunaModel {
 		$code_str = md5(serialize(array($this->conf, $this->index)));
 		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($code_str))) {
-			$res = unserialize($cache_str);
+			$res = unserialize($cache_str, array('allowed_classes' => false));
 		} else { 
 			if (!$this->load_xsl($xslfile)) { return false; }
 			include_once('arc/ARC2.php');

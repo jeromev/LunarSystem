@@ -462,7 +462,7 @@ class lunaTools {
 	public static function load_config() {
 		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get('Config'))) {
-			return unserialize($cache_str);
+			return unserialize($cache_str, array('allowed_classes' => false));
 		} else {
 			// load config
 			$config = array();

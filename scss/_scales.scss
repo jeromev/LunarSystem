@@ -1,0 +1,307 @@
+// ==============================================================================
+// RESPONSIVE SCALES
+// ==============================================================================
+// This file defines all responsive scale values across 7 breakpoints.
+// Values are organized into: Typography, Layout, and Spacing scales.
+//
+// Breakpoints:
+//   xs (0px)     - Mobile first (no min-width)
+//   s (375px)    - Small phone
+//   m (560px)    - Large phone / small tablet
+//   l (768px)    - Tablet
+//   xl (1024px)  - Desktop
+//   xxl (1440px) - Large desktop
+//   ul (2004px)  - Ultra-large display
+// ==============================================================================
+
+@use 'sass:list';
+@use 'sass:map';
+
+// ==============================================================================
+// TYPOGRAPHY
+// ==============================================================================
+
+/// Font families
+$family: verdana, sans-serif;
+
+/// Optical width adjustment multiplier
+$width-optical-adjustment: 1.08;
+
+/// Typography scale names (for indexing)
+$size-names-scale: 'note', 'labeur', 'title-s', 'title-m', 'title-l', 'title-xl', 'title-ul';
+
+/// Font sizes per breakpoint (7 sizes × 7 breakpoints)
+$xs-size-scale:   12px, 15px, 16px, 18px, 20px, 36px, 40px;
+$s-size-scale:    13px, 16px, 18px, 19px, 24px, 40px, 58px;
+$m-size-scale:    14px, 18px, 19px, 20px, 28px, 58px, 76px;
+$l-size-scale:    15px, 19px, 20px, 21px, 38px, 76px, 90px;
+$xl-size-scale:   16px, 20px, 21px, 22px, 48px, 90px, 96px;
+$xxl-size-scale:  17px, 21px, 22px, 23px, 54px, 96px, 110px;
+$ul-size-scale:   18px, 22px, 23px, 24px, 62px, 110px, 130px;
+
+/// Line heights per breakpoint
+$xs-line-height:  24px;
+$s-line-height:   26px;
+$m-line-height:   28px;
+$l-line-height:   30px;
+$xl-line-height:  32px;
+$xxl-line-height: 34px;
+$ul-line-height:  36px;
+
+/// Font weights
+$weight-note:     400;
+$weight-labeur:   400;
+$weight-title-s:  600;
+$weight-title-m:  600;
+$weight-title-l:  600;
+$weight-title-xl: 600;
+$weight-title-ul: 600;
+
+// ==============================================================================
+// LAYOUT SCALES
+// ==============================================================================
+
+/// Maximum screen width (in rem)
+$max-screen-width: 150;
+
+/// Breakpoint names
+$min-width-name-scale: 'xs', 's', 'm', 'l', 'xl', 'xxl', 'ul';
+
+/// Breakpoint minimum widths
+$min-width-scale: 0, 375px, 560px, 768px, 1024px, 1440px, 2004px;
+
+/// Maximum frame widths (in baseline units)
+$max-frame-width-scale: 49, 51, 54, 56, 58, 64, 84;
+
+/// Maximum content widths (in baseline units)
+$max-content-width-scale: 39, 41, 44, 48, 50, 56, 62;
+
+/// Column widths (in baseline units)
+$column-width-scale: 11, 12, 16, 20, 16, 16, 20;
+
+/// Large column widths (in baseline units)
+$column-l-width-scale: 17, 17, 17, 20, 26, 32, 26;
+
+/// Number of columns per breakpoint
+$n-columns-scale: 1, 1, 2, 2, 3, 4, 5;
+
+// ==============================================================================
+// SPACING SCALES
+// ==============================================================================
+
+/// Padding scale (in baseline units)
+$pad-scale: 0.5, 1, 1, 2, 3, 6, 10;
+
+/// Gutter scale (in baseline units)
+$gutter-scale: 1, 1, 1, 2, 2, 2, 2;
+
+/// Margin scale (in baseline units)
+$marg-scale: 0, 1, 1, 2, 4, 7, 12;
+
+// ==============================================================================
+// EXTRACTED VARIABLES (for backward compatibility)
+// ==============================================================================
+// These variables are auto-extracted from the scales above.
+// Use the scale maps directly when possible for cleaner code.
+
+// Breakpoint widths
+$xs-min-width:  list.nth($min-width-scale, 1);
+$s-min-width:   list.nth($min-width-scale, 2);
+$m-min-width:   list.nth($min-width-scale, 3);
+$l-min-width:   list.nth($min-width-scale, 4);
+$xl-min-width:  list.nth($min-width-scale, 5);
+$xxl-min-width: list.nth($min-width-scale, 6);
+$ul-min-width:  list.nth($min-width-scale, 7);
+
+// Max content widths
+$xs-max-content-width:  list.nth($max-content-width-scale, 1);
+$s-max-content-width:   list.nth($max-content-width-scale, 2);
+$m-max-content-width:   list.nth($max-content-width-scale, 3);
+$l-max-content-width:   list.nth($max-content-width-scale, 4);
+$xl-max-content-width:  list.nth($max-content-width-scale, 5);
+$xxl-max-content-width: list.nth($max-content-width-scale, 6);
+$ul-max-content-width:  list.nth($max-content-width-scale, 7);
+
+// Max frame widths
+$xs-max-frame-width:  list.nth($max-frame-width-scale, 1);
+$s-max-frame-width:   list.nth($max-frame-width-scale, 2);
+$m-max-frame-width:   list.nth($max-frame-width-scale, 3);
+$l-max-frame-width:   list.nth($max-frame-width-scale, 4);
+$xl-max-frame-width:  list.nth($max-frame-width-scale, 5);
+$xxl-max-frame-width: list.nth($max-frame-width-scale, 6);
+$ul-max-frame-width:  list.nth($max-frame-width-scale, 7);
+
+// Column widths
+$xs-column-width:  list.nth($column-width-scale, 1);
+$s-column-width:   list.nth($column-width-scale, 2);
+$m-column-width:   list.nth($column-width-scale, 3);
+$l-column-width:   list.nth($column-width-scale, 4);
+$xl-column-width:  list.nth($column-width-scale, 5);
+$xxl-column-width: list.nth($column-width-scale, 6);
+$ul-column-width:  list.nth($column-width-scale, 7);
+
+// Large column widths
+$xs-column-l-width:  list.nth($column-l-width-scale, 1);
+$s-column-l-width:   list.nth($column-l-width-scale, 2);
+$m-column-l-width:   list.nth($column-l-width-scale, 3);
+$l-column-l-width:   list.nth($column-l-width-scale, 4);
+$xl-column-l-width:  list.nth($column-l-width-scale, 5);
+$xxl-column-l-width: list.nth($column-l-width-scale, 6);
+$ul-column-l-width:  list.nth($column-l-width-scale, 7);
+
+// Number of columns
+$xs-n-columns:  list.nth($n-columns-scale, 1);
+$s-n-columns:   list.nth($n-columns-scale, 2);
+$m-n-columns:   list.nth($n-columns-scale, 3);
+$l-n-columns:   list.nth($n-columns-scale, 4);
+$xl-n-columns:  list.nth($n-columns-scale, 5);
+$xxl-n-columns: list.nth($n-columns-scale, 6);
+$ul-n-columns:  list.nth($n-columns-scale, 7);
+
+// Padding widths
+$xs-pad-width:  list.nth($pad-scale, 1);
+$s-pad-width:   list.nth($pad-scale, 2);
+$m-pad-width:   list.nth($pad-scale, 3);
+$l-pad-width:   list.nth($pad-scale, 4);
+$xl-pad-width:  list.nth($pad-scale, 5);
+$xxl-pad-width: list.nth($pad-scale, 6);
+$ul-pad-width:  list.nth($pad-scale, 7);
+
+// Gutter widths
+$xs-gutter-width:  list.nth($gutter-scale, 1);
+$s-gutter-width:   list.nth($gutter-scale, 2);
+$m-gutter-width:   list.nth($gutter-scale, 3);
+$l-gutter-width:   list.nth($gutter-scale, 4);
+$xl-gutter-width:  list.nth($gutter-scale, 5);
+$xxl-gutter-width: list.nth($gutter-scale, 6);
+$ul-gutter-width:  list.nth($gutter-scale, 7);
+
+// Margin widths
+$xs-marg-width:  list.nth($marg-scale, 1);
+$s-marg-width:   list.nth($marg-scale, 2);
+$m-marg-width:   list.nth($marg-scale, 3);
+$l-marg-width:   list.nth($marg-scale, 4);
+$xl-marg-width:  list.nth($marg-scale, 5);
+$xxl-marg-width: list.nth($marg-scale, 6);
+$ul-marg-width:  list.nth($marg-scale, 7);
+
+// Typography - note
+$xs-size-note:  list.nth($xs-size-scale, 1);
+$s-size-note:   list.nth($s-size-scale, 1);
+$m-size-note:   list.nth($m-size-scale, 1);
+$l-size-note:   list.nth($l-size-scale, 1);
+$xl-size-note:  list.nth($xl-size-scale, 1);
+$xxl-size-note: list.nth($xxl-size-scale, 1);
+$ul-size-note:  list.nth($ul-size-scale, 1);
+
+// Typography - labeur (body text)
+$xs-size-labeur:        list.nth($xs-size-scale, 2);
+$xs-line-height-labeur: $xs-line-height;
+$s-size-labeur:         list.nth($s-size-scale, 2);
+$s-line-height-labeur:  $s-line-height;
+$m-size-labeur:         list.nth($m-size-scale, 2);
+$m-line-height-labeur:  $m-line-height;
+$l-size-labeur:         list.nth($l-size-scale, 2);
+$l-line-height-labeur:  $l-line-height;
+$xl-size-labeur:        list.nth($xl-size-scale, 2);
+$xl-line-height-labeur: $xl-line-height;
+$xxl-size-labeur:       list.nth($xxl-size-scale, 2);
+$xxl-line-height-labeur: $xxl-line-height;
+$ul-size-labeur:        list.nth($ul-size-scale, 2);
+$ul-line-height-labeur: $ul-line-height;
+
+// Typography - title-s (small title)
+$xs-size-title-s:  list.nth($xs-size-scale, 3);
+$s-size-title-s:   list.nth($s-size-scale, 3);
+$m-size-title-s:   list.nth($m-size-scale, 3);
+$l-size-title-s:   list.nth($l-size-scale, 3);
+$xl-size-title-s:  list.nth($xl-size-scale, 3);
+$xxl-size-title-s: list.nth($xxl-size-scale, 3);
+$ul-size-title-s:  list.nth($ul-size-scale, 3);
+
+// Typography - title-m (medium title)
+$xs-size-title-m:  list.nth($xs-size-scale, 4);
+$s-size-title-m:   list.nth($s-size-scale, 4);
+$m-size-title-m:   list.nth($m-size-scale, 4);
+$l-size-title-m:   list.nth($l-size-scale, 4);
+$xl-size-title-m:  list.nth($xl-size-scale, 4);
+$xxl-size-title-m: list.nth($xxl-size-scale, 4);
+$ul-size-title-m:  list.nth($ul-size-scale, 4);
+
+// Typography - title-l (large title)
+$xs-size-title-l:  list.nth($xs-size-scale, 5);
+$s-size-title-l:   list.nth($s-size-scale, 5);
+$m-size-title-l:   list.nth($m-size-scale, 5);
+$l-size-title-l:   list.nth($l-size-scale, 5);
+$xl-size-title-l:  list.nth($xl-size-scale, 5);
+$xxl-size-title-l: list.nth($xxl-size-scale, 5);
+$ul-size-title-l:  list.nth($ul-size-scale, 5);
+
+// Typography - title-xl (extra-large title)
+$xs-size-title-xl:  list.nth($xs-size-scale, 6);
+$s-size-title-xl:   list.nth($s-size-scale, 6);
+$m-size-title-xl:   list.nth($m-size-scale, 6);
+$l-size-title-xl:   list.nth($l-size-scale, 6);
+$xl-size-title-xl:  list.nth($xl-size-scale, 6);
+$xxl-size-title-xl: list.nth($xxl-size-scale, 6);
+$ul-size-title-xl:  list.nth($ul-size-scale, 6);
+
+// Typography - slogan
+$xs-size-slogan:  list.nth($xs-size-scale, 7);
+$s-size-slogan:   list.nth($s-size-scale, 7);
+$m-size-slogan:   list.nth($m-size-scale, 7);
+$l-size-slogan:   list.nth($l-size-scale, 7);
+$xl-size-slogan:  list.nth($xl-size-scale, 7);
+$xxl-size-slogan: list.nth($xxl-size-scale, 7);
+$ul-size-slogan:  list.nth($ul-size-scale, 7);
+
+// ==============================================================================
+// BASELINEGRID CONFIGURATION MAP
+// ==============================================================================
+// This map is used to configure the baselinegrid.scss module.
+// It contains the essential responsive scale data needed for vertical rhythm.
+
+$scale: (
+  'xs': (
+    'font-size':   $xs-size-labeur,
+    'line-height': $xs-line-height-labeur,
+    'min-width':   $xs-min-width,
+    'pad': $xs-pad-width
+  ),
+  's': (
+    'font-size':   $s-size-labeur,
+    'line-height': $s-line-height-labeur,
+    'min-width':   $s-min-width,
+    'pad': $s-pad-width
+  ),
+  'm': (
+    'font-size':   $m-size-labeur,
+    'line-height': $m-line-height-labeur,
+    'min-width':   $m-min-width,
+    'pad': $m-pad-width
+  ),
+  'l': (
+    'font-size':   $l-size-labeur,
+    'line-height': $l-line-height-labeur,
+    'min-width':   $l-min-width,
+    'pad': $l-pad-width
+  ),
+  'xl': (
+    'font-size':   $xl-size-labeur,
+    'line-height': $xl-line-height-labeur,
+    'min-width':   $xl-min-width,
+    'pad': $xl-pad-width
+  ),
+  'xxl': (
+    'font-size':   $xxl-size-labeur,
+    'line-height': $xxl-line-height-labeur,
+    'min-width':   $xxl-min-width,
+    'pad': $xxl-pad-width
+  ),
+  'ul': (
+    'font-size':   $ul-size-labeur,
+    'line-height': $ul-line-height-labeur,
+    'min-width':   $ul-min-width,
+    'pad': $ul-pad-width
+  )
+);

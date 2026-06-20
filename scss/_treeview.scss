@@ -1,10 +1,12 @@
+@use 'bg';
+
 /* ////////////////////////////////////////////////////////////////  TVlists */
 /* JQuery Tree View, @ 2006 Myles Angell <mangell@cronin-co.com> See: <http://be.twixt.us/jquery/treeViewCollapsed.php> */
 ul.tv {
 	&, ul { padding: 0; margin: 0; list-style: none; }
-	li { position: relative; margin: 0; padding: 0.125rem 0 0.125rem 0.625rem; z-index: 10; }
-	div.tvca { height: 0.9375rem; width: 0.9375rem; position: absolute; top: 0.0625rem; left: -0.25rem; cursor: pointer; z-index: 50; }
-	li, .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat; }
+	li { position: relative; margin: 0; padding: bg.v(0.5) 0 bg.v(0.5) bg.h(); z-index: 10; }
+	div.tvca { height: bg.v(); width: bg.h(); position: absolute; top: bg.v(0.5); left: -0.25rem; cursor: pointer; z-index: 50; }
+	li, .tvi /* Tree View Item */ { background: url(../images/treeView/tvi.png) bg.v(-1) 0 no-repeat; }
 	.tvic /* Tree View Item, Collapsable */ { background-image: url(../images/treeView/tvie.png); }
 	.tvie /* Tree View Item, Expandable */ { background-image: url(../images/treeView/tvic.png); }
 	.tvil /* Tree View Last Item */ { background-image: url(../images/treeView/tvil.png); }

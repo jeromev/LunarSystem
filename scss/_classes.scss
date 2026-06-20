@@ -1,3 +1,5 @@
+@use 'bg';
+
 /* /////////////////////////////////////////////////////////////////  CLASSES */
 .on { display: block; }
 .off { display: none; }
@@ -5,21 +7,21 @@
 .autoscroll { overflow: auto; }
 .nowrap { white-space: nowrap; }
 .box {
-	border-radius: 0.3125rem;
-	box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, .1);
+	border-radius: bg.v(0.5);
+	// box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, .1);
 }
 .box-content {
-	border-radius: 0.1875rem;
+	border-radius: bg.v(0.5);
 	padding: 0;
 }
 .box-handle {
 	&.collapsed {
-		padding-left: 1.375rem;
+		padding-left: bg.h(2);
 		cursor: pointer;
 		background: url("../images/menu-collapsed.png") no-repeat 0 50%;
 	}
 	&.expanded {
-		padding-left: 1.375rem;
+		padding-left: bg.h(2);
 		cursor: pointer;
 		background: url("../images/menu-expanded.png") no-repeat 0 50%;
 		color: #744d4c;

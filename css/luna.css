@@ -3,6 +3,24 @@
    .css directly. Edit the partials here and run `make css` (or `make css-watch`).
    Source of truth: scss/. Build tool: Dart Sass (`sass`).
    =========================================================================== */
+/*
+  baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss
+  -----------------------------------------------------------------------------
+  A modern SCSS toolkit for aligning text and layout to a baseline grid.
+  Features responsive scaling, typographic precision, and utility mixins.
+  -----------------------------------------------------------------------------
+  USAGE:
+    @use 'path/to/_baselinegrid.scss' as *;
+    .my-class { @include set(20px); }
+    .container { @include pad-scale(); }
+    .element { @include respond-to('m') { font-size: 20px; } }
+  -----------------------------------------------------------------------------
+*/
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -29,7 +47,6 @@ h4,
 h5,
 h6,
 p {
-  margin: 0;
   font-weight: inherit;
 }
 
@@ -120,22 +137,13 @@ hr {
   --warn: #a60045; /* warning button / message */
   --field-border: #ccc;
   --field-focus: #938379;
-  --font: 16px/1.5rem Verdana, sans-serif;
 }
 
-/*
-  baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss
-  -----------------------------------------------------------------------------
-  A modern SCSS toolkit for aligning text and layout to a baseline grid.
-  Features responsive scaling, typographic precision, and utility mixins.
-  -----------------------------------------------------------------------------
-  USAGE:
-    @use 'path/to/_baselinegrid.scss' as *;
-    .my-class { @include set(20px); }
-    .container { @include pad-scale(); }
-    .element { @include respond-to('m') { font-size: 20px; } }
-  -----------------------------------------------------------------------------
-*/
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
 /* ////////////////////////////////////////////////////////////////////  TAGS */
 body *:before,
 body *:after {
@@ -143,77 +151,79 @@ body *:after {
   vertical-align: baseline;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
+html,
+body {
   color: var(--ink);
 }
 
 html {
+  font-family: verdana, sans-serif;
+  font-weight: 400;
   --base-font-size: 15px;
   --base-line-height: 24px;
 }
 @media (min-width: 375px) {
   html {
-    --base-font-size: 17px;
+    --base-font-size: 16px;
     --base-line-height: 26px;
   }
 }
 @media (min-width: 560px) {
   html {
-    --base-font-size: 19px;
+    --base-font-size: 18px;
     --base-line-height: 28px;
   }
 }
 @media (min-width: 768px) {
   html {
-    --base-font-size: 20px;
+    --base-font-size: 19px;
     --base-line-height: 30px;
   }
 }
 @media (min-width: 1024px) {
   html {
-    --base-font-size: 21px;
+    --base-font-size: 20px;
     --base-line-height: 32px;
   }
 }
 @media (min-width: 1440px) {
   html {
-    --base-font-size: 23px;
+    --base-font-size: 21px;
     --base-line-height: 34px;
   }
 }
 @media (min-width: 2004px) {
   html {
-    --base-font-size: 25px;
+    --base-font-size: 22px;
     --base-line-height: 36px;
   }
 }
 html {
   --base-unit: calc(var(--base-line-height) / 2);
-  --width-optical-adjustment: 1.1;
-  --right-side-optical-adjustment: 0.8;
+  --width-optical-adjustment: 1.08;
+  --right-side-optical-adjustment: 1;
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
+  background-size: 100% var(--base-unit);
+  background-position: left top;
 }
 html {
   /* responsive base font + the baseline unit (--base-unit) */
-  font-family: Verdana, sans-serif;
 }
 
-body {
-  padding: 0 0.6875rem 0.6875rem;
-}
-
-body, input, textarea, button, select, optgroup, table {
+body,
+input,
+textarea,
+button,
+select,
+optgroup,
+table {
   font: inherit;
 }
 
 table.zebra {
   border: none;
-  margin: 0;
-  padding: 0;
   width: 100%;
   border-collapse: collapse;
 }
@@ -222,18 +232,18 @@ table.zebra tbody {
 }
 table.zebra thead div.pagination {
   border-bottom: solid 0.0625rem #eee;
-  padding: 0.125rem 0;
-  margin: 0.125rem 0 0;
+  padding: calc(0.5 * var(--base-unit)) 0;
+  margin: calc(0.5 * var(--base-unit)) 0 0;
   color: var(--muted-2);
 }
 table.zebra thead div.pagination a.prev,
 table.zebra thead div.pagination a.next,
 table.zebra thead div.pagination a.first,
 table.zebra thead div.pagination a.last {
-  border-radius: 0.1875rem;
+  border-radius: calc(0.5 * var(--base-unit));
   background: rgba(255, 255, 255, 0.6);
   border: 0.125rem solid #ccc;
-  padding: 0 0.3125rem 0.0625rem;
+  padding: 0 calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
 }
 table.zebra thead div.pagination a.prev:hover,
 table.zebra thead div.pagination a.next:hover,
@@ -251,8 +261,7 @@ table.zebra thead div.alphabetic strong.on {
 table.zebra thead th {
   background: rgba(0, 0, 0, 0.15);
   color: #fff;
-  padding: 0.3125rem 0.375rem;
-  margin: 0;
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   text-align: left;
   font-weight: normal;
   border-bottom: solid 0.0625rem #bbb;
@@ -260,10 +269,10 @@ table.zebra thead th {
   text-shadow: 0.0625rem 0.0625rem 0.5em rgba(0, 0, 0, 0.5);
 }
 table.zebra thead th:first-child {
-  border-radius: 0.3125rem 0 0 0;
+  border-radius: calc(0.5 * var(--base-unit)) 0 0 0;
 }
 table.zebra thead th:last-child {
-  border-radius: 0 0.3125rem 0 0;
+  border-radius: 0 calc(0.5 * var(--base-unit)) 0 0;
 }
 table.zebra thead th a {
   display: block;
@@ -276,16 +285,12 @@ table.zebra thead th a strong {
   font-weight: normal;
 }
 table.zebra caption {
-  padding: 0.375rem 0;
+  padding: calc(1 * var(--base-unit)) 0;
   text-align: left;
-  font-size: 0.6875rem;
-  line-height: 0.9375rem;
-  margin-top: 0.625rem;
+  margin-top: calc(1 * var(--base-unit));
 }
 table.zebra tbody tr {
   background: rgba(255, 255, 255, 0.8);
-  padding: 0;
-  margin: 0;
   border-bottom: thin solid #f9f9f9;
   color: var(--muted);
 }
@@ -295,14 +300,14 @@ table.zebra tbody tr:hover {
 }
 table.zebra tbody tr.even {
   background: rgba(0, 0, 0, 0.1);
-  padding: 0.1875rem;
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
 }
 table.zebra tbody tr.even:hover, table.zebra tbody tr.even.hover {
   background: rgba(0, 0, 0, 0.1);
 }
 table.zebra tbody tr.odd {
   background: rgba(0, 0, 0, 0.05);
-  padding: 0.1875rem;
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
 }
 table.zebra tbody tr.odd:hover, table.zebra tbody tr.odd.hover {
   background: rgba(0, 0, 0, 0.1);
@@ -312,103 +317,91 @@ table.zebra tbody tr.active:hover, table.zebra tbody tr.active.hover {
   cursor: pointer;
 }
 
-table.zebra tbody tr.info, body div#Page div.message.info {
+table.zebra tbody tr.info,
+body div#Page div.message.info {
   background: #d6ffe0;
 }
 
-table.zebra tbody tr.notice, body div#Page div.message.notice {
+table.zebra tbody tr.notice,
+body div#Page div.message.notice {
   background: #ffe5c1;
 }
 
-table.zebra tbody tr.critical, body div#Page div.message.critical {
+table.zebra tbody tr.critical,
+body div#Page div.message.critical {
   background: #febbbf;
 }
 
-table.zebra tbody tr.warning, body div#Page div.message.warning {
+table.zebra tbody tr.warning,
+body div#Page div.message.warning {
   background: #ffc6c6;
 }
 
-table.zebra tbody tr.error, body div#Page div.message.error {
+table.zebra tbody tr.error,
+body div#Page div.message.error {
   background: #ff8680;
 }
 
-table.zebra tbody tr.deleted, table.zebra tbody tr.deleted a, table.zebra tbody tr.inactive, table.zebra tbody tr.inactive a {
+table.zebra tbody tr.deleted,
+table.zebra tbody tr.deleted a,
+table.zebra tbody tr.inactive,
+table.zebra tbody tr.inactive a {
   font-style: italic;
   color: var(--muted-2) !important;
 }
 table.zebra tbody td {
-  padding: 0.3125rem 0.375rem;
-  margin: 0;
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 form {
   display: block;
-  margin: 0;
-  padding: 0;
   background: transparent;
 }
 form fieldset {
   border: none;
   display: block;
-  margin: 0;
-  padding: 0;
 }
 form fieldset p {
   color: var(--muted);
 }
 form fieldset div.box {
-  padding: 0.6875rem;
-  margin: 0;
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: rgba(0, 0, 0, 0.1);
 }
 form fieldset legend {
-  padding: 0;
-  margin: 0;
   display: block !important;
   text-align: left;
-  font-size: 0.6875rem;
-  line-height: 0.9375rem;
 }
 form fieldset label {
-  padding: 0;
-  margin: 0;
   display: block;
 }
 form fieldset label span.label {
   display: block;
   color: var(--muted);
-  padding: 0 0 0.1875rem;
+  padding: 0 0 calc(0.5 * var(--base-unit));
 }
 form fieldset select {
-  margin: 0;
   font-weight: normal;
-  font-size: 0.8125rem;
   border: solid 0.125rem var(--field-border);
-  line-height: 0.9375rem;
-  padding: 0.125rem 0.0625rem 0.125rem 0.125rem;
-  width: 11.625rem;
-  border-radius: 0.1875rem;
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
+  border-radius: calc(0.5 * var(--base-unit));
 }
 form fieldset input {
-  padding: 0.1875rem 0.3125rem;
-  width: 10.75rem;
-  margin: 0;
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(16 * var(--base-unit) * var(--width-optical-adjustment));
   font-weight: normal;
-  font-size: 0.8125rem;
   border: solid 0.125rem var(--field-border);
-  line-height: 0.9375rem;
-  border-radius: 0.1875rem;
+  border-radius: calc(0.5 * var(--base-unit));
 }
 form fieldset input.submit {
   background: var(--chrome);
   color: #fff;
-  font-size: 0.6875rem;
-  letter-spacing: 0.0625rem;
-  margin: 0.3125rem 0 0.25rem 0.375rem;
-  padding: 0.375rem 0.25rem 0.3125rem;
+  margin: calc(0.5 * var(--base-unit)) 0 calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  padding: calc(1 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
   text-transform: uppercase;
-  width: 11.6875rem;
-  border-radius: 0.1875rem;
+  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
+  border-radius: calc(0.5 * var(--base-unit));
 }
 form fieldset input.submit:hover, form fieldset input.submit:focus {
   cursor: pointer;
@@ -423,14 +416,12 @@ form fieldset input.becarefull:hover {
   color: #f9f9f9;
 }
 form fieldset textarea {
-  padding: 0.3125rem 0.375rem;
-  margin: 0;
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   font-weight: normal;
   border: solid 0.125rem var(--field-border);
-  width: 10.625rem;
-  height: 8.75rem;
-  font-size: 0.6875rem;
-  border-radius: 0.1875rem;
+  width: calc(15 * var(--base-unit) * var(--width-optical-adjustment));
+  height: calc(13 * var(--base-unit));
+  border-radius: calc(0.5 * var(--base-unit));
 }
 form fieldset input:hover,
 form fieldset input:focus,
@@ -459,11 +450,6 @@ a:hover {
   color: var(--link-hover);
 }
 
-small {
-  font-size: 0.5625rem;
-  line-height: 0.8125rem;
-}
-
 img {
   border: none;
 }
@@ -477,104 +463,318 @@ p:after {
 }
 p {
   /* align body text to the baseline grid */
-  margin: 0.34375rem 0;
-  padding: 0;
   clear: both;
-  max-width: 35rem;
+  max-width: calc(55 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 blockquote {
-  margin: 0.6875rem 0 0 0.6875rem;
-  padding: 0;
-  font-size: 0.625rem;
-  line-height: 0.6875rem;
+  margin: calc(1 * var(--base-unit)) 0 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 ul {
-  margin: 0;
-  padding: 0 0 0 0.6875rem;
+  padding: 0 0 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 ol {
-  margin: 0;
-  padding: 0 0 0 0.6875rem;
-}
-
-dl {
-  margin: 0;
-  padding: 0;
+  padding: 0 0 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 dt {
   clear: both;
 }
 
-dd {
-  margin: 0;
-  padding: 0;
-}
-
 dl.analyse {
-  margin: 0.6875rem 0;
+  margin: calc(1 * var(--base-unit)) 0;
   background: transparent;
 }
 dl.analyse dt {
   color: var(--muted-2);
-  padding: 0.3125rem 0;
+  padding: calc(0.5 * var(--base-unit)) 0;
   background: rgba(0, 0, 0, 0.05);
 }
 dl.analyse dd {
-  padding: 0.3125rem 0.6875rem;
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #000;
   font-weight: normal;
-  margin: 0;
-  padding: 0;
 }
 
 h1 {
-  font-size: 150%;
-  line-height: 80%;
-  padding: 0.6875rem 0;
+  font-size: 36px;
+  --line-height: calc(var(--base-unit) * 3);
+  line-height: var(--line-height);
+}
+@media (min-width: 375px) {
+  h1 {
+    font-size: 40px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 4);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  h1 {
+    font-size: 58px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 5);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 768px) {
+  h1 {
+    font-size: 76px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 6);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 90px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 6);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  h1 {
+    font-size: 96px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 6);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  h1 {
+    font-size: 110px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 7);
+    line-height: var(--line-height);
+  }
+}
+h1:before, h1:after {
+  height: var(--line-height);
+  content: "";
+}
+h1:after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 
 h2 {
-  padding: 0.6875rem 0;
-  text-align: left;
-  font-size: 0.875rem;
-  line-height: 0.875rem;
+  font-size: 20px;
+  --line-height: calc(var(--base-unit) * 2);
+  line-height: var(--line-height);
+}
+@media (min-width: 375px) {
+  h2 {
+    font-size: 24px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  h2 {
+    font-size: 28px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 768px) {
+  h2 {
+    font-size: 38px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1024px) {
+  h2 {
+    font-size: 48px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  h2 {
+    font-size: 54px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 4);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  h2 {
+    font-size: 62px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 4);
+    line-height: var(--line-height);
+  }
+}
+h2:before, h2:after {
+  height: var(--line-height);
+  content: "";
+}
+h2:after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 
 h3 {
-  font-size: 125%;
-  line-height: 140%;
-  padding: 0.6875rem 0;
-  text-align: left;
+  font-size: 18px;
+  --line-height: calc(var(--base-unit) * 2);
+  line-height: var(--line-height);
+}
+@media (min-width: 375px) {
+  h3 {
+    font-size: 19px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  h3 {
+    font-size: 20px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 768px) {
+  h3 {
+    font-size: 21px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1024px) {
+  h3 {
+    font-size: 22px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  h3 {
+    font-size: 23px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  h3 {
+    font-size: 24px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+h3:before, h3:after {
+  height: var(--line-height);
+  content: "";
+}
+h3:after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 
-h4 {
-  font-size: 0.8125rem;
-  line-height: 1.1875rem;
-  padding: 0.6875rem 0;
-  text-align: left;
-}
-
-h5 {
-  font-size: 0.75rem;
-  line-height: 1.125rem;
-  padding: 0.6875rem 0;
-  text-align: left;
-}
-
+h4,
+h5,
 h6 {
-  font-size: 0.6875rem;
-  line-height: 1rem;
-  padding: 0.6875rem 0;
-  text-align: left;
+  font-size: 16px;
+  --line-height: calc(var(--base-unit) * 2);
+  line-height: var(--line-height);
+}
+@media (min-width: 375px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 18px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 19px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 768px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 20px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1024px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 21px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 22px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  h4,
+  h5,
+  h6 {
+    font-size: 23px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+h4:before, h4:after,
+h5:before,
+h5:after,
+h6:before,
+h6:after {
+  height: var(--line-height);
+  content: "";
+}
+h4:after,
+h5:after,
+h6:after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
 /* /////////////////////////////////////////////////////////////////  CLASSES */
 .on {
   display: block;
@@ -597,239 +797,282 @@ h6 {
 }
 
 .box {
-  border-radius: 0.3125rem;
-  box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, 0.1);
+  border-radius: calc(0.5 * var(--base-unit));
 }
 
 .box-content {
-  border-radius: 0.1875rem;
+  border-radius: calc(0.5 * var(--base-unit));
   padding: 0;
 }
 
 .box-handle.collapsed {
-  padding-left: 1.375rem;
+  padding-left: calc(2 * var(--base-unit) * var(--width-optical-adjustment));
   cursor: pointer;
   background: url("../images/menu-collapsed.png") no-repeat 0 50%;
 }
 .box-handle.expanded {
-  padding-left: 1.375rem;
+  padding-left: calc(2 * var(--base-unit) * var(--width-optical-adjustment));
   cursor: pointer;
   background: url("../images/menu-expanded.png") no-repeat 0 50%;
   color: #744d4c;
 }
 
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
 /* ////////////////////////////////////////////////////////////////////  PAGE */
-body div#Page {
+#Page {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-areas: "top" "content";
   align-items: start;
   margin: 0 auto;
   width: 100%;
-  padding-bottom: 3rem; /* clear the fixed bottom toolbar (div#Nav) */
+  padding-bottom: calc(4.5 * var(--base-unit)); /* clear the fixed bottom toolbar (#Nav) */
   background: transparent;
   position: relative;
 }
-body div#Page div#Top {
+#Page #Top {
   grid-area: top;
-  display: flex;
-  gap: 0.6875rem;
-  background: transparent;
-}
-body div#Page div#Top div.box {
-  flex: 0 1 66.667%;
-  margin: 0;
-  padding: 0.125rem 0 0;
   background: var(--chrome);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
-body div#Page div#Top div.box:first-child {
-  flex: 0 1 33.333%;
+#Page #Top h1 {
+  font-size: 16px;
+  --line-height: calc(var(--base-unit) * 2);
+  line-height: var(--line-height);
 }
-body div#Page div#Top h1 {
-  padding: 0;
-  margin: 0;
+@media (min-width: 375px) {
+  #Page #Top h1 {
+    font-size: 18px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
 }
-body div#Page div#Top h1 a {
+@media (min-width: 560px) {
+  #Page #Top h1 {
+    font-size: 19px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 768px) {
+  #Page #Top h1 {
+    font-size: 20px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1024px) {
+  #Page #Top h1 {
+    font-size: 21px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  #Page #Top h1 {
+    font-size: 22px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  #Page #Top h1 {
+    font-size: 23px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+#Page #Top h1:before, #Page #Top h1:after {
+  height: var(--line-height);
+  content: "";
+}
+#Page #Top h1:after {
+  vertical-align: calc(var(--line-height) * -1);
+}
+#Page #Top h1 {
+  /* This title wraps a block <a>, so bg.scale()'s baseline ::before/::after
+  get pushed onto their own lines and balloon the height. The header
+  sits in a fixed bar and needs no baseline leading — switch them off. */
+}
+#Page #Top h1::before, #Page #Top h1::after {
+  content: none;
+}
+#Page #Top h1:nth-child(2) {
+  background: var(--accent);
+}
+#Page #Top h1 a {
   color: #fff;
   display: block;
-  padding: 0.6875rem;
-  text-shadow: 0.0625rem 0.0625rem 0.5em rgba(0, 0, 0, 0.5);
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content {
+#Page #Content {
   grid-area: content;
   background: transparent;
   position: relative;
-  padding: 0.6875rem 0;
+  padding: calc(1 * var(--base-unit)) 0;
 }
-body div#Page div#Content div#Content-header h1 {
-  padding: 0;
-  margin: 0;
+#Page #Content #Content-header h1::before, #Page #Content #Content-header h1::after {
+  content: none;
 }
-body div#Page div#Content div#Content-header h1 a {
+#Page #Content #Content-header h1 {
+  /* same as #Top: block <a> inside, no baseline leading */
+}
+#Page #Content #Content-header h1 a {
   color: #fff;
   display: block;
-  padding: 0.6875rem;
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: var(--accent);
 }
-body div#Page div#Content div#Bottom {
-  padding: 0.375rem 0.6875rem;
-  margin: 0;
+#Page #Content #Bottom {
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
 }
-body div#Page div#Content div#Content-main {
-  padding: 0;
+#Page #Content #Content-main {
   background: transparent;
 }
-body div#Page div#Content div#Content-main div.box {
-  margin: 0 0 0.6875rem;
-  padding: 0 0.6875rem;
-  background: rgba(255, 255, 255, 0.6);
+#Page #Content #Content-main div.box {
+  margin: 0 0 calc(1 * var(--base-unit));
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.box.text {
-  padding: 0.6875rem 1.375rem 1.375rem;
-  background: rgba(255, 255, 255, 0.9);
+#Page #Content #Content-main div.box.text {
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.box.text h2 {
-  font-size: 155%;
+#Page #Content #Content-main div.boxtable {
+  padding: 0 0 calc(1 * var(--base-unit));
 }
-body div#Page div#Content div#Content-main div.box.text .box-content {
-  font-size: 108%;
-  line-height: 140%;
-  padding: 0;
+#Page #Content #Content-main #PagesList table td.level2 {
+  padding-left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.box.text .box-content ul {
-  margin: 0;
-  padding: 0;
+#Page #Content #Content-main #PagesList table td.level3 {
+  padding-left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.box.text .box-content li {
-  margin: 0;
-  font-size: 83%;
+#Page #Content #Content-main #PagesList table td.level4 {
+  padding-left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.boxtable {
-  padding: 0 0 0.6875rem;
+#Page #Content #Content-main #PagesList table td.level5 {
+  padding-left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main #PagesList table td.level2 {
-  padding-left: 0.6875rem;
-}
-body div#Page div#Content div#Content-main #PagesList table td.level3 {
-  padding-left: 0.6875rem;
-}
-body div#Page div#Content div#Content-main #PagesList table td.level4 {
-  padding-left: 0.6875rem;
-}
-body div#Page div#Content div#Content-main #PagesList table td.level5 {
-  padding-left: 0.6875rem;
-}
-body div#Page div#Content div#Content-main div.onecol {
-  padding: 0.6875rem;
+#Page #Content #Content-main div.onecol {
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   width: 100%;
 }
-body div#Page div#Content div#Content-main div.onecol label {
+#Page #Content #Content-main div.onecol label {
   clear: both;
 }
-body div#Page div#Content div#Content-main div.col {
-  padding: 0.6875rem 0 0.6875rem 0.6875rem;
-  width: 11.5625rem;
+#Page #Content #Content-main div.col {
+  padding: calc(1 * var(--base-unit)) 0 calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.col.autowidth input, body div#Page div#Content div#Content-main div.col.autowidth textarea, body div#Page div#Content div#Content-main div.col.autowidth label span.label {
+#Page #Content #Content-main div.col.autowidth input, #Page #Content #Content-main div.col.autowidth textarea, #Page #Content #Content-main div.col.autowidth label span.label {
   width: auto !important;
 }
-body div#Page div#Content div#Content-main div.col label.big input,
-body div#Page div#Content div#Content-main div.col label.big textarea,
-body div#Page div#Content div#Content-main div.col label.big span.label {
-  width: 35.25rem;
+#Page #Content #Content-main div.col label.big input,
+#Page #Content #Content-main div.col label.big textarea,
+#Page #Content #Content-main div.col label.big span.label {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main form fieldset {
+#Page #Content #Content-main form fieldset {
   background: transparent;
 }
-body div#Page div#Content div#Content-main form fieldset div.box-content {
-  padding-bottom: 0.6875rem;
+#Page #Content #Content-main form fieldset div.box-content {
+  padding-bottom: calc(1 * var(--base-unit));
 }
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth input,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth textarea,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col.autowidth label span.label {
+#Page #Content #Content-main form fieldset div.box-content div.col.autowidth input,
+#Page #Content #Content-main form fieldset div.box-content div.col.autowidth textarea,
+#Page #Content #Content-main form fieldset div.box-content div.col.autowidth label span.label {
   width: auto !important;
 }
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big input,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big textarea,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.big span.label {
-  width: 35.25rem;
+#Page #Content #Content-main form fieldset div.box-content div.col label.big input,
+#Page #Content #Content-main form fieldset div.box-content div.col label.big textarea,
+#Page #Content #Content-main form fieldset div.box-content div.col label.big span.label {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large input,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large textarea,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large select,
-body div#Page div#Content div#Content-main form fieldset div.box-content div.col label.large span.label {
-  width: 23.875rem;
+#Page #Content #Content-main form fieldset div.box-content div.col label.large input,
+#Page #Content #Content-main form fieldset div.box-content div.col label.large textarea,
+#Page #Content #Content-main form fieldset div.box-content div.col label.large select,
+#Page #Content #Content-main form fieldset div.box-content div.col label.large span.label {
+  width: calc(35 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content-main form fieldset label.big input,
-body div#Page div#Content-main form fieldset label.big span.label {
-  width: 35.25rem;
+#Page #Content-main form fieldset label.big input,
+#Page #Content-main form fieldset label.big span.label {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content-main form fieldset label.big textarea {
-  width: 35.25rem;
-  height: 12.5rem;
+#Page #Content-main form fieldset label.big textarea {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
+  height: calc(18 * var(--base-unit));
 }
-body div#Page div#Content div#Content-main div.fields {
+#Page #Content #Content-main div.fields {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   background: rgba(0, 0, 0, 0.05);
-  border-top-left-radius: 0.3125rem;
-  border-top-right-radius: 0.3125rem;
+  border-top-left-radius: calc(0.5 * var(--base-unit));
+  border-top-right-radius: calc(0.5 * var(--base-unit));
   padding: 0.0006875rem 0 0;
 }
-body div#Page div#Content div#Content-main div.text div.col {
-  padding: 0 0.375rem 0.6875rem 0.5625rem;
-  width: 11.375rem;
+#Page #Content #Content-main div.text div.col {
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Content div#Content-main div.text div.col:first-child {
+#Page #Content #Content-main div.text div.col:first-child {
   padding-left: 0;
 }
-body div#Page div#Content div#Content-main div.text div.col:last-child {
+#Page #Content #Content-main div.text div.col:last-child {
   padding-right: 0;
   border: none;
 }
-body div#Page div#Content div#Content-main div.submit {
-  margin: 0;
-  padding: 0.25rem;
+#Page #Content #Content-main div.submit {
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
   background: rgba(0, 0, 0, 0.1);
-  border-bottom-left-radius: 0.3125rem;
-  border-bottom-right-radius: 0.3125rem;
+  border-bottom-left-radius: calc(0.5 * var(--base-unit));
+  border-bottom-right-radius: calc(0.5 * var(--base-unit));
 }
-body div#Page div#AnalyseLog {
-  padding: 0 0.6875rem 0.6875rem 0;
+#Page #AnalyseLog {
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(1 * var(--base-unit)) 0;
 }
-body div#Page div#AnalyseLog div.message {
-  padding: 0.3125rem 0.6875rem;
-  width: 35.25rem;
+#Page #AnalyseLog div.message {
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Messages p {
+#Page #Messages p {
   color: #f9f9f9;
-  padding: 0.375rem 0.6875rem 0.4375rem;
-  margin: 0 0 0.6875rem;
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
+  margin: 0 0 calc(1 * var(--base-unit));
   font-weight: bold;
-  border-radius: 0.3125rem;
+  border-radius: calc(0.5 * var(--base-unit));
 }
-body div#Page div.message {
-  padding: 0.3125rem 0.6875rem;
-  width: 35.25rem;
+#Page div.message {
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Messages p.warning {
+#Page #Messages p.warning {
   background: var(--warn);
 }
-body div#Page div#Messages p.notice {
+#Page #Messages p.notice {
   background: #c99;
 }
-body div#Page div#Messages p.okay {
+#Page #Messages p.okay {
   background: var(--ok);
 }
-body div#Page {
+#Page {
   /* Fixed bottom toolbar: hamburger-revealed sitemap + language / format switches */
 }
-body div#Page div#Nav {
+#Page #Nav {
   position: fixed;
   left: 0;
   right: 0;
@@ -837,110 +1080,94 @@ body div#Page div#Nav {
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 0.6875rem;
-  padding: 0.25rem 0.6875rem;
+  gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: var(--chrome);
-  box-shadow: 0 -0.0625rem 0.5em rgba(0, 0, 0, 0.4);
 }
-body div#Page div#Nav div#SiteMap {
+#Page #Nav #SiteMap {
   position: relative;
   background: transparent;
   /* the box-handle <h2> is the hamburger button */
 }
-body div#Page div#Nav div#SiteMap h2.box-handle {
-  margin: 0;
-  padding: 0.25rem 0.5rem;
+#Page #Nav #SiteMap h2.box-handle {
+  padding: 0;
+  width: calc(2 * var(--base-unit) * var(--width-optical-adjustment));
+  height: calc(2 * var(--base-unit));
   color: #fff;
-  font-size: 0.8125rem;
+  font-size: 0; /* hide the "Site map" label visually (kept in the DOM for screen readers) */
   font-weight: normal;
   white-space: nowrap;
   cursor: pointer;
   background: none; /* drop the +/- png icon */
 }
-body div#Page div#Nav div#SiteMap h2.box-handle::before {
+#Page #Nav #SiteMap h2.box-handle::before {
   content: "☰"; /* ☰ hamburger */
-  margin-right: 0.4rem;
-  font-size: 1rem;
-  vertical-align: -0.05rem;
+  font-size: 2rem;
+  margin-top: -0.35em;
 }
-body div#Page div#Nav div#SiteMap {
+#Page #Nav #SiteMap h2.box-handle::after {
+  content: none;
+}
+#Page #Nav #SiteMap {
   /* the sitemap tree pops UP above the bar; hidden until the hamburger is clicked */
 }
-body div#Page div#Nav div#SiteMap div.box-content {
+#Page #Nav #SiteMap div.box-content {
   display: none;
   position: absolute;
   bottom: 100%;
   left: 0;
-  margin-bottom: 0.4375rem;
-  min-width: 14rem;
+  margin-bottom: calc(0.5 * var(--base-unit));
+  min-width: calc(20 * var(--base-unit) * var(--width-optical-adjustment));
   max-height: 70vh;
   overflow: auto;
-  padding: 0.6875rem 0.875rem;
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 0.3125rem;
-  box-shadow: 0 0.0625rem 0.75em rgba(0, 0, 0, 0.5);
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  background: var(--chrome);
+  border-radius: calc(0.5 * var(--base-unit));
 }
-body div#Page div#Nav div#SiteMap div.box-content li {
+#Page #Nav #SiteMap div.box-content li {
   font-size: 97%;
 }
-body div#Page div#Nav div#Options {
+#Page #Nav #Options {
   margin-left: auto; /* push the switches to the right edge */
   display: flex;
   align-items: center;
-  gap: 0.6875rem;
+  gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
-body div#Page div#Nav div#Options ul {
+#Page #Nav #Options ul {
   list-style: none;
   display: flex;
-  margin: 0;
-  padding: 0;
 }
-body div#Page div#Nav div#Options ul li {
+#Page #Nav #Options ul li {
   list-style: none;
   letter-spacing: 0.0625rem;
   font-size: 0.625rem;
 }
-body div#Page div#Nav div#Options ul li a {
+#Page #Nav #Options ul li a {
   color: #fff;
   display: block;
-  padding: 0.1875rem 0.3125rem 0.125rem;
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
   background: rgba(255, 255, 255, 0.2);
   margin-left: -0.0625rem;
 }
-body div#Page div#Nav div#Options ul li:first-child a {
-  border-radius: 0.1875rem 0 0 0.1875rem;
+#Page #Nav #Options ul li:first-child a {
+  border-radius: calc(0.5 * var(--base-unit)) 0 0 calc(0.5 * var(--base-unit));
 }
-body div#Page div#Nav div#Options ul li:last-child a {
-  border-radius: 0 0.1875rem 0.1875rem 0;
+#Page #Nav #Options ul li:last-child a {
+  border-radius: 0 calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit)) 0;
 }
-body div#Page div#Nav div#Options ul li a:hover {
+#Page #Nav #Options ul li a:hover {
   background: var(--accent);
 }
-body div#Page div#Nav div#Options ul li a.on {
+#Page #Nav #Options ul li a.on {
   background: rgba(0, 0, 0, 0.3);
   color: #ddd;
 }
 
-/* /////////////////////////////////////////////////////////  CLEARFIX (FLOATS) */
-/* The float clearfix that used to live here is gone: the layout is now grid /
-   flexbox (see _page.scss), which contains its own children — no clearing
-   needed. Kept as an empty partial so scss/luna.scss can still `@use` it. */
-/* /////////////////////////////////////////////////////////////////  TINYMCE */
-span.mceEditorContainer {
-  margin-right: 0.6875rem;
-  display: block;
-  border: 0.125rem;
-}
-span.mceEditorContainer iframe.mceEditorIframe {
-  background: #fff;
-}
-
-table.mceEditor td.mceToolbarTop select.mceSelectList {
-  width: auto;
-  margin: 0.1875rem;
-  border-width: 0.0625rem;
-}
-
+/* ===========================================================================
+   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
+   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
+   Source of truth: scss/. Build tool: Dart Sass (`sass`).
+   =========================================================================== */
 /* ////////////////////////////////////////////////////////////////  TVlists */
 /* JQuery Tree View, @ 2006 Myles Angell <mangell@cronin-co.com> See: <http://be.twixt.us/jquery/treeViewCollapsed.php> */
 ul.tv, ul.tv ul {
@@ -951,20 +1178,20 @@ ul.tv, ul.tv ul {
 ul.tv li {
   position: relative;
   margin: 0;
-  padding: 0.125rem 0 0.125rem 0.625rem;
+  padding: calc(0.5 * var(--base-unit)) 0 calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   z-index: 10;
 }
 ul.tv div.tvca {
-  height: 0.9375rem;
-  width: 0.9375rem;
+  height: calc(1 * var(--base-unit));
+  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   position: absolute;
-  top: 0.0625rem;
+  top: calc(0.5 * var(--base-unit));
   left: -0.25rem;
   cursor: pointer;
   z-index: 50;
 }
 ul.tv li, ul.tv .tvi {
-  background: url(../images/treeView/tvi.png) -0.375rem 0 no-repeat;
+  background: url(../images/treeView/tvi.png) calc(-1 * var(--base-unit)) 0 no-repeat;
 }
 ul.tv .tvic {
   background-image: url(../images/treeView/tvie.png);
@@ -990,3 +1217,5 @@ ul.tv .tvclosed ul, ul.tv .tvclosed li.tvclosed ul {
 ul.tv .tvclosed ul ul {
   display: block;
 }
+
+/*# sourceMappingURL=luna.css.map */

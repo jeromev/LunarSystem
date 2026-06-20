@@ -79,7 +79,13 @@ class lunaSession {
 		);
 		register_shutdown_function('session_write_close');
 		self::$time_out = intval(luna::get_ini('config', 'session_length'));
-		session_set_cookie_params(self::$time_out);
+		session_set_cookie_params(array(
+			'lifetime' => self::$time_out,
+			'path'     => luna::$site_relative_url ?: '/',
+			'httponly' => true,
+			'samesite' => 'Lax',
+			'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+		));
 		ini_set('session.gc_maxlifetime', SID_IN? self::$time_out : self::$min_time_out);
 		define('SESSION_READY_TO_START', true);
 		return true;

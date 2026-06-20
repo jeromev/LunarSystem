@@ -29,8 +29,10 @@ if (function_exists('date_default_timezone_set')) {
 ini_set('register_globals', 0); 
 // Turn OFF/ON public error display
 ini_set('display_errors', 0);
-// ENABLE trans_sid
-ini_set('session.use_trans_sid', 1);
+// Cookie-only sessions: no SID in the URL, and reject attacker-supplied SIDs.
+ini_set('session.use_trans_sid', 0);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.use_strict_mode', 1);
 ini_set('arg_separator.output','&amp;');
 // Set error reporting. E_DEPRECATED/E_STRICT are masked because this 2010-era
 // code targets PHP 5.2/5.3 idioms (`=& new`, static-call style) that PHP 5.6
@@ -61,7 +63,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.7.0-alpha';
+	public static $lunaVersion = '0.7.1-alpha';
 	/**
 	 * instance
 	 * @var object

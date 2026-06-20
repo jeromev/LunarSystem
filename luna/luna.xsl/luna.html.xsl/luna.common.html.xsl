@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
 	version="1.0"
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:luna="http://lunarsystem.org/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
@@ -40,7 +40,7 @@
 				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
-		
+
 	</xsl:template>
 
 	<xsl:template match="/rdf:RDF/luna:message">
@@ -63,7 +63,7 @@
 			<xsl:text>, </xsl:text>
 		</xsl:if>
 	</xsl:template>
-	
+
 	<xsl:template name="buildSortURL">
 		<xsl:param name="start">0</xsl:param>
 		<xsl:value-of select="$pageurl"/>
@@ -104,7 +104,7 @@
 									<xsl:text>0</xsl:text>
 								</xsl:when>
 								<xsl:otherwise>
-									<xsl:value-of select="$pagenumber"/> 
+									<xsl:value-of select="$pagenumber"/>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:with-param>
@@ -147,7 +147,7 @@
 										<xsl:text>0</xsl:text>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$prevpagenumber * /rdf:RDF/luna:pager/luna:perpage"/> 
+										<xsl:value-of select="$prevpagenumber * /rdf:RDF/luna:pager/luna:perpage"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:with-param>
@@ -182,7 +182,7 @@
 										<xsl:value-of select="(/rdf:RDF/luna:pager/luna:total - 1) * /rdf:RDF/luna:pager/luna:perpage"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$nextpagenumber * /rdf:RDF/luna:pager/luna:perpage"/> 
+										<xsl:value-of select="$nextpagenumber * /rdf:RDF/luna:pager/luna:perpage"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:with-param>
@@ -436,11 +436,11 @@
 						<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>
 						<xsl:attribute name="rows">80</xsl:attribute>
-						<xsl:attribute name="cols">40</xsl:attribute> 
+						<xsl:attribute name="cols">40</xsl:attribute>
 						<xsl:if test="$wysiwyg = '1'">
 							<xsl:attribute name="class">wysiwyg</xsl:attribute>
-						</xsl:if>     
-						<xsl:value-of select="$value"/>                      
+						</xsl:if>
+						<xsl:value-of select="$value"/>
 					</textarea>
 				</xsl:when>
 				<xsl:when test="$type = 'select'">
@@ -478,15 +478,15 @@
 										<xsl:variable name="dataname"><xsl:value-of select="luna:lid"/></xsl:variable>
 										<xsl:variable name="datavalue"><xsl:value-of select="luna:value"/></xsl:variable>
 										<xsl:attribute name="label"><xsl:value-of select="luna:lid"/></xsl:attribute>
-										<xsl:attribute name="value"><xsl:value-of select="$datavalue"/></xsl:attribute>
+										<xsl:attribute name="value"><xsl:value-of select="$dataname"/></xsl:attribute>
 										<xsl:choose>
 											<xsl:when test="$dataname = $required">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
-											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $datavalue) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
+											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $dataname) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
-											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $datavalue) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
+											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $dataname) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
 											<xsl:otherwise>
@@ -497,7 +497,7 @@
 												</xsl:if>
 											</xsl:otherwise>
 										</xsl:choose>
-										<xsl:value-of select="$dataname"/>
+										<xsl:value-of select="$datavalue"/>
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:variable name="option_nid"><xsl:value-of select="luna:nid"/></xsl:variable>
@@ -647,7 +647,7 @@
 	</xsl:template>
 
 	<xsl:template name="sitemap">
-		<div id="SiteMap" class="box">
+		<div id="SiteMap">
 			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Sitemap']/luna:value"/></h2>
 			<div class="box-content">
 				<ul class="tv">

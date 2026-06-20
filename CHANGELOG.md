@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.5-alpha] - 2026-06-19
+- **Fixed: the edit_texts language field could only be set to the default (`en-EN`).** In the shared `forminput` template's `data`-mode `<option>`, the *translated language name* (`luna:value`, e.g. "Français") was put in `@value` — the value the browser submits — while the language *code* was shown as the label. `mod_edit_texts` validates the submission against `site_langs` (the codes) with `in_array()`, so any non-default choice failed the check and silently fell back to the first language. Swapped them in [common.html.xsl](luna/luna.xsl/luna.html.xsl/luna.common.html.xsl): `@value` is now the code (`luna:lid`, e.g. `fr-FR`), the visible label is the readable name, and the selected-state tests compare the code. Verified on both the add and modify forms (modify correctly pre-selects the text's own language). The `char(2)` `lang` column still stores `fr`; `format_language()` rebuilds `fr-FR` on render — unchanged.
+
 ## [0.6.4-alpha] - 2026-06-19
 - **Site page labels moved to a separate, git-ignored gettext domain** — so a site's page-label translations no longer pollute the engine's catalog (reverts the `about` entry added to `luna.po` in 0.6.3). The engine `luna` catalog stays purely the CMS's UI vocabulary; per-site labels live in a `local` domain (`<lang>/LC_MESSAGES/local.po` / `local.mo`), git-ignored. New helper `lunaTools::label($lid)` resolves a label by trying `local` → engine `luna` → the raw lid; the model's three `rdfs:label` assignments now route through it, and the `local` domain is bound next to `luna`. Workflow to add a label: edit the git-ignored `local.po`, `msgfmt`, restart — nothing site-specific reaches the repo. See [luna/luna.locale/README.md](luna/luna.locale/README.md).
 

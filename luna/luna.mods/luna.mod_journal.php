@@ -165,8 +165,9 @@ class mod_journal {
 				LIMIT
 					'.$start.', '.luna::$data['limit'].'
 			');
-			while ($row = $res->fetchRow()) { 
-				$row->message = unserialize($row->message);
+			while ($row = $res->fetchRow()) {
+				// Guard object injection, mirroring the single-entry path above (line ~100).
+				$row->message = unserialize($row->message, array('allowed_classes' => array('lunaException')));
 				$message = get_class($row->message) == 'lunaException'? $row->message->getMessage() : lunaTools::display_string($row->message->message);
 				$var = array(
 					'type' => 'log',

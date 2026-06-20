@@ -140,15 +140,29 @@ class mod_log {
 			$user = $res->fetchRow();
 			$res->free();
 			// Throttle by client IP, independent of whether the account exists, so the
-			// back-off can't be used to tell a real account from an unknown one (the old
-			// per-account sleep only fired for existing users -> account enumeration).
-			// Capped at 5s; a successful login clears the IP's counter below.
+			// back-off can never reveal whether an account exists (the pre-0.8.2 per-account
+			// sleep leaked that). Count THIS attempt FIRST and atomically: the INSERT .. ON
+			// DUPLICATE KEY UPDATE takes a table lock, so concurrent/parallel requests from
+			// one IP serialise and each lands on a distinct, higher count -- closing the
+			// TOCTOU where N parallel requests all read the same stale count and skipped the
+			// escalating delay. Then sleep on the PRIOR count (attempts-1) so a clean first
+			// login stays instant while repeats escalate (capped 5s); a lapsed window resets
+			// the counter, and a successful login clears it below.
 			$throttle_ip = lunaTools::encode_ip();
 			$throttle_tbl = luna::get_ini('DBtables', 'THROTTLE');
 			$throttle_window = intval(time() - 900);
-			$tr = lunaDB::query('SELECT attempts FROM '.$throttle_tbl.' WHERE ip = '.lunaDB::quote($throttle_ip).' AND last_time > '.$throttle_window.'');
+			$throttle_now = intval(time());
+			lunaDB::query('
+				INSERT INTO '.$throttle_tbl.' (ip, attempts, last_time)
+				VALUES ('.lunaDB::quote($throttle_ip).', 1, '.$throttle_now.')
+				ON DUPLICATE KEY UPDATE
+					attempts = IF(last_time > '.$throttle_window.', attempts + 1, 1),
+					last_time = '.$throttle_now.'
+			');
+			$tr = lunaDB::query('SELECT attempts FROM '.$throttle_tbl.' WHERE ip = '.lunaDB::quote($throttle_ip).'');
 			$trow = $tr->fetchRow(); $tr->free();
-			if (!empty($trow) && !empty($trow->attempts)) { sleep(min(intval($trow->attempts), 5)); }
+			$throttle_n = (!empty($trow) && !empty($trow->attempts)) ? intval($trow->attempts) : 1;
+			if ($throttle_n > 1) { sleep(min($throttle_n - 1, 5)); }
 			// Generic client message for every failure (no account enumeration); the specific
 			// reason is logged server-side only. A dummy verify on the non-password paths
 			// flattens timing so a missing/inactive account isn't distinguishable.
@@ -177,17 +191,9 @@ class mod_log {
 				');
 			}
 		}
-		if ($inerror) {
-			// Count this failure against the client IP (a stale window resets it to 1).
-			lunaDB::query('
-				INSERT INTO '.$throttle_tbl.' (ip, attempts, last_time)
-				VALUES ('.lunaDB::quote($throttle_ip).', 1, '.intval(time()).')
-				ON DUPLICATE KEY UPDATE
-					attempts = IF(last_time > '.$throttle_window.', attempts + 1, 1),
-					last_time = '.intval(time()).'
-			');
-			return false;
-		}
+		// This attempt was already counted against the IP above (before the sleep), so a
+		// failure needs no extra throttle bookkeeping here.
+		if ($inerror) { return false; }
 		if (!$inerror) {
 			// A successful login clears this IP's throttle counter.
 			lunaDB::query('DELETE FROM '.$throttle_tbl.' WHERE ip = '.lunaDB::quote($throttle_ip).'');

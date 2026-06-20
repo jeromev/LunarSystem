@@ -94,6 +94,8 @@ class mod_log {
 	 * @return boolean
 	 */
 	public function logout() {
+		// Logout is a state change: require a valid CSRF token (blocks forged GET /logout).
+		if (!hash_equals((string) luna::$session->user->csrf_token, (string) lunaTools::request('csrf_token'))) { return false; }
 		luna::$model->purge_index();
 		$_SESSION = array();
 		lunaTools::set_cookie(session_name(), '', NOW - 42000);

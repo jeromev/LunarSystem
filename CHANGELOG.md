@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.9-alpha] - 2026-06-20
+- **Layout — responsive pass across all pages (A1).** Verified every page type at 390px (mobile) and 1280px (desktop) with headless Chrome:
+  - **Turned off the baseline-grid debug overlay** (`_bg.scss` `$debug: 1 → 0`) — it was shipping a visible grid overlay baked into `css/luna.css`.
+  - **Fixed horizontal overflow on every authenticated page.** Wide admin data tables widened the whole grid on phones (admin reached 785px in a 390px viewport). Root-cause chain: grid items (`#Top`/`#Content`) defaulted to `min-width:auto` and fieldsets to `min-inline-size:min-content`, so a wide table's min-content propagated up to the `minmax(auto,1fr)` track. Now grid items + fieldsets use `min-width:0` and `.boxtable` is `overflow-x:auto`, so wide tables scroll inside their box instead of widening the page — all pages now fit 390px.
+  - **Capped form fields/columns** (`input/textarea/select/.col/span.label { max-width:100%; box-sizing:border-box }`) so the fixed `bg.h()` widths never overflow; made `img` responsive.
+  - **Footer toolbar fits phones** — the format/language switches were clipping the `jsonld` button under 480px; tightened gaps/padding.
+  - Wrapped the `admin_groups` users table in `.boxtable` for consistency with the other admin tables.
+
 ## [0.8.8-alpha] - 2026-06-20
 - **Removed the dead `en_EN` gettext locale.** The app standardised on `en-US` everywhere in 0.7.x — `lunaTools::format_language()` maps `en`→`US`, so `site_langs` (built from the DB `langs='en, fr'` config) resolves to `['en-US','fr-FR']`, and both the nav language switcher ([luna.php:560](luna/luna.php)) and `set_language()` only ever use those. Nothing produced, offered, or loaded `en_EN`/`en-EN`; 0.8.7 only marked it legacy in the docs. Now actually deleted:
   - `git rm -r luna/luna.locale/en_EN` (the whole `LC_MESSAGES/{luna,local}.{po,mo}` set; the git-ignored `local.*` files were removed from disk too).

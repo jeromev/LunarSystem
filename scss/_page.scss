@@ -319,3 +319,48 @@
     }
   }
 }
+
+/* ===========================================================================
+   RESPONSIVE GUARDS (2026 layout pass)
+   Keep every page within the viewport on small screens: the fixed bg.h()
+   field/column widths and the wide admin data tables would otherwise force
+   horizontal scrolling on phones (verified at 390px across all admin pages).
+   =========================================================================== */
+#Page #Top,
+#Page #Content {
+  /* Grid items default to min-width:auto, so the track (minmax(auto,1fr)) grows to
+     the widest item's min-content — a wide data table then widens the whole grid.
+     Allowing the items to shrink lets the table scroll inside .boxtable instead. */
+  min-width: 0;
+}
+#Page #Content-main {
+  div.boxtable {
+    overflow-x: auto; /* wide tables scroll inside their box, not the whole page */
+    -webkit-overflow-scrolling: touch;
+  }
+  input,
+  textarea,
+  select,
+  span.label,
+  div.col,
+  div.onecol {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  /* footer toolbar: keep the hamburger + language + format switches on one row */
+  #Page #Nav {
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  #Page #Nav #Options {
+    gap: 0.5rem;
+  }
+  #Page #Nav #Options ul li a {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}

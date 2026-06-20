@@ -1521,9 +1521,9 @@ class lunaModel {
 			}
 			$cookie['order_dir'] = luna::$data['order_dir'] = ($order_dir == 'DESC' || empty($order_dir))? 'DESC' : 'ASC';
 			if (!defined('PERPAGE')) { define('PERPAGE', 20); } 
-			luna::$data['limit'] = lunaTools::request('limit', 0, PERPAGE);
+			luna::$data['limit'] = max(1, intval(lunaTools::request('limit', 0, PERPAGE)));
 			$cookie['limit'] = luna::$data['limit'];
-			$start = lunaTools::request('start', 0, 0);
+			$start = max(0, intval(lunaTools::request('start', 0, 0)));
 			if (empty($start)) { $start = 0; }
 			$cookie['start'] = luna::$data['start'] = $start;
 	/*	$letters = array();

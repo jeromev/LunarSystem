@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0-alpha] - 2026-06-20
+- **Security — post-review release-blockers (two criticals + audit-log CSRF).** An adversarial re-review found three issues the first pass missed:
+  - **Critical: a second blind/stacked SQLi** in `load_texts()` (the twin of the `load_users` fix) — `start`/`limit` reached the `LIMIT` clause raw and were exploitable by any logged-in editor (`limit=20;SELECT SLEEP(5)`). Now `intval`-clamped like `load_users` ([luna.model.class.php](luna/luna.classes/luna.model.class.php)).
+  - **Critical: `.htaccess` deny rules were case-sensitive** while the filesystem is case-insensitive, so `/.GIT/HEAD`, `/DOCKERFILE`, `/DOCKER-COMPOSE.YML`, `/DOCS/…` served the full repo + creds. Added `[NC]` (case-insensitive) to every deny rule — uppercase variants now 403.
+  - **High: `purgelogs` could wipe the entire audit log via a tokenless cross-site POST** (`mod_journal::load()` runs outside the central CSRF gate). It now requires POST + a valid CSRF token, and the journal page renders a token-bearing purge form. Verified: forged POST leaves the log intact; a tokened request purges.
+
 ## [0.7.9-alpha] - 2026-06-20
 - **Security — logout is no longer a GET CSRF.** `logout()` now requires a valid CSRF token (read from GET or POST via `request()`), and the nav logout link carries the per-session token in its href. A forged `GET /logout` (e.g. `<img src=/logout>`) without the token no longer destroys the victim's session; the real nav logout still works. Verified live: forged GET leaves the user logged in (200), the tokened nav link logs out (404). Closes the logout residual from 0.7.4.
 

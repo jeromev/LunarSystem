@@ -78,7 +78,8 @@ class mod_journal {
 		$inerror = 0;
 		// POST-only: request() also reads GET, so a forged link/img could wipe the
 		// whole log with a single request. Require a real form POST.
-		if (isset($_POST['purgelogs'])) {
+		if (isset($_POST['purgelogs']) && $_SERVER['REQUEST_METHOD'] === 'POST'
+			&& hash_equals((string) luna::$session->user->csrf_token, (string)($_POST['csrf_token'] ?? ''))) {
 			$res = lunaDB::query('
 				DELETE FROM
 					'.luna::get_ini('DBtables', 'LOGS').'

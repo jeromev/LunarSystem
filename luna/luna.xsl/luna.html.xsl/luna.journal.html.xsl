@@ -84,6 +84,11 @@
 					</table>
 				</div>
 			</div>
+			<form method="post" id="PurgeLogs">
+				<xsl:call-template name="csrf-input"/>
+				<input type="hidden" name="purgelogs" value="1"/>
+				<button type="submit">Purge the log</button>
+			</form>
 		</xsl:if>
 		<xsl:if test="not($log_id = '')">
 			<div id="AnalyseLog" class="box">

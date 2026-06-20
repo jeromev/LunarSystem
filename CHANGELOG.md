@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.4-alpha] - 2026-06-20
+- **Security — `use_strict_mode` is now actually enforced (review MEDIUM).** The session save-handler was registered via the legacy 6-callback `session_set_save_handler()` form, which cannot expose `validateId()` — so `session.use_strict_mode=1` was inert and `sessionRead()` would `INSERT` (adopt) any client-supplied session id. `lunaSession` now implements `SessionHandlerInterface` + `SessionUpdateTimestampHandlerInterface` and is registered as the object handler; the new `validateId()` accepts only a session id that already exists server-side, so PHP discards a forged id and mints a fresh server-side one. Verified live: a forged cookie `PHPSESSID=abcdef…` is rejected and reissued (no DB row created for it), while anon sessions persist across requests, login still regenerates the id, and logout still destroys the row.
+
 ## [0.8.3-alpha] - 2026-06-20
 - **Security — logout is now a POST form, not a token-in-URL GET (review MEDIUM).** The nav rendered logout as `GET /logout?csrf_token=<token>`, leaking the per-session CSRF token into browser history and the server access log (and, on some setups, the Referer). The nav now renders a POST `<form>` with the token in a hidden field, and `logout()` requires `POST` + a matching `$_POST` token. Verified live: a forged `GET /logout?csrf_token=<valid>` no longer logs the user out (wrong method), a tokenless cross-site POST is rejected, and the legitimate POST form logs out cleanly; no `?csrf_token=` appears in any rendered URL.
 

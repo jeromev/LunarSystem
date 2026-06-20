@@ -99,7 +99,7 @@ CREATE TABLE `luna_users` (
   `nid` int(11) unsigned NOT NULL default '0',
   `firstname` varchar(255) default NULL,
   `lastname` varchar(255) default NULL,
-  `password` varchar(32) default NULL,
+  `password` varchar(255) default NULL,
   `regis_time` int(11) default NULL,
   `last_time` int(11) default NULL,
   `last_url` varchar(255) default NULL,

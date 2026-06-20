@@ -92,7 +92,7 @@ class mod_admin_users {
 		if (!lunaTools::check_emptyness('add_user_password', 'password')) { $inerror++; }
 		if (!lunaTools::check_emptyness('add_user_groups', 'groups')) { $inerror++; }
 		if ($inerror) { return false; }
-		$_POST['add_user_password'] = md5($_POST['add_user_password']);
+		$_POST['add_user_password'] = lunaTools::hash_password($_POST['add_user_password']);
 		$_POST['add_user_is_inactive'] = isset($_POST['add_user_is_inactive'])? ($_POST['add_user_is_inactive'] == 1? 1 : 0) : 0;
 		// load stuff
 		if (!luna::$model->merge_index(luna::$model->load_nodes('group', 'level'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
@@ -234,7 +234,7 @@ class mod_admin_users {
 					SET
 						firstname = '.lunaDB::quote($_POST['modify_user_firstname']).', 
 						lastname = '.lunaDB::quote($_POST['modify_user_lastname']).'
-						'.((isset($_POST['modify_user_password']) && !empty($_POST['modify_user_password']))? ', password = '.lunaDB::quote(md5($_POST['modify_user_password'])) : ' ').'
+						'.((isset($_POST['modify_user_password']) && !empty($_POST['modify_user_password']))? ', password = '.lunaDB::quote(lunaTools::hash_password($_POST['modify_user_password'])) : ' ').'
 					WHERE
 						nid = '.lunaDB::quote($node).'
 				');

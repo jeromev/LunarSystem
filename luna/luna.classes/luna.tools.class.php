@@ -37,6 +37,21 @@ class lunaTools {
 			."object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 	}
 	// }}}
+	// {{{ password helpers (bcrypt, with legacy-md5 upgrade-on-login)
+	/** Valid bcrypt hash used only to spend ~constant time on the unknown-user login
+	 *  path, so a failed login can't be distinguished from a wrong password by timing. */
+	const DUMMY_PASSWORD_HASH = '$2y$10$1AhGbI193T6v1gLbjdB/eOZ21C02WkBbepjqV0y6hPvQLZjjWCLxa';
+	public static function hash_password($plain) {
+		return password_hash((string) $plain, PASSWORD_DEFAULT);
+	}
+	public static function password_is_legacy($hash) {
+		return (strlen((string) $hash) === 32 && ctype_xdigit((string) $hash));
+	}
+	public static function verify_password($plain, $hash) {
+		if (self::password_is_legacy($hash)) { return hash_equals((string) $hash, md5((string) $plain)); }
+		return password_verify((string) $plain, (string) $hash);
+	}
+	// }}}
 	// {{{ set_cookie()
 	/**
 	 * @param mixed data

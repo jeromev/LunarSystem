@@ -5,7 +5,7 @@ maintained. It reflects the security practices of its era. Treat it as a
 historical artifact: safe to study and run locally, **not** safe to expose on the
 public internet without significant hardening.
 
-## 2026 hardening pass (0.6.9–0.7.6-alpha)
+## 2026 hardening pass (0.6.9–0.8.5-alpha)
 
 A focused, verified hardening pass closed the major issues catalogued below. Each
 fix was confirmed against the running Docker stack. The tables further down record
@@ -21,9 +21,30 @@ the **original** findings; several are now fixed or partially fixed as noted her
 | **Session fixation** | `session_regenerate_id` on login (DB-handler row re-keyed) | ✅ | 0.7.3 |
 | **No CSRF protection** | per-session synchronizer token in every state-changing form + central POST-only `hash_equals` verify in the dispatch; `?purge` POST-only | ✅ | 0.7.4 |
 | **Stored XSS** (SVG SMIL `<animate>` bypass) | HTML_Safe strips `svg`/`math`/`animate`/… + SMIL attrs; cache `unserialize(..., ['allowed_classes'=>false])` | ✅ | 0.7.5 |
-| **IDOR** — edit_texts text→page linking | `user_can_access_page()` per-target check on links; fixed `submit_modify` validating the wrong array | ◐ | 0.7.6 |
+| **IDOR** — edit_texts text→page linking + content modify/delete | per-target `user_can_access_page()` on links; `user_can_act_on_text()` now fails **closed** (a text on a level-less or higher-level page is denied) | ✅ | 0.7.6 / 0.8.1 |
+| **2nd blind/stacked SQLi** — `load_texts` start/limit | `intval`-clamped like `load_users` (was editor-exploitable: `limit=20;SELECT SLEEP(5)`) | ✅ | 0.8.0 |
+| **Source/secret disclosure — case bypass** | `.htaccess` deny rules made case-insensitive (`[NC]`); `/.GIT/HEAD`, `/DOCKERFILE`, `/DOCKER-COMPOSE.YML`, `/DOCS/` no longer served (had leaked DB creds) | ✅ | 0.8.0 |
+| **Audit-log CSRF** — `purgelogs` | log wipe in `mod_journal` now requires POST + a valid CSRF token; token-bearing purge form added | ✅ | 0.8.0 |
+| **Login timing enumeration** — legacy MD5 | throwaway bcrypt verify on the MD5 branch so legacy accounts are not ~3× faster than unknown ones | ✅ | 0.8.1 |
+| **Sanitizer / deserialization gaps** | `formaction`/`poster`/`ping`/`srcset`/`xlink:href` protocol-filtered; journal log `unserialize(…, ['allowed_classes'=>['lunaException']])`; request-driven `?purge` removed | ✅ | 0.8.1 |
+| **Account enumeration** — login throttle | back-off moved to a per-IP table (`luna_login_throttle`); fires for unknown and known accounts alike (existence no longer observable from timing) | ✅ | 0.8.2 |
+| **CSRF token in URL** — logout | logout converted to a POST `<form>`; `logout()` requires POST + a matching `$_POST` token (token no longer in history / access log) | ✅ | 0.8.3 |
+| **`use_strict_mode` inert** | session handler switched to the object form implementing `validateId()`; a forged client session id is rejected and reissued, not adopted | ✅ | 0.8.4 |
+| **Login-throttle TOCTOU** | back-off was read→sleep→increment, so N parallel requests from one IP read the same stale count and skipped the escalation; the attempt is now counted **first** with an atomic `INSERT … ON DUPLICATE KEY UPDATE` (MyISAM table lock serialises), then slept on the post-increment count | ✅ | 0.8.5 |
+| **Journal deserialization** — list path | the list-all loop used a bare `unserialize()` (the single-entry path was guarded in 0.8.1); both now pass `['allowed_classes'=>['lunaException']]` | ✅ | 0.8.5 |
 
-**Still open / partial:** per-target authorization for *content* modify/delete of a text already on a higher-level page (edit_texts) is not yet gated; **logout** is still a low-severity GET CSRF; the session guard bound to the client User-Agent is unchanged. This remains an archival app — keep it behind web-server auth / a VPN and **off the public internet**.
+## Second adversarial review (post-0.8.4)
+
+A fresh multi-agent review audited the post-0.8.4 tree across 8 dimensions (SQLi, authn/timing, session, authz/IDOR, CSRF, XSS/sanitizer, disclosure/deploy, fix-regression). Each finding was independently voted on by two skeptics — one proving exploitability, one trying to refute — then synthesised.
+
+**Verdict: ship-with-low-risk.** No remotely-exploitable critical/high in the stock configuration. 29 raw findings → 2 real defects fixed (both in 0.8.5, above) + 1 documented latent gap (below). The rest were dismissed with reasons: the 8-finding admin "IDOR/privilege-escalation" cluster is not reachable as shipped (single admin tier, below); the SameSite=Lax/`validateId`-rebind/regenerate-race session findings are defended in depth by the **mandatory UA+IP binding** in `get_user_data()` (a mismatch yields zero rows → demotion to anonymous); the legacy-MD5 timing leak is mitigated by the dummy bcrypt verify and is below network noise; the `Cache_Lite`/`ARC2_Store` deserialization sinks are dead/unreachable vendor code; and all host ports bind `127.0.0.1` (Oxigraph's `0.0.0.0:7878` is container-internal only).
+
+**Residual (documented, not exploitable as shipped):**
+- **Admin modules perform no per-target authorization in their submit handlers.** `mod_admin_users/levels/pages/groups/mods` check only node existence and protected-lid status — never `user_can_access_level()`/`user_can_access_page()` on the specific target or on the levels/groups/pages being assigned (the Batch-6 per-target pattern was applied to `edit_texts`/`mod_node` only). This is **safe in the shipped configuration**: every admin page/mod is bound exclusively to `level_admin`, the dispatcher gate (`luna.php:450`) requires that level to reach any admin handler, and there is no lower admin tier — so anyone who can call these handlers already holds full admin. It becomes a live privilege-escalation/IDOR issue **only if an operator delegates admin by re-binding an admin page/mod to a lower level**; do not do so without first adding the `edit_texts`-style per-target guard to every admin submit handler.
+- The per-IP login throttle resists parallel/sequential brute force from one IP but is still bypassable by **IP rotation** (one free first guess per fresh IP), and there is no per-account lockout — a deliberate trade-off, since a per-account counter would re-introduce the account-enumeration timing leak fixed in 0.8.2.
+- The session guard bound to the client `User-Agent` is a fixed, weak binding; the CSP still allows `'unsafe-inline'`.
+
+This remains an archival app on PHP 8.3 with a flat group→level authz model. Keep it behind web-server auth / a VPN and **off the public internet**.
 
 ## Hard compatibility limits
 

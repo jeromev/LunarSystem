@@ -474,7 +474,11 @@ class lunaTools {
 		if (empty($str)) { return ''; }
 		$str = str_replace($search, $replace, $str);
 		if (strpos($str, $replace) === false) {
-			$str .= $replace.strtoupper(substr($str, 0, 2));
+			// Region defaults to the upper-cased language code, but some languages
+			// have a canonical region that differs (English -> US, not the bogus "EN").
+			$lc = substr($str, 0, 2);
+			$regions = array('en' => 'US');
+			$str .= $replace.(isset($regions[$lc])? $regions[$lc] : strtoupper($lc));
 		} else {
 			$str_array = explode($replace, $str); 
 			$str = substr($str_array[0], 0, 2).$replace.strtoupper(substr($str_array[1], 0, 2)); 
@@ -524,7 +528,7 @@ class lunaTools {
 			$lang = $lang_requested;
 		} else if (!empty($httplangs) && in_array($httplangs[0], $site_langs)) {
 			$lang = $httplangs[0];
-		} else if (isset(luna::$session->user->session_lang)) {
+		} else if (isset(luna::$session->user->session_lang) && in_array(luna::$session->user->session_lang, $site_langs)) {
 			$lang = luna::$session->user->session_lang;
 		}
 		if (!isset($lang) || empty($lang)) { $lang = $site_langs[0]; }

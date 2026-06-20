@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.2-alpha] - 2026-06-20
+- **Security — login throttle is now per-IP, closing an account-enumeration channel (review HIGH).** The previous back-off slept only for *existing* accounts with prior failures, so an attacker could tell a real account (induces a delay) from an unknown one (no delay). The throttle is now keyed on the client IP in a new `luna_login_throttle` table: every failed login — unknown account, deactivated, or wrong password — counts against the IP and incurs the same escalating sleep (capped 5s, 15-minute window); a successful login clears the IP's counter. Verified live: a 4th failed login on an existing account (~3s) and a 5th on an unknown account (~4s) both sleep (escalation only, existence no longer observable); a correct password resets the counter to zero.
+
 ## [0.8.1-alpha] - 2026-06-20
 - **Security — review follow-ups (timing, deserialization, sanitizer, authz, purge).** From the adversarial re-review: (1) the legacy-MD5 login branch now also runs a throwaway bcrypt `password_verify` so legacy accounts aren't ~3x faster than the unknown-user path (closes a timing-enumeration channel); (2) `lunaTools::user_can_act_on_text()` now fails **closed** — a text linked to a page with no resolvable level is denied (was fail-open), via a `total == accessible` page-count comparison; (3) HTML_Safe now protocol-filters `formaction`/`poster`/`ping`/`srcset`/`xlink:href` (a `javascript:` formaction/poster survived before); (4) the journal log-message `unserialize()` is guarded with `['allowed_classes' => ['lunaException']]`; (5) the request-driven `?purge` cache flush is removed (it ran pre-session so could never carry a CSRF token, and every mutating mod already purges internally). Verified live.
 

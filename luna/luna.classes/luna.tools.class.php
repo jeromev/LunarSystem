@@ -741,6 +741,32 @@ class lunaTools {
 		return self::user_can_access_level(luna::$session->user, $level_nid);
 	}
 	// }}}
+	// {{{ user_can_act_on_text()
+	/**
+	 * True when the current user may modify/delete $text_nid — i.e. can access the
+	 * level of EVERY page the text is linked to (so a text living on a higher-level
+	 * page cannot be edited from below). A text with no pages is allowed.
+	 * @access public
+	 */
+	public static function user_can_act_on_text($text_nid) {
+		$text_nid = intval($text_nid);
+		if (empty($text_nid)) { return false; }
+		$nodes = luna::get_ini('DBtables', 'NODES'); $map = luna::get_ini('DBtables', 'NODES_MAP'); $types = luna::get_ini('DBtables', 'CLASSES');
+		$res = lunaDB::query('
+			SELECT DISTINCT l.nid AS level_nid
+			FROM '.$map.' tp
+			JOIN '.$nodes.' p ON p.nid = tp.nid2 AND p.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('page').')
+			JOIN '.$map.' pl ON pl.nid1 = p.nid
+			JOIN '.$nodes.' l ON l.nid = pl.nid2 AND l.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('level').')
+			WHERE tp.nid1 = '.lunaDB::quote($text_nid).'
+		');
+		while ($row = $res->fetchRow()) {
+			if (!isset(luna::$session->user->levels[$row->level_nid])) { $res->free(); return false; }
+		}
+		$res->free();
+		return true;
+	}
+	// }}}
 	// {{{ remove_accents()
 	/**
 	 * This function is based on the function 'remove_accents', by WordPress 2.0.4 (see file 'functions-formatting.php', line 143)

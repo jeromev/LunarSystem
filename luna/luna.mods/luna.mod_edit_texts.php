@@ -172,6 +172,11 @@ class mod_edit_texts {
 		luna::$model->merge_index(luna::$model->load_texts($_POST['modify_item_nid']));
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'text')) { return false; }
+		if (!lunaTools::user_can_act_on_text($_POST['modify_item_nid'])) {
+			luna::$messages['warning'][] = _('Access denied: this text belongs to a page above your level.');
+			lunaLog::log('edit_texts: denied acting on a text bound to an inaccessible page (nid '.intval($_POST['modify_item_nid']).')', PEAR_LOG_WARNING);
+			return false;
+		}
 		// check if identifier is already used by antoher item
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_text_lid'], $_POST['modify_item_nid'])) { return false; }
 		if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { 
@@ -232,6 +237,11 @@ class mod_edit_texts {
 		luna::$model->merge_index(luna::$model->load_texts($_POST['modify_item_nid']));
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'text')) { return false; }
+		if (!lunaTools::user_can_act_on_text($_POST['modify_item_nid'])) {
+			luna::$messages['warning'][] = _('Access denied: this text belongs to a page above your level.');
+			lunaLog::log('edit_texts: denied acting on a text bound to an inaccessible page (nid '.intval($_POST['modify_item_nid']).')', PEAR_LOG_WARNING);
+			return false;
+		}
 		if ($inerror) { return false; }
 		if (luna::$model->delete($_POST['modify_item_nid'])) {
 			lunaTools::purge_cache();

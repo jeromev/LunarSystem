@@ -129,7 +129,7 @@ hr {
   --chrome: rgb(36, 36, 36); /* dark top bar / submit button */
   --muted: #666;
   --muted-2: #999;
-  --link: #cc007a;
+  --link: #be006f; /* darkened slightly from #cc007a for AA contrast on table stripes */
   --link-hover: #ff6099;
   --accent: #0066cc; /* content header + nav hover */
   --accent-bright:#09f; /* pagination hover border */
@@ -231,7 +231,7 @@ table.zebra thead div.pagination {
   border-bottom: solid 0.0625rem #eee;
   padding: calc(0.5 * var(--base-unit)) 0;
   margin: calc(0.5 * var(--base-unit)) 0 0;
-  color: var(--muted-2);
+  color: #555; /* AA contrast on the light pager strip (was --muted-2 #999) */
 }
 table.zebra thead div.pagination a.prev,
 table.zebra thead div.pagination a.next,
@@ -256,7 +256,7 @@ table.zebra thead div.alphabetic strong.on {
   font-size: 0.6875rem;
 }
 table.zebra thead th {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.62); /* AA contrast for the white th text on the #e2e2e2 page */
   color: #fff;
   padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   text-align: left;
@@ -344,7 +344,7 @@ table.zebra tbody tr.deleted a,
 table.zebra tbody tr.inactive,
 table.zebra tbody tr.inactive a {
   font-style: italic;
-  color: var(--muted-2) !important;
+  color: #6a6a6a !important; /* AA-readable while still muted (was --muted-2 #999) */
 }
 table.zebra tbody td {
   padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
@@ -448,6 +448,13 @@ a {
 }
 a:hover {
   color: var(--link-hover);
+}
+
+/* In-text links must be distinguishable without relying on colour (WCAG). */
+p a,
+dd a,
+#Bottom a {
+  text-decoration: underline;
 }
 
 img {

@@ -39,7 +39,7 @@ table.zebra {
       border-bottom: solid 0.0625rem #eee;
       padding: bg.v(0.5) 0;
       margin: bg.v(0.5) 0 0;
-      color: var(--muted-2);
+      color: #555; /* AA contrast on the light pager strip (was --muted-2 #999) */
 
       a.prev,
       a.next,
@@ -64,7 +64,7 @@ table.zebra {
       }
     }
     th {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.62); /* AA contrast for the white th text on the #e2e2e2 page */
       color: #fff;
       padding: bg.v(0.5) bg.h();
 
@@ -159,7 +159,7 @@ table.zebra tbody {
   tr.inactive,
   tr.inactive a {
     font-style: italic;
-    color: var(--muted-2) !important;
+    color: #6a6a6a !important; /* AA-readable while still muted (was --muted-2 #999) */
   }
   td {
     padding: bg.v(0.5) bg.h();
@@ -273,6 +273,13 @@ a {
   &:hover {
     color: var(--link-hover);
   }
+}
+
+/* In-text links must be distinguishable without relying on colour (WCAG). */
+p a,
+dd a,
+#Bottom a {
+  text-decoration: underline;
 }
 // small {
 // 	font-size: 0.5625rem;

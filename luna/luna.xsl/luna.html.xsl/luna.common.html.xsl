@@ -161,6 +161,7 @@
 				<xsl:text> </xsl:text>
 				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/>
 				<select name="pagination" size="1" class="autowidth">
+					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/></xsl:attribute>
 					<xsl:attribute name="onchange">document.location=this[this.selectedIndex].value</xsl:attribute>
 					<xsl:call-template name="loop1">
 						<xsl:with-param name="total"><xsl:value-of select="/rdf:RDF/luna:pager/luna:total"/></xsl:with-param>
@@ -210,6 +211,7 @@
 				<xsl:text> </xsl:text>
 				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/>
 				<select name="perpage" size="1" class="autowidth">
+					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/></xsl:attribute>
 					<xsl:attribute name="onchange">document.location=this[this.selectedIndex].value</xsl:attribute>
 					<xsl:call-template name="optionlimit">
 						<xsl:with-param name="limit">10</xsl:with-param>

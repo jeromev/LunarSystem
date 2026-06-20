@@ -67,6 +67,7 @@
 													</xsl:with-param>
 												</xsl:call-template>
 											</xsl:attribute>
+											<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Message']/luna:value"/><xsl:text> </xsl:text><xsl:value-of select="luna:lid"/></xsl:attribute>
 											<xsl:call-template name="cutstring">
 												<xsl:with-param name="string">
 														<xsl:value-of select="luna:message"/>

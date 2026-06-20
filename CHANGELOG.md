@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.12-alpha] - 2026-06-20
+- **CI — make the regression job deterministic.** The new `regression` job now boots only `app`+`db` with `SPARQL_READS=0` (SQL read path) instead of the full stack, so it doesn't depend on a populated Oxigraph triplestore. Verified the SQL path renders identically via the per-request `?sparql=0` toggle.
+
 ## [0.8.11-alpha] - 2026-06-20
 - **Tooling — smoke + security-regression suite (C1).** Added `test/regression.sh` (run via `make test`) that exercises the 2026 hardening against a running stack: public-page smoke, case-insensitive source/secret denials (`.git`, docker files, `semantic/`, `db.ini`), security headers (CSP / X-Frame-Options / nosniff / no `X-Powered-By`), authentication (valid login, wrong-password rejection, **tokenless-login CSRF-gate rejection**), and the `load_texts` SQLi clamp (timed stacked `SLEEP`). Wired into CI as a new `regression` job that boots the stack and runs the suite. Also fixed the CI `php-lint` job to use `php:8.3-cli` (was `php:5.6-cli`, which fails on the codebase's PHP 7+ syntax).
 

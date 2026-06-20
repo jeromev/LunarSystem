@@ -14,7 +14,7 @@
  * @package		lunarSystem
  */
 // {{{
-class lunaSession {
+class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface {
 	/**
 	 * instance
 	 * @var object
@@ -69,15 +69,13 @@ class lunaSession {
 		} else {
 			define('SID_IN', true);
 		}
-		session_set_save_handler(
-			array(&$this, 'sessionOpen'),
-			array(&$this, 'sessionClose'),
-			array(&$this, 'sessionRead'),
-			array(&$this, 'sessionWrite'),
-			array(&$this, 'sessionDestroy'),
-			array(&$this, 'sessionGc')
-		);
-		register_shutdown_function('session_write_close');
+		// Register $this as the save handler (object form, not the legacy 6-callback
+		// form) so use_strict_mode can call validateId(): a client-supplied session id
+		// that does not already exist server-side is rejected and PHP mints a fresh one,
+		// so an attacker cannot pin a victim's session id (defence-in-depth atop the
+		// regenerate-on-login already done in mod_log::login()). 'true' auto-registers
+		// session_write_close() on shutdown.
+		session_set_save_handler($this, true);
 		self::$time_out = intval(luna::get_ini('config', 'session_length'));
 		session_set_cookie_params(array(
 			'lifetime' => self::$time_out,
@@ -124,6 +122,30 @@ class lunaSession {
 			return true;
 		}
 		return false;
+	}
+	// }}}
+	// {{{ SessionHandlerInterface + SessionUpdateTimestampHandlerInterface
+	/**
+	 * PHP 8 needs an object handler to expose validateId() to use_strict_mode.
+	 * These wrappers delegate to the existing session* methods; validateId() is
+	 * the new strict-mode gate that refuses unknown (client-forged) session ids.
+	 * @access public
+	 */
+	#[\ReturnTypeWillChange] public function open($save_path, $session_name) { return $this->sessionOpen($save_path, $session_name); }
+	#[\ReturnTypeWillChange] public function close() { return $this->sessionClose(); }
+	#[\ReturnTypeWillChange] public function read($sid) { return $this->sessionRead($sid); }
+	#[\ReturnTypeWillChange] public function write($sid, $data) { return $this->sessionWrite($sid, $data); }
+	#[\ReturnTypeWillChange] public function destroy($sid) { return $this->sessionDestroy($sid); }
+	#[\ReturnTypeWillChange] public function gc($maxlifetime) { return $this->sessionGc($maxlifetime); }
+	#[\ReturnTypeWillChange] public function updateTimestamp($sid, $data) { return $this->sessionWrite($sid, $data); }
+	#[\ReturnTypeWillChange] public function validateId($sid) {
+		// Accept only a session id that already exists server-side; an unknown id
+		// returns false so PHP (under use_strict_mode) discards it and generates a
+		// fresh, server-side id instead of adopting the client's.
+		$res = lunaDB::query('SELECT session_id FROM '.luna::get_ini('DBtables', 'SESSIONS').' WHERE session_id = '.lunaDB::quote($sid).'');
+		$exists = (bool) $res->fetchRow();
+		$res->free();
+		return $exists;
 	}
 	// }}}
 	// {{{ sessionOpen()

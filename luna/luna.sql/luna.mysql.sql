@@ -29,6 +29,14 @@ CREATE TABLE `luna_logs` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
 
+DROP TABLE IF EXISTS `luna_login_throttle`;
+CREATE TABLE `luna_login_throttle` (
+  `ip` varchar(32) NOT NULL default '',
+  `attempts` int(11) NOT NULL default '0',
+  `last_time` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`ip`)
+) ENGINE=MyISAM;
+
 DROP TABLE IF EXISTS `luna_nodes`;
 CREATE TABLE `luna_nodes` (
   `nid` int(11) unsigned NOT NULL auto_increment,

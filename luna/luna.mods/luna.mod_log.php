@@ -136,9 +136,16 @@ class mod_log {
 			');
 			$user = $res->fetchRow();
 			$res->free();
-			// Throttle: back off on accounts with prior failed attempts. Capped, and a
-			// correct password resets login_attempts below, so this never locks an account.
-			if (!empty($user) && !empty($user->login_attempts)) { sleep(min(intval($user->login_attempts), 5)); }
+			// Throttle by client IP, independent of whether the account exists, so the
+			// back-off can't be used to tell a real account from an unknown one (the old
+			// per-account sleep only fired for existing users -> account enumeration).
+			// Capped at 5s; a successful login clears the IP's counter below.
+			$throttle_ip = lunaTools::encode_ip();
+			$throttle_tbl = luna::get_ini('DBtables', 'THROTTLE');
+			$throttle_window = intval(time() - 900);
+			$tr = lunaDB::query('SELECT attempts FROM '.$throttle_tbl.' WHERE ip = '.lunaDB::quote($throttle_ip).' AND last_time > '.$throttle_window.'');
+			$trow = $tr->fetchRow(); $tr->free();
+			if (!empty($trow) && !empty($trow->attempts)) { sleep(min(intval($trow->attempts), 5)); }
 			// Generic client message for every failure (no account enumeration); the specific
 			// reason is logged server-side only. A dummy verify on the non-password paths
 			// flattens timing so a missing/inactive account isn't distinguishable.
@@ -167,8 +174,20 @@ class mod_log {
 				');
 			}
 		}
-		if ($inerror) { return false; }
+		if ($inerror) {
+			// Count this failure against the client IP (a stale window resets it to 1).
+			lunaDB::query('
+				INSERT INTO '.$throttle_tbl.' (ip, attempts, last_time)
+				VALUES ('.lunaDB::quote($throttle_ip).', 1, '.intval(time()).')
+				ON DUPLICATE KEY UPDATE
+					attempts = IF(last_time > '.$throttle_window.', attempts + 1, 1),
+					last_time = '.intval(time()).'
+			');
+			return false;
+		}
 		if (!$inerror) {
+			// A successful login clears this IP's throttle counter.
+			lunaDB::query('DELETE FROM '.$throttle_tbl.' WHERE ip = '.lunaDB::quote($throttle_ip).'');
 			// Rotate the session id at the privilege boundary to defeat fixation.
 			// regenerate_id(false) keeps the old row (the DB handler only UPDATEs, never
 			// INSERTs), so re-key that row to the new id by hand (session_id is the PK).

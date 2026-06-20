@@ -15,28 +15,26 @@
  */
 // {{{
 class lunaTools {
-	// {{{ debug()
+	// {{{ send_security_headers()
 	/**
-	 * Simple local wrapper for print_r().
-	 * @access	public
-	 * @param	mixed $var	(optional) any variable. 
-	 * @return	void
+	 * Send a baseline set of HTTP security response headers, once, before output.
+	 * CSP still allows 'unsafe-inline' because the admin UI uses inline
+	 * onclick/onchange handlers; tighten to 'self' once those are delegated.
+	 *
+	 * @access public
+	 * @return void
 	 */
-	public static function debug($var = false) {
-		echo '<h1>DEBUGGING</h1><pre>';
-		print_r(!empty($var)? $var : $GLOBALS); 
-		$files = get_included_files();
-		$totalkb = 0;
-		for($i = 0; $i < count($files); $i++) {
-			$weight = round(filesize($files[$i]) / 1000, 2);
-			$files[$i] .= ' ('.$weight.' Kb)';
-			$totalkb += $weight;
-		}
-		echo '</pre><h2>Included files'.' ('.$totalkb.' Kb)'.'</h2><pre>';
-		print_r($files); 
-		echo '</pre><h2>DB Queries</h2><pre>';
-		print_r(lunaDB::get_queries());
-		die('</pre>');
+	public static function send_security_headers() {
+		if (headers_sent()) { return; }
+		header_remove('X-Powered-By');
+		header('X-Content-Type-Options: nosniff');
+		header('X-Frame-Options: DENY');
+		header('Referrer-Policy: strict-origin-when-cross-origin');
+		header('Cross-Origin-Opener-Policy: same-origin');
+		header("Content-Security-Policy: default-src 'self'; "
+			."script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+			."img-src 'self' data:; font-src 'self'; connect-src 'self'; "
+			."object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 	}
 	// }}}
 	// {{{ set_cookie()

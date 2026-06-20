@@ -61,7 +61,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.6.9-alpha';
+	public static $lunaVersion = '0.7.0-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -226,6 +226,8 @@ class luna {
 			if (!require_once 'luna.classes/luna.model.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.model.class', PEAR_LOG_CRIT); } 
 			// clean $_GET, $_POST, $_COOKIE, $_SESSION & $_REQUEST
 			lunaTools::sanitize_inputs();
+			// send baseline security headers before any output
+			lunaTools::send_security_headers();
 			// display errors if the DEBUG constant is set to 1.
 			if (self::get_ini('Constantes', 'DEBUG')) { ini_set('display_errors', 1); } 
 			// check cache

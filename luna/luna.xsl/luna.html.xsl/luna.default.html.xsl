@@ -17,12 +17,14 @@
 	<xsl:include href="./luna.header.html.xsl"/> 
 
 	<xsl:template name="page">
-		<xsl:for-each select="/rdf:RDF/luna:text[luna:page/@rdf:resource = /rdf:RDF/luna:page[luna:nid = $masternodenid]/@rdf:about]">
+		<xsl:for-each select="/rdf:RDF/luna:text[luna:page/@rdf:resource = /rdf:RDF/luna:page[luna:nid = $masternodenid]/@rdf:about and substring-before(concat(luna:content/@xml:lang,'-'),'-') = substring-before(concat($lang,'-'),'-')]">
 			<div class="box text">
-				<h2>
-					<xsl:attribute name="xml:lang"><xsl:value-of select="rdfs:label/@xml:lang"/></xsl:attribute>
-					<xsl:value-of select="rdfs:label"/>
-				</h2>
+				<xsl:if test="normalize-space(rdfs:label) != '' and normalize-space(rdfs:label) != '0'">
+					<h2>
+						<xsl:attribute name="xml:lang"><xsl:value-of select="rdfs:label/@xml:lang"/></xsl:attribute>
+						<xsl:value-of select="rdfs:label"/>
+					</h2>
+				</xsl:if>
 				<div class="box-content">
 					<xsl:attribute name="xml:lang"><xsl:value-of select="luna:content/@xml:lang"/></xsl:attribute>
 					<xsl:value-of select="luna:content" disable-output-escaping="yes"/>

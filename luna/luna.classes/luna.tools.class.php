@@ -601,7 +601,7 @@ class lunaTools {
 			if (!$dir = mkdir(SITEPATH.'cache', 0700)) { return false; }
 			define('CACHE_PATH', SITEPATH.'cache/');
 		}
-		if ($purge = self::request('purge_cache') || $purge = self::request('purge')) { self::purge_cache(); }
+		if (($purge = self::request('purge_cache') || $purge = self::request('purge')) && $_SERVER['REQUEST_METHOD'] === 'POST') { self::purge_cache(); }
 		return true;
 	}
 	// }}}

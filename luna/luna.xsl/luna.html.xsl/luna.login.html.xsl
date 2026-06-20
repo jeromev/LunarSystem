@@ -49,6 +49,7 @@
 					</div>
 				</fieldset>
 			</div>
+			<xsl:call-template name="csrf-input"/>
 		</form>
 	</xsl:template>
 

@@ -63,7 +63,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.7.1-alpha';
+	public static $lunaVersion = '0.7.4-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -289,6 +289,7 @@ class luna {
 			self::$data['author'] = self::get_ini('config', 'author');
 			self::$data['general_email'] = self::get_ini('config', 'general_email');
 			self::$data['lang'] = self::$lang;
+			self::$data['csrf_token'] = self::$session->user->csrf_token ?? '';
 			return true; 
 		} catch (lunaException $e) {
 			lunaLog::log($e);
@@ -476,6 +477,11 @@ class luna {
 					return false;
 				}
 				if ((lunaTools::request('submit') || lunaTools::request('batch_submit'))) {
+					// CSRF + POST-only guard: every state-changing action needs POST and a valid token.
+					if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !hash_equals((string) self::$session->user->csrf_token, (string)($_POST['csrf_token'] ?? ''))) {
+						luna::$messages['warning'][] = _('Security check failed. Please reload the page and try again.');
+						lunaLog::log('CSRF/POST check failed for mod '.$lid, PEAR_LOG_WARNING);
+					} else {
 					if (method_exists($lid, 'submit')) { self::$mods[$nid]->submit(); }
 					if (isset($_POST['mode'])) {
 						switch($_POST['mode']) {
@@ -500,6 +506,7 @@ class luna {
 							self::get_ini('DBtables', 'NODES_MAP'), 
 							self::get_ini('DBtables', 'ACTIONS')
 						));
+					}
 					}
 				}
 				if (method_exists($lid, 'load')) { self::$mods[$nid]->load(); }

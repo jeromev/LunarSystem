@@ -23,6 +23,7 @@
 				<xsl:value-of select="$pageurl"/>
 			</xsl:attribute>
 			<xsl:call-template name="configadmin"/>
+			<xsl:call-template name="csrf-input"/>
 		</form>
 		<xsl:if test="/rdf:RDF/luna:mod[luna:lid = 'mod_admin_groups']/luna:is_loaded = '1'">
 			<xsl:call-template name="groupslist">

@@ -106,6 +106,7 @@
 							</div>
 						</div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 			<xsl:call-template name="textslist"/>
@@ -208,6 +209,7 @@
 							</div>
 						</div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 		</xsl:if>

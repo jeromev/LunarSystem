@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.4-alpha] - 2026-06-20
+- **Security — CSRF protection (synchronizer token) + POST-only state changes.** Closes a *confirmed full-takeover* hole: a forged cross-site POST could mint a new administrator account. Every session now carries a 256-bit CSRF token (`luna_sessions.csrf_token`, minted on first read in `sessionRead`, rotated on login), exposed to the templates via `luna::$data['csrf_token']` and emitted as a hidden field in every state-changing form by a shared `csrf-input` XSL template (injected into all 16 admin / login / edit / search forms — as the last form child, after the `xsl:attribute` action). The bootstrap dispatch now rejects any `submit`/`batch_submit` request that isn't a `POST` carrying a token matching the session (`hash_equals`), logs the failure, and skips every `submit_*` handler. `?purge` cache-flush is now POST-only (kills the zero-click `<img>` drive-by). Verified live: the forged admin-creation is blocked ("Security check failed", no row created) while login and every legitimate admin action work with their token. (Logout remains a low-severity GET — flagged for follow-up.)
+
 ## [0.7.3-alpha] - 2026-06-20
 - **Security — session-ID regeneration on login (session-fixation defence).** `login()` now rotates the session id at the privilege boundary: `session_regenerate_id(false)` (the DB-keyed handler only `UPDATE`s, so the old row is re-keyed to the new id by hand — `session_id` is the PK), then the logged-in `UPDATE`s target the new id. Combined with 0.7.1's `use_strict_mode`, a pre-seeded or pre-auth session id can no longer survive authentication. Verified live: the SID changes at login, the new session stays authenticated, and the old pre-login SID is no longer a logged-in session.
 

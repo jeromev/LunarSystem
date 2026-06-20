@@ -65,6 +65,7 @@ CREATE TABLE `luna_sessions` (
   `session_logged_in` tinyint(1) NOT NULL default '0',
   `session_lang` varchar(5) default NULL,
   `session_useragent` varchar(255) default NULL,
+  `csrf_token` varchar(64) default NULL,
   PRIMARY KEY  (`session_id`),
   KEY `session_user_nid` (`session_user_nid`),
   KEY `session_time` (`session_time`),

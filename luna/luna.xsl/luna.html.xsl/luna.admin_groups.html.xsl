@@ -87,6 +87,7 @@
 								</div>
 							</div>
 						</fieldset>
+						<xsl:call-template name="csrf-input"/>
 					</form>
 				</div>
 				<xsl:call-template name="groupslist"/>
@@ -169,6 +170,7 @@
 							</div>
 						</div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 			<div id="UsersList" class="box">
@@ -422,6 +424,7 @@
 							</input>
 						</div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 			<xsl:call-template name="groupslist"><xsl:with-param name="expand">0</xsl:with-param></xsl:call-template>

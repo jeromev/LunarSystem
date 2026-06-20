@@ -176,6 +176,10 @@ class mod_log {
 			lunaDB::query('DELETE FROM '.luna::get_ini('DBtables', 'SESSIONS').' WHERE session_id = '.lunaDB::quote($new_sid).' AND session_id <> '.lunaDB::quote($old_sid).'');
 			lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'SESSIONS').' SET session_id = '.lunaDB::quote($new_sid).' WHERE session_id = '.lunaDB::quote($old_sid).'');
 			luna::$session->user->session_id = $new_sid;
+			// rotate the CSRF token at the privilege boundary too
+			$new_csrf = bin2hex(random_bytes(32));
+			lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'SESSIONS').' SET csrf_token = '.lunaDB::quote($new_csrf).' WHERE session_id = '.lunaDB::quote($new_sid).'');
+			luna::$session->user->csrf_token = $new_csrf;
 			$res = lunaDB::query('
 				UPDATE 
 					'.luna::get_ini('DBtables', 'SESSIONS').' 

@@ -5,6 +5,26 @@ maintained. It reflects the security practices of its era. Treat it as a
 historical artifact: safe to study and run locally, **not** safe to expose on the
 public internet without significant hardening.
 
+## 2026 hardening pass (0.6.9–0.7.6-alpha)
+
+A focused, verified hardening pass closed the major issues catalogued below. Each
+fix was confirmed against the running Docker stack. The tables further down record
+the **original** findings; several are now fixed or partially fixed as noted here.
+
+| Area | Fix | Status | Version |
+|---|---|---|---|
+| **Blind SQLi** — admin users `order_by` | whitelist map for the sort column; `intval` on LIMIT/IN | ✅ | 0.6.9 |
+| **Source / secret disclosure** | `.htaccess` 403s `/.git`, `*.ini`/`*.sql`, docker files, `docs/`, `scss/`; `DEBUG=0` default; dead `debug()` dump removed | ✅ | 0.7.0 |
+| **No security headers** | CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, COOP; `X-Powered-By` removed | ✅ | 0.7.0 |
+| **Session / cookie hardening** | HttpOnly + SameSite=Lax (+ Secure on HTTPS); cookie-only sessions (`use_trans_sid=0`, `use_only_cookies=1`, `use_strict_mode=1`) | ✅ | 0.7.1 |
+| **Unsalted MD5 passwords** | bcrypt (`password_hash`) with transparent upgrade-on-login; generic login errors + dummy verify (no account enumeration) | ✅ | 0.7.2 |
+| **Session fixation** | `session_regenerate_id` on login (DB-handler row re-keyed) | ✅ | 0.7.3 |
+| **No CSRF protection** | per-session synchronizer token in every state-changing form + central POST-only `hash_equals` verify in the dispatch; `?purge` POST-only | ✅ | 0.7.4 |
+| **Stored XSS** (SVG SMIL `<animate>` bypass) | HTML_Safe strips `svg`/`math`/`animate`/… + SMIL attrs; cache `unserialize(..., ['allowed_classes'=>false])` | ✅ | 0.7.5 |
+| **IDOR** — edit_texts text→page linking | `user_can_access_page()` per-target check on links; fixed `submit_modify` validating the wrong array | ◐ | 0.7.6 |
+
+**Still open / partial:** per-target authorization for *content* modify/delete of a text already on a higher-level page (edit_texts) is not yet gated; **logout** is still a low-severity GET CSRF; the session guard bound to the client User-Agent is unchanged. This remains an archival app — keep it behind web-server auth / a VPN and **off the public internet**.
+
 ## Hard compatibility limits
 
 | Issue | Impact | Detail |

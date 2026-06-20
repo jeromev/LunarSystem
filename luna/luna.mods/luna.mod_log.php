@@ -167,6 +167,15 @@ class mod_log {
 		}
 		if ($inerror) { return false; }
 		if (!$inerror) {
+			// Rotate the session id at the privilege boundary to defeat fixation.
+			// regenerate_id(false) keeps the old row (the DB handler only UPDATEs, never
+			// INSERTs), so re-key that row to the new id by hand (session_id is the PK).
+			$old_sid = session_id();
+			session_regenerate_id(false);
+			$new_sid = session_id();
+			lunaDB::query('DELETE FROM '.luna::get_ini('DBtables', 'SESSIONS').' WHERE session_id = '.lunaDB::quote($new_sid).' AND session_id <> '.lunaDB::quote($old_sid).'');
+			lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'SESSIONS').' SET session_id = '.lunaDB::quote($new_sid).' WHERE session_id = '.lunaDB::quote($old_sid).'');
+			luna::$session->user->session_id = $new_sid;
 			$res = lunaDB::query('
 				UPDATE 
 					'.luna::get_ini('DBtables', 'SESSIONS').' 

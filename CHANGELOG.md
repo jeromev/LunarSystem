@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.3-alpha] - 2026-06-20
+- **Security — session-ID regeneration on login (session-fixation defence).** `login()` now rotates the session id at the privilege boundary: `session_regenerate_id(false)` (the DB-keyed handler only `UPDATE`s, so the old row is re-keyed to the new id by hand — `session_id` is the PK), then the logged-in `UPDATE`s target the new id. Combined with 0.7.1's `use_strict_mode`, a pre-seeded or pre-auth session id can no longer survive authentication. Verified live: the SID changes at login, the new session stays authenticated, and the old pre-login SID is no longer a logged-in session.
+
 ## [0.7.2-alpha] - 2026-06-20
 - **Security — passwords migrated from unsalted MD5 to bcrypt, with transparent upgrade-on-login.** Login verifies via `lunaTools::verify_password()`: it accepts a legacy 32-hex MD5 hash (constant-time `hash_equals`) or a modern hash (`password_verify`), and on a successful login with a legacy/outdated hash it silently rehashes the stored password to bcrypt (`PASSWORD_DEFAULT`) — zero downtime, no forced reset. New/changed passwords (admin create + modify) are hashed with bcrypt; `luna_users.password` was widened to `VARCHAR(255)` (live + seed). Login failures now return one generic message ("Invalid email or password.") instead of distinct unknown-user / deactivated / wrong-password branches (the specific reason stays only in the server log), and the unknown/inactive paths run a dummy `password_verify` to flatten timing — closing the account-enumeration channel. Verified live: an MD5 admin logs in and is upgraded to `$2y$` in place, the next login uses the bcrypt path, wrong-password and unknown-user return identical messages.
 

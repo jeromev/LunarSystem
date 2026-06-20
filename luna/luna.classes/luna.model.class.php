@@ -1117,39 +1117,27 @@ class lunaModel {
 			$groupsql = !empty($group_nid)? ' AND g.nid = '.lunaDB::quote(intval($group_nid)).' ' : '';
 			$order_dir = lunaTools::request('order_dir', 0, 'DESC');
 			$alphastyle = 0;
-			switch($cookie['order_by']) {
-				case 'nid':
-					$order_by_ok = 'nu.nid';
-					$alphastyle = false;
-					if (empty($order_dir)) { $order_dir = 'ASC'; }
-					break;
-				case 'firstname':
-				case 'lastname':
-					$order_by_ok = 'u.'.$cookie['order_by'];
-					$alphastyle = true;
-					if (empty($order_dir)) { $order_dir = 'ASC'; }
-					break;
-				case 'email':
-					$order_by_ok = 'nu.lid';
-					$alphastyle = true;
-					if (empty($order_dir)) { $order_dir = 'ASC'; }
-					break;
-				case 'regis_time':
-				case 'last_time': 
-				default:
-					$order_by_ok = 'u.'.$cookie['order_by'];
-					$alphastyle = false;
-					if (empty($order_dir)) { $order_dir = 'DESC'; }
-					break;
-			}
+			// Whitelist the sort column: order_by is request input, so the raw value must
+			// never reach a SQL identifier (nor be reflected/persisted unfiltered).
+			$order_map = array(
+				'nid'        => array('nu.nid',       false, 'ASC'),
+				'firstname'  => array('u.firstname',  true,  'ASC'),
+				'lastname'   => array('u.lastname',   true,  'ASC'),
+				'email'      => array('nu.lid',       true,  'ASC'),
+				'regis_time' => array('u.regis_time', false, 'DESC'),
+				'last_time'  => array('u.last_time',  false, 'DESC'),
+			);
+			$order_key = isset($order_map[$cookie['order_by']])? $cookie['order_by'] : 'last_time';
+			$cookie['order_by'] = luna::$data['order_by'] = $order_key;
+			$order_by_ok = $order_map[$order_key][0];
+			$alphastyle  = $order_map[$order_key][1];
+			if (empty($order_dir)) { $order_dir = $order_map[$order_key][2]; }
 			$order_dir = ($order_dir == 'DESC' || empty($order_dir))? 'DESC' : 'ASC';
 			luna::$data['order_dir'] = $order_dir;
 			$cookie['order_dir'] = luna::$data['order_dir'];
 			if (!defined('PERPAGE')) { define('PERPAGE', 20); } 
-			luna::$data['limit'] = lunaTools::request('limit', 0, PERPAGE);
-			luna::$data['limit'] = luna::$data['limit'];
-			$start = lunaTools::request('start', 0, 0);
-			if (empty($start)) { $start = 0; }
+			luna::$data['limit'] = max(1, intval(lunaTools::request('limit', 0, PERPAGE)));
+			$start = max(0, intval(lunaTools::request('start', 0, 0)));
 			luna::$data['start'] = luna::$data['start'] = $start;
 			/*
 			$letters = array();
@@ -2058,7 +2046,7 @@ class lunaModel {
 				map'.($i + 1).'.nid2 = n'.($i + 1).'.nid 
 				';
 			$sql['where'] .=  'AND map'.($i + 1).'.nid1 = n.nid AND n'.($i + 1).'.tid = (SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote("$type2").') ';
-			if ($type2 == 'level') { $sql['where'] .= 'AND n2.nid IN ('.implode(',', luna::$session->user->levels).')'; }
+			if ($type2 == 'level') { $sql['where'] .= 'AND n2.nid IN ('.(implode(',', array_map('intval', (array) luna::$session->user->levels)) ?: '0').')'; }
 		} else if (is_array($type2)) { 
 			$i = 1;
 			foreach ($type2 as $type2x) {
@@ -2067,7 +2055,7 @@ class lunaModel {
 				$sql['select'] .=  'n'.($i + 1).'.is_active as is_active'.($i + 1).', ';
 				$sql['from'] .=  ', '.luna::get_ini('DBtables', 'NODES_MAP').' map'.($i + 1).' LEFT JOIN '.luna::get_ini('DBtables', 'NODES').' n'.($i + 1).' ON map'.($i + 1).'.nid2 = n'.($i + 1).'.nid ';
 				$sql['where'] .=  'AND map'.($i + 1).'.nid1 = n.nid AND n'.($i + 1).'.tid = (SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote("$type2x").') ';
-				if ($type2x == 'level') { $sql['where'] .= 'AND n'.($i + 1).'.nid IN ('.implode(',', luna::$session->user->levels).')'; }
+				if ($type2x == 'level') { $sql['where'] .= 'AND n'.($i + 1).'.nid IN ('.(implode(',', array_map('intval', (array) luna::$session->user->levels)) ?: '0').')'; }
 				$i++;
 			}
 		}

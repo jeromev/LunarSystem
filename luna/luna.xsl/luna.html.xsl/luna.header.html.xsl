@@ -116,30 +116,26 @@ var ckeditorconfig = 0;
 			<body class="main">
 				<div id="Page">
 					<xsl:attribute name="class"><xsl:value-of select="$masternodelid"/></xsl:attribute>
-					<div id="Top">
-						<div class="box">
-							<h1>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'root']/luna:alias"/></xsl:call-template>
-									</xsl:attribute>
-									<span id="SiteTitle"><xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/></span>
-								</a>
-							</h1>
-						</div>
-						<div class="box">
-							<h1>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:value-of select="$pageurl"/>
-									</xsl:attribute>
-									<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
-								</a>
-							</h1>
-						</div>
-					</div>
+					<header id="Top">
+						<h1>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'root']/luna:alias"/></xsl:call-template>
+								</xsl:attribute>
+								<span id="SiteTitle"><xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/></span>
+							</a>
+						</h1>
+						<h1>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:value-of select="$pageurl"/>
+								</xsl:attribute>
+								<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
+							</a>
+						</h1>
+					</header>
 					<hr/>
-					<div id="Content">
+					<main id="Content">
 						<xsl:if test="/rdf:RDF/luna:message">
 							<div id="Messages" class="box"><xsl:apply-templates select="/rdf:RDF/luna:message"/></div>
 						</xsl:if>
@@ -178,9 +174,9 @@ var ckeditorconfig = 0;
 								</p>
 							</div>
 						</div>
-					</div>
+					</main>
 					<hr/>
-					<div id="Nav">
+					<nav id="Nav">
 						<h1 class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Navigation']/luna:value"/></h1>
 						<!-- <xsl:if test="not($guest = '1')">  -->
 							<!-- <xsl:call-template name="search"/>  -->
@@ -222,7 +218,7 @@ var ckeditorconfig = 0;
 								</ul>
 							<!-- </xsl:if>  -->
 						</div>
-					</div>
+					</nav>
 				</div>
 			</body>
 		</html>

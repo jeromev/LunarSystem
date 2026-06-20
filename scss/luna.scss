@@ -3,11 +3,11 @@
    .css directly. Edit the partials here and run `make css` (or `make css-watch`).
    Source of truth: scss/. Build tool: Dart Sass (`sass`).
    =========================================================================== */
+@use 'bg';
 @use 'init';
 @use 'tokens';
 @use 'base';
 @use 'classes';
 @use 'page';
-@use 'clearfix';
-@use 'tinymce';
 @use 'treeview';
+@use 'mixins';

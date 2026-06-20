@@ -1,29 +1,29 @@
-function confirmSubmit(string) { var agree = confirm(string); if (agree) { return true; } else { return false; } }
-$(function(){
-	$('.zebra tr:even').addClass('even');
-	$('.zebra tr:odd').addClass('odd');
-	$('.zebra tr').on('mouseover', function() { $(this).addClass('hover'); });
-	$('.zebra tr').on('mouseout', function() { $(this).removeClass('hover'); });
+/* LunarSystem front-end behaviour — dependency-free (no jQuery), no animation.
+ * Show/hide is instant; add a CSS transition on .box-content or a row if you
+ * want movement. */
 
-	// Collapsible box handle — drives the bottom-bar hamburger and any .box-handle.
-	// (jQuery removed the two-callback .toggle() in 1.9, so toggle off the current class.)
-	$('.box-handle').on('click', function(){
-		var $h = $(this);
-		if ($h.hasClass('collapsed')) {
-			$h.removeClass('collapsed').addClass('expanded').next('.box-content').show('slow');
-		} else {
-			$h.removeClass('expanded').addClass('collapsed').next('.box-content').hide('slow');
-		}
-	});
+function confirmSubmit(string) { return confirm(string); }
 
-	// Tree view: tag items, then wire the expand/collapse carets (delegated).
-	$('ul.tv').find('li:last-child').addClass('tvil').end()
-		.find('li[ul]').addClass('tvic').removeClass('tvil').addClass('tvilc').append('<div class="tvca">');
-	$('ul.tv').on('click', 'div.tvca', function(){
-		var $li = $(this).parent('li');
-		$li.removeClass('tvic').addClass('tvie').removeClass('tvilc').addClass('tvile');
-		var $ul = $li.find('>ul');
-		if ($ul.is(':visible')) { $ul.slideUp('normal'); } else { $ul.slideDown('normal'); }
-	});
-	// (WYSIWYG editor removed in the minimal build — content textareas are plain)
+document.addEventListener('DOMContentLoaded', function () {
+
+	// Zebra striping + row hover. The stylesheet styles .even / .odd / .hover.
+	var rows = document.querySelectorAll('.zebra tr');
+	for (var i = 0; i < rows.length; i++) {
+		rows[i].classList.add(i % 2 ? 'odd' : 'even');
+		rows[i].addEventListener('mouseover', function () { this.classList.add('hover'); });
+		rows[i].addEventListener('mouseout', function () { this.classList.remove('hover'); });
+	}
+
+	// Collapsible box handles: the bottom-bar hamburger sitemap, the search box, …
+	// Instant open/close — flip the +/- class and the adjacent .box-content display.
+	var handles = document.querySelectorAll('.box-handle');
+	for (var j = 0; j < handles.length; j++) {
+		handles[j].addEventListener('click', function () {
+			var opening = this.classList.contains('collapsed');
+			this.classList.toggle('collapsed', !opening);
+			this.classList.toggle('expanded', opening);
+			var content = this.nextElementSibling;
+			if (content) { content.style.display = opening ? 'block' : 'none'; }
+		});
+	}
 });

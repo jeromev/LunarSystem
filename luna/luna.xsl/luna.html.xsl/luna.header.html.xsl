@@ -92,22 +92,6 @@
 					</xsl:attribute>
 				</link>
 				<script type="text/javascript">
-					<xsl:comment>
-<xsl:text>
-var basehref='</xsl:text><xsl:value-of select="$site_uri"/><xsl:text>'; var pagenid='</xsl:text><xsl:value-of select="$masternodenid"/> <xsl:text>'; var pagelid='</xsl:text><xsl:value-of select="$masternodelid"/> <xsl:text>'; var lang='</xsl:text><xsl:value-of select="$lang"/><xsl:text>';
-</xsl:text>
-<xsl:text>
-var ckeditorconfig = 0;
-</xsl:text>
-					</xsl:comment>
-				</script>
-				<script type="text/javascript">
-					<xsl:attribute name="src">https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js</xsl:attribute>
-					<xsl:attribute name="integrity">sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==</xsl:attribute>
-					<xsl:attribute name="crossorigin">anonymous</xsl:attribute>
-					<xsl:attribute name="referrerpolicy">no-referrer</xsl:attribute>
-				</script>
-				<script type="text/javascript">
 					<xsl:attribute name="src">
 						<xsl:value-of select="$site_relative_url"/><xsl:text>js/luna.js</xsl:text>
 					</xsl:attribute>

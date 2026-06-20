@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.9-alpha] - 2026-06-20
+- **Security — logout is no longer a GET CSRF.** `logout()` now requires a valid CSRF token (read from GET or POST via `request()`), and the nav logout link carries the per-session token in its href. A forged `GET /logout` (e.g. `<img src=/logout>`) without the token no longer destroys the victim's session; the real nav logout still works. Verified live: forged GET leaves the user logged in (200), the tokened nav link logs out (404). Closes the logout residual from 0.7.4.
+
 ## [0.7.8-alpha] - 2026-06-20
 - **Security — completed the edit_texts IDOR fix: content modify/delete is now gated on the text's pages.** Added `lunaTools::user_can_act_on_text()` (one query resolving the level of every page a text is linked to; the user must hold **all** of them, fail-closed) and call it at the top of `submit_modify` and `submit_delete`. A logged-in editor can no longer modify or delete a text that lives on a page above their level. Verified live with a real `group_edition` editor: **denied** on a text bound to an admin-level page (content left intact, delete refused), **allowed** on a public text (no over-restriction); admin unaffected. This closes the residual flagged in 0.7.6.
 

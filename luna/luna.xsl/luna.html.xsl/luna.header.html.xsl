@@ -147,6 +147,7 @@
 											<xsl:otherwise>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'logout']/luna:alias"/></xsl:call-template>
+													<xsl:text>?csrf_token=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/>
 												</xsl:attribute>
 												<xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'logout']/rdfs:label"/>
 											</xsl:otherwise>

@@ -536,11 +536,30 @@ class lunaTools {
 		bindtextdomain($domain, LOCALE_PATH);
 		textdomain($domain);
 		bind_textdomain_codeset($domain, 'UTF-8');
+		// Site-specific page labels live in a separate, git-ignored 'local' domain,
+		// layered over the engine 'luna' catalog by lunaTools::label().
+		bindtextdomain('local', LOCALE_PATH);
+		bind_textdomain_codeset('local', 'UTF-8');
 		$_SESSION['lang'] = $lang;
 		lunaTools::set_cookie('lang', $lang);
 		define('LANG', $lang); 
 		if (function_exists('locale_set_default')) { locale_set_default($lang_); }
 		return $lang;
+	}
+	// }}}
+	// {{{ label()
+	/**
+	 * Localise a node label/slug. Tries the site-specific, git-ignored 'local'
+	 * gettext domain first (per-site page labels), then falls back to the engine
+	 * 'luna' catalog, then the raw lid.
+	 *
+	 * @access public
+	 * @param string $lid
+	 * @return string
+	 */
+	public static function label($lid) {
+		$t = dgettext('local', "$lid");
+		return ($t !== "$lid") ? $t : _("$lid");
 	}
 	// }}}
 	// {{{ check_cache()

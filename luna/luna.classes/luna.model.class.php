@@ -1967,7 +1967,7 @@ class lunaModel {
 		$nodes = array();
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'nid'][0]['value'] = $node['nid'];
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'lid'][0]['value'] = $node['lid'];
-		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['value'] = _($node['lid']);
+		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node['lid']);
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_active'];
@@ -1983,7 +1983,7 @@ class lunaModel {
 		if (is_string($type2) && isset($node['nid2'])) { 
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'nid'][0]['value'] = $node['nid2'];
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'lid'][0]['value'] = $node['lid2'];
-			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['value'] = _($node['lid2']);
+			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node['lid2']);
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_active2'];
@@ -2005,7 +2005,7 @@ class lunaModel {
 				if (isset($node[$nidx])) {
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'nid'][0]['value'] = $node[$nidx];
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'lid'][0]['value'] = $node[$lidx];
-					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['value'] = _($node[$lidx]);
+					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node[$lidx]);
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node[$is_activex];

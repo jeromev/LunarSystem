@@ -877,7 +877,3 @@ msgstr "Liste des éléments"
 
 msgid "Texts to load with this page"
 msgstr "Textes chargés avec cette page"
-
-# page label
-msgid "about"
-msgstr "À propos"

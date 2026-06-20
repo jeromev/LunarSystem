@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.4-alpha] - 2026-06-19
+- **Site page labels moved to a separate, git-ignored gettext domain** — so a site's page-label translations no longer pollute the engine's catalog (reverts the `about` entry added to `luna.po` in 0.6.3). The engine `luna` catalog stays purely the CMS's UI vocabulary; per-site labels live in a `local` domain (`<lang>/LC_MESSAGES/local.po` / `local.mo`), git-ignored. New helper `lunaTools::label($lid)` resolves a label by trying `local` → engine `luna` → the raw lid; the model's three `rdfs:label` assignments now route through it, and the `local` domain is bound next to `luna`. Workflow to add a label: edit the git-ignored `local.po`, `msgfmt`, restart — nothing site-specific reaches the repo. See [luna/luna.locale/README.md](luna/luna.locale/README.md).
+
 ## [0.6.3-alpha] - 2026-06-19
 - **Localised the `/about` page label.** Page labels are produced by `_($lid)` (gettext) → the node's `rdfs:label` ([luna.model.class.php:1970](luna/luna.classes/luna.model.class.php)), so a lid with no catalog entry renders verbatim. Added `msgid "about"` → `"About"` (`en_EN`) / `"À propos"` (`fr_FR`) to the gettext catalogs and recompiled the `.mo`s, so the page name now localises in the header, sitemap and breadcrumb. (`en_US` is unused — not in the language switcher — so left as-is.)
 

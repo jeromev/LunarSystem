@@ -12,12 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # gettext needs the OS locales generated; otherwise setlocale() fails and every
 # translation silently falls back to the source string (i.e. localisation does
-# nothing). Generate the locales lunaTools::format_language() maps to: fr_FR for
-# French, en_US, and the non-standard en_EN ('en' -> 'en_EN'), the latter aliased
-# to the en_US definition since glibc ships no en_EN source.
+# nothing). Generate the locales lunaTools::format_language() maps to: en_US for
+# English ('en' -> 'en-US') and fr_FR for French.
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
-    && localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 \
-    && { localedef -i en_US -f UTF-8 en_EN.UTF-8 || true; }
+    && localedef -i fr_FR -f UTF-8 fr_FR.UTF-8
 
 # PHP extensions. pdo_mysql is the DB driver (replaced PEAR MDB2 + ext/mysql);
 # xsl drives the XSLT view layer; gettext is i18n; mbstring is required by the

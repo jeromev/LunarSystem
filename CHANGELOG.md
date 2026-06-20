@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.8-alpha] - 2026-06-20
+- **Removed the dead `en_EN` gettext locale.** The app standardised on `en-US` everywhere in 0.7.x — `lunaTools::format_language()` maps `en`→`US`, so `site_langs` (built from the DB `langs='en, fr'` config) resolves to `['en-US','fr-FR']`, and both the nav language switcher ([luna.php:560](luna/luna.php)) and `set_language()` only ever use those. Nothing produced, offered, or loaded `en_EN`/`en-EN`; 0.8.7 only marked it legacy in the docs. Now actually deleted:
+  - `git rm -r luna/luna.locale/en_EN` (the whole `LC_MESSAGES/{luna,local}.{po,mo}` set; the git-ignored `local.*` files were removed from disk too).
+  - Dropped the now-orphan `msgid "en-EN"` (→ `"English"`) from the remaining `en_US` and `fr_FR` `luna.po` catalogs — no source string ever looked it up (`_($lang)` is only called with full `en-US`/`fr-FR` tags) — and recompiled both `luna.mo`.
+  - `Dockerfile` — removed the `localedef … en_EN.UTF-8` alias (and its comment) that existed only to satisfy the old `en`→`en_EN` mapping; the image now generates just `en_US.UTF-8` + `fr_FR.UTF-8`.
+  - `README.md` — the locale tree line drops the "`en_EN` is a legacy locale" note.
+  - Verified live on the Docker stack: the switcher still offers only English (`?lang=en-US`) and Français (`?lang=fr-FR`); `en-US` and `fr-FR` pages render with the correct `<html lang>` and gettext; a stale `?lang=en-EN` request still falls back cleanly (HTTP 200, no 404). No config or schema change.
+
 ## [0.8.7-alpha] - 2026-06-20
 - **Docs — consistency pass (all 24 doc files + codebase audited against the 0.8.x state).** A multi-agent audit (8 areas; each finding verified against the code to separate genuine staleness from correct historical references) surfaced 11 real inconsistencies, now fixed:
   - `README.md` — the warning box and "Known issues" table no longer claim unsalted-MD5 / no-CSRF / `use_trans_sid=1` / missing `session_regenerate_id` (all fixed in 0.7.x); they now list the real residuals (unauthenticated SPARQL endpoint, no per-target admin authz, per-IP-only throttle). The directory tree drops the "jQuery from cdnjs" note and marks `en_EN` as a legacy locale.

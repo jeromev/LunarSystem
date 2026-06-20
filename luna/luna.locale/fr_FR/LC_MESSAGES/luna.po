@@ -743,9 +743,6 @@ msgstr "Langue"
 msgid "en"
 msgstr "English"
 
-msgid "en-EN"
-msgstr "English"
-
 msgid "en-US"
 msgstr "English"
 

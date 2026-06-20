@@ -5,10 +5,10 @@ RewriteBase /
 
 # Deny direct access to VCS, config, build, and source-doc files (defense-in-depth;
 # in production the DocumentRoot should not be the repository root at all).
-RewriteRule (^|/)\.(git|svn|hg)(/|$) - [F]
-RewriteRule \.(ini|sql|dist|example|log)$ - [F]
-RewriteRule ^(docker-compose\.ya?ml|Dockerfile|Makefile|package(-lock)?\.json)$ - [F]
-RewriteRule ^(docs|scss|semantic|examples)/ - [F]
+RewriteRule (^|/)\.(git|svn|hg)(/|$) - [F,NC]
+RewriteRule \.(ini|sql|dist|example|log)$ - [F,NC]
+RewriteRule ^(docker-compose\.ya?ml|Dockerfile|Makefile|package(-lock)?\.json)$ - [F,NC]
+RewriteRule ^(docs|scss|semantic|examples)/ - [F,NC]
 
 # Skip rewriting for existing files and directories
 RewriteCond %{REQUEST_FILENAME} !-f

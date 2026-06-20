@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.10-alpha] - 2026-06-20
+- **Accessibility pass (A2).** Audited every page with axe-core (WCAG 2 A/AA + best-practice) driving headless Chrome — the tree is now clean. Fixes:
+  - Pager `<select>`s (page / per-page) get `aria-label`s (was a *critical* "select must have an accessible name").
+  - In-text links are underlined (`p` / `dd` / `#Bottom`) so they're distinguishable without relying on colour.
+  - Journal log-entry links get an `aria-label` (the message preview can render blank, which left an empty link with no name).
+  - Colour contrast brought to AA: table `<th>` darkened (white text was ~1.3:1 on the `#e2e2e2` page), the pager strip text (`#999 → #555`), the brand link colour (`#cc007a → #be006f`, imperceptible) so links pass on striped rows, and inactive/deleted-row text (`#999 → #6a6a6a`).
+
 ## [0.8.9-alpha] - 2026-06-20
 - **Layout — responsive pass across all pages (A1).** Verified every page type at 390px (mobile) and 1280px (desktop) with headless Chrome:
   - **Turned off the baseline-grid debug overlay** (`_bg.scss` `$debug: 1 → 0`) — it was shipping a visible grid overlay baked into `css/luna.css`.

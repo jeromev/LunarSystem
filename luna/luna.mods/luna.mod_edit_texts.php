@@ -111,6 +111,11 @@ class mod_edit_texts {
 					$message = _('Unknown page '.intval($postpage_nid)); 
 					luna::$messages['warning'][] = $message; 
 					lunaLog::log($message, PEAR_LOG_WARNING);
+				} else if (!lunaTools::user_can_access_page($postpage_node)) {
+					$inerror++;
+					$message = _('Access denied to page '.intval($postpage_nid));
+					luna::$messages['warning'][] = $message;
+					lunaLog::log('edit_texts: attempt to link a text to an inaccessible page '.intval($postpage_nid), PEAR_LOG_WARNING);
 				}
 			}
 		} 
@@ -169,13 +174,18 @@ class mod_edit_texts {
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'text')) { return false; }
 		// check if identifier is already used by antoher item
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_text_lid'], $_POST['modify_item_nid'])) { return false; }
-		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) { 
-			foreach ($_POST['add_text_pages'] as $postpage_nid) {
+		if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { 
+			foreach ($_POST['modify_text_pages'] as $postpage_nid) {
 				if (!$postpage_node = luna::$model->get_node($postpage_nid, 'page')) {
 					$inerror++; 
 					$message = _('Unknown page '.intval($postpage_nid)); 
 					luna::$messages['warning'][] = $message; 
 					lunaLog::log($message, PEAR_LOG_WARNING);
+				} else if (!lunaTools::user_can_access_page($postpage_node)) {
+					$inerror++;
+					$message = _('Access denied to page '.intval($postpage_nid));
+					luna::$messages['warning'][] = $message;
+					lunaLog::log('edit_texts: attempt to link a text to an inaccessible page '.intval($postpage_nid), PEAR_LOG_WARNING);
 				}
 			}
 		} 

@@ -727,6 +727,20 @@ class lunaTools {
 		return false;
 	}
 	// }}}
+	// {{{ user_can_access_page()
+	/**
+	 * True when the current user may act on $page_node — i.e. can access the level
+	 * the page is bound to. Fail-closed: a page with no resolvable level is denied.
+	 * @access public
+	 */
+	public static function user_can_access_page($page_node = false) {
+		if (empty($page_node) || !is_array($page_node)) { return false; }
+		$level_node = luna::$model->get_level_node($page_node);
+		if (!$level_node) { return false; }
+		$level_nid = intval(luna::$model->get_nid($level_node, 'level'));
+		return self::user_can_access_level(luna::$session->user, $level_nid);
+	}
+	// }}}
 	// {{{ remove_accents()
 	/**
 	 * This function is based on the function 'remove_accents', by WordPress 2.0.4 (see file 'functions-formatting.php', line 143)

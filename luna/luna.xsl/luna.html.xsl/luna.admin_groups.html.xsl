@@ -180,7 +180,7 @@
 						<h2 class="box-handle expanded">
 							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Users who belong to this group']/luna:value"/>
 						</h2>
-						<div class="box-content">
+						<div class="box-content boxtable">
 							<table class="zebra">
 								<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Users who belong to this group']/luna:value"/></caption>
 								<thead>

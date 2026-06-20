@@ -204,9 +204,6 @@ html {
   --right-side-optical-adjustment: 1;
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
-  background-size: 100% var(--base-unit);
-  background-position: left top;
 }
 html {
   /* responsive base font + the baseline unit (--base-unit) */
@@ -360,6 +357,9 @@ form {
 form fieldset {
   border: none;
   display: block;
+  min-width: 0; /* fieldsets default to min-inline-size:min-content, which refuses
+   to shrink below wide table/field content and forces the whole
+   page to overflow on mobile — let it shrink so .boxtable scrolls */
 }
 form fieldset p {
   color: var(--muted);
@@ -452,6 +452,8 @@ a:hover {
 
 img {
   border: none;
+  max-width: 100%;
+  height: auto;
 }
 
 p:before, p:after {
@@ -1163,6 +1165,49 @@ h6:after {
   color: #ddd;
 }
 
+/* ===========================================================================
+   RESPONSIVE GUARDS (2026 layout pass)
+   Keep every page within the viewport on small screens: the fixed bg.h()
+   field/column widths and the wide admin data tables would otherwise force
+   horizontal scrolling on phones (verified at 390px across all admin pages).
+   =========================================================================== */
+#Page #Top,
+#Page #Content {
+  /* Grid items default to min-width:auto, so the track (minmax(auto,1fr)) grows to
+     the widest item's min-content — a wide data table then widens the whole grid.
+     Allowing the items to shrink lets the table scroll inside .boxtable instead. */
+  min-width: 0;
+}
+
+#Page #Content-main div.boxtable {
+  overflow-x: auto; /* wide tables scroll inside their box, not the whole page */
+  -webkit-overflow-scrolling: touch;
+}
+#Page #Content-main input,
+#Page #Content-main textarea,
+#Page #Content-main select,
+#Page #Content-main span.label,
+#Page #Content-main div.col,
+#Page #Content-main div.onecol {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  /* footer toolbar: keep the hamburger + language + format switches on one row */
+  #Page #Nav {
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  #Page #Nav #Options {
+    gap: 0.5rem;
+  }
+  #Page #Nav #Options ul li a {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}
 /* ===========================================================================
    GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
    .css directly. Edit the partials here and run `make css` (or `make css-watch`).

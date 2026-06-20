@@ -92,6 +92,7 @@
 								</div>
 							</div>
 						</fieldset>
+						<xsl:call-template name="csrf-input"/>
 					</form>
 				</div>
 				<xsl:call-template name="modslist"/>
@@ -175,6 +176,7 @@
 							</div>
 						</div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 			<xsl:call-template name="modslist">

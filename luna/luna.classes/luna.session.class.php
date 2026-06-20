@@ -196,6 +196,13 @@ class lunaSession {
 			$this->sessionDestroy($sid);
 			throw new lunaException(_('Error: cannot read session.'), PEAR_LOG_CRIT);
 		}
+		// Every session carries a CSRF synchronizer token; mint one on first read
+		// (covers brand-new sessions and rows predating the csrf_token column).
+		if (empty($this->user->csrf_token)) {
+			$csrf = bin2hex(random_bytes(32));
+			lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'SESSIONS').' SET csrf_token = '.lunaDB::quote($csrf).' WHERE session_id = '.lunaDB::quote($sid).'');
+			$this->user->csrf_token = $csrf;
+		}
 		// PHP's session handler requires read() to return a STRING (PHP 8 rejects a
 		// non-string with "Failed to read session data"). luna keeps user state in
 		// $this->user + the DB, so there is no PHP-serialised session payload.
@@ -310,6 +317,7 @@ class lunaSession {
 				s.session_logged_in,
 				s.session_ip,
 				s.session_useragent,
+				s.csrf_token,
 				g.nid as group_nid,
 				l.nid as level_nid
 			FROM
@@ -356,6 +364,7 @@ class lunaSession {
 			$user->session_ip = lunaTools::decode_ip($row->session_ip);
 			$user->lang = $row->lang;
 			$user->session_useragent = $row->session_useragent;
+			$user->csrf_token = $row->csrf_token;
 			$user->groups[$row->group_nid] = $row->group_nid;
 			$user->levels[$row->level_nid] = $row->level_nid;
 			self::$new = 0;

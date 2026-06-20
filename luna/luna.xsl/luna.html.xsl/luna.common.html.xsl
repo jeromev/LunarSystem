@@ -395,6 +395,13 @@
 		</xsl:if>
 	</xsl:template>
 
+	<!-- {{{ csrf-input: anti-CSRF token, first child of every state-changing form -->
+	<xsl:template name="csrf-input">
+		<input type="hidden" name="csrf_token">
+			<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/></xsl:attribute>
+		</input>
+	</xsl:template>
+	<!-- }}} -->
 	<xsl:template name="forminput">
 		<xsl:param name="type">text</xsl:param>
 		<xsl:param name="mode">node</xsl:param>
@@ -728,6 +735,7 @@
 						</p>
 						<div id="SearchTarget"></div>
 					</fieldset>
+					<xsl:call-template name="csrf-input"/>
 				</form>
 			</div>
 		</div>

@@ -7,13 +7,13 @@ on:
 
 jobs:
   php-lint:
-    name: PHP 5.6 lint (our code)
+    name: PHP 8.3 lint (our code)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: php -l across project code (vendored libs excluded)
         run: |
-          docker run --rm -v "$PWD":/app -w /app php:5.6-cli sh -c '
+          docker run --rm -v "$PWD":/app -w /app php:8.3-cli sh -c '
             set -e
             find index.php luna/luna.php luna/luna.classes luna/luna.mods \
               -name "*.php" -print0 | xargs -0 -n1 php -l'
@@ -38,3 +38,20 @@ jobs:
             echo "::error::Found a published port not bound to 127.0.0.1"; exit 1
           fi
           echo "OK: all published ports are 127.0.0.1-bound"
+
+  regression:
+    name: smoke + security regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Boot the stack
+        run: docker compose up -d
+      - name: Wait for the app to render
+        run: |
+          for i in $(seq 1 90); do
+            [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/about || true)" = 200 ] && exit 0
+            sleep 2
+          done
+          echo "::error::app did not become ready"; docker compose logs --tail=80; exit 1
+      - name: Run the smoke + security-regression suite
+        run: BASE=http://localhost:8080 DB_CONTAINER="$(docker compose ps -q db)" bash test/regression.sh

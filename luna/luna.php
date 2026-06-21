@@ -63,7 +63,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.17-alpha';
+	public static $lunaVersion = '0.8.18-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -587,8 +587,12 @@ class luna {
 				$output_formats = self::$model->merge_nodes($output_formats, $var_node);
 			}
 			self::$model->merge_index($output_formats);
-			// Insert Data
-			self::$model->merge_index(self::$model->load_data(self::$data));
+			// Insert Data. The CSRF token is HTML-form chrome (and a security token), so
+			// keep it out of the machine-readable data outputs (xml/json/n3/jsonld) — only
+			// the HTML forms need it, and a data response could be cached or shared.
+			$render_data = self::$data;
+			if (self::$output_format !== 'html') { unset($render_data['csrf_token']); }
+			self::$model->merge_index(self::$model->load_data($render_data));
 			self::$model->merge_index(self::$model->load_vocabulary(self::$vocabulary));
 			self::$model->merge_index(self::$model->load_request($_REQUEST, 'request'));
 			// If ajax is on, no need to go further

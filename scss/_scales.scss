@@ -31,13 +31,13 @@ $width-optical-adjustment: 1.08;
 $size-names-scale: 'note', 'labeur', 'title-s', 'title-m', 'title-l', 'title-xl', 'title-ul';
 
 /// Font sizes per breakpoint (7 sizes × 7 breakpoints)
-$xs-size-scale:   12px, 15px, 16px, 18px, 20px, 36px, 40px;
-$s-size-scale:    13px, 16px, 18px, 19px, 24px, 40px, 58px;
-$m-size-scale:    14px, 18px, 19px, 20px, 28px, 58px, 76px;
-$l-size-scale:    15px, 19px, 20px, 21px, 38px, 76px, 90px;
-$xl-size-scale:   16px, 20px, 21px, 22px, 48px, 90px, 96px;
-$xxl-size-scale:  17px, 21px, 22px, 23px, 54px, 96px, 110px;
-$ul-size-scale:   18px, 22px, 23px, 24px, 62px, 110px, 130px;
+$xs-size-scale:   12px, 14px, 15px, 18px, 21px, 27px, 36px;
+$s-size-scale:    13px, 15px, 17px, 20px, 23px, 30px, 39px;
+$m-size-scale:    14px, 16px, 18px, 21px, 25px, 32px, 42px;
+$l-size-scale:    15px, 17px, 19px, 23px, 27px, 34px, 45px;
+$xl-size-scale:   16px, 18px, 21px, 24px, 29px, 37px, 48px;
+$xxl-size-scale:  17px, 19px, 22px, 26px, 30px, 39px, 51px;
+$ul-size-scale:   18px, 21px, 23px, 27px, 32px, 41px, 54px;
 
 /// Line heights per breakpoint
 $xs-line-height:  24px;
@@ -246,14 +246,14 @@ $xl-size-title-xl:  list.nth($xl-size-scale, 6);
 $xxl-size-title-xl: list.nth($xxl-size-scale, 6);
 $ul-size-title-xl:  list.nth($ul-size-scale, 6);
 
-// Typography - slogan
-$xs-size-slogan:  list.nth($xs-size-scale, 7);
-$s-size-slogan:   list.nth($s-size-scale, 7);
-$m-size-slogan:   list.nth($m-size-scale, 7);
-$l-size-slogan:   list.nth($l-size-scale, 7);
-$xl-size-slogan:  list.nth($xl-size-scale, 7);
-$xxl-size-slogan: list.nth($xxl-size-scale, 7);
-$ul-size-slogan:  list.nth($ul-size-scale, 7);
+// Typography - title-ul (ultra-large title)
+$xs-size-title-ul:  list.nth($xs-size-scale, 7);
+$s-size-title-ul:   list.nth($s-size-scale, 7);
+$m-size-title-ul:   list.nth($m-size-scale, 7);
+$l-size-title-ul:   list.nth($l-size-scale, 7);
+$xl-size-title-ul:  list.nth($xl-size-scale, 7);
+$xxl-size-title-ul: list.nth($xxl-size-scale, 7);
+$ul-size-title-ul:  list.nth($ul-size-scale, 7);
 
 // ==============================================================================
 // BASELINEGRID CONFIGURATION MAP

@@ -15,21 +15,31 @@
 	padding: 0;
 }
 .box-handle {
-	&.collapsed {
+	/* The collapse/expand triangle is drawn as a BACKGROUND IMAGE rather than a
+	   ::before glyph. The baseline grid (bg.set/bg.scale) reserves BOTH ::before and
+	   ::after on every heading for its empty-content grid struts, so putting glyph
+	   content in ::before silently destroyed the heading's baseline snap. Keeping the
+	   handle off the pseudo-elements lets the grid keep them and the heading stays on
+	   the baseline. The triangle is vertically centred on the first line via the grid's
+	   own --line-height (no magic offset). (The nav hamburger overrides this below with
+	   `background: none` + its own ::before ☰, so it is unaffected.) */
+	&.collapsed, &.expanded {
 		cursor: pointer;
-		&::before {
-			content: "\25B6"; /* ▶ right-pointing triangle */
-			font-size: 0.75rem;
-			vertical-align: 0.15rem;
-			width: bg.h();
-		}
+		padding-left: bg.h(1.5);
+		background-repeat: no-repeat;
+		background-size: 0.6rem;
+		/* Centre the triangle on the heading's CAP height (not the line box), so it
+		   reads as aligned with the text. Vertically:
+		     (--line-height − 1em)/2  → the leading above the first text line
+		     0.636em                  → Verdana's cap-centre below the text-top (ascent − cap-height/2)
+		     − 0.3rem                 → half the triangle, to centre it
+		   All terms scale with the heading, so it holds across breakpoints. */
+		background-position: left calc((var(--line-height) - 1em) / 2 + 0.636em - 0.3rem);
 	}
-	&.expanded {
-		cursor: pointer;
-		&::before {
-			content: "\25BC"; /* ▼ down-pointing triangle */
-			font-size: 0.75rem;
-			width: bg.h();
-		}
+	&.collapsed { /* ▶ right-pointing triangle */
+		background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20d='M3%202L7%205L3%208Z'%20fill='%23000'/%3E%3C/svg%3E");
+	}
+	&.expanded { /* ▼ down-pointing triangle */
+		background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20d='M2%203.5L8%203.5L5%207.5Z'%20fill='%23000'/%3E%3C/svg%3E");
 	}
 }

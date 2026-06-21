@@ -151,6 +151,7 @@ class mod_admin_levels {
 		$_POST['modify_level_is_inactive'] = isset($_POST['modify_level_is_inactive'])? ($_POST['modify_level_is_inactive'] == 1? 1 : 0) : 0;
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'level')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['modify_item_nid']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_levels: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// preserve sensitive data
 		if (!$item_lid = luna::$model->check_if_lid_is_protected($item_node, array('level_admin', 'level_public'))) { return false; }
 		// check if identifier is already used
@@ -197,6 +198,7 @@ class mod_admin_levels {
 		if ($inerror) { return false; } 
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'level')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['modify_item_nid']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_levels: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// preserve sensitive data
 		if (!$item_lid = luna::$model->check_if_lid_is_protected($item_node, array('level_admin', 'level_public'))) { return false; }
 		$item_nid = luna::$model->get_nid($item_node); 

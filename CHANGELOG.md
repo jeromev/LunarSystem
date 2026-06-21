@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.15-alpha] - 2026-06-20
+- **Security — per-target authz in the remaining admin modules (finishes B1).** Extended the B1 pattern to the object-IDOR vectors: `admin_pages` (add/modify/delete), `admin_levels` (modify/delete) and `admin_mods` (add/modify) now refuse, via `lunaTools::user_can_access_level`, to bind a page/mod to — or modify/delete an object at — an access level the actor does not hold. Verified no-ops for the shipped admin (a page modify still succeeds; regression suite green). Latent in the single-admin config like the rest of the cluster.
+
 ## [0.8.14-alpha] - 2026-06-20
 - **Security / UX — JSON log payloads + fix blank journal messages (B3).** `lunaLog::log()` now stores payloads as **JSON** instead of `serialize()`, so the journal read path never `unserialize()`s stored data — the object-injection sink is gone for all new logs. It also persists only a trimmed identity (`session_summary()` — firstname/lastname/email) instead of the whole session object (csrf token, levels, internals). The reader gained `decode_message()`: JSON first, with a guarded `unserialize(allowed_classes => ['lunaException','stdClass'])` fallback for pre-0.8.14 rows (transitional). This also **fixes the blank-message bug**: the earlier `allowed_classes => ['lunaException']` guard turned string-log `stdClass` payloads into `__PHP_Incomplete_Class`, so `->message` read blank — the journal list and detail now render the real messages (verified: 20 non-empty entries where there were 0, new JSON and legacy rows alike).
 

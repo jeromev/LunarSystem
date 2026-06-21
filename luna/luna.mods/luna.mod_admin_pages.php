@@ -109,6 +109,7 @@ class mod_admin_pages {
 		if (!$item_parent_node = luna::$model->check_if_node_exists($_POST['add_parent_nid'], 'page')) { return false; }
 		// make sure the level node exists
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['add_page_level'], 'level')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['add_page_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_pages: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each mod node exists
 		if (isset($_POST['add_page_mods']) && is_array($_POST['add_page_mods']) && !empty($_POST['add_page_mods'])) { 
 			foreach ($_POST['add_page_mods'] as $mod_nid) {
@@ -163,6 +164,7 @@ class mod_admin_pages {
 		$page_lid = luna::$model->get_lid($item_node);
 		$page_level_node = luna::$model->get_level_node($item_node);
 		$page_level_nid = luna::$model->get_nid($page_level_node);
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($page_level_nid)) || !lunaTools::user_can_access_level(luna::$session->user, intval($_POST['modify_page_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_pages: attempt to modify a page across an inaccessible level', PEAR_LOG_WARNING); return false; }
 		$page_parent_node = luna::$model->get_parent_node($item_node);
 		$page_parent_nid = luna::$model->get_nid($page_parent_node);
 		// preserve the root
@@ -289,6 +291,7 @@ class mod_admin_pages {
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'page')) { return false; }
 		$page_lid = luna::$model->get_lid($item_node);
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval(luna::$model->get_nid(luna::$model->get_level_node($item_node))))) { luna::$messages['warning'][] = _('Access denied: this page is above your access level.'); lunaLog::log('admin_pages: attempt to delete an inaccessible page', PEAR_LOG_WARNING); return false; }
 		if ($page_lid == 'root') { 
 			$inerror++; 
 			$message = _('You cannot delete the root page.');

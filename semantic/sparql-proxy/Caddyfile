@@ -1,0 +1,22 @@
+# Authenticating reverse proxy in front of Oxigraph.
+#
+# Oxigraph has no native authentication and its /update + /store endpoints accept
+# unauthenticated writes. This proxy sits between the app and Oxigraph and demands
+# HTTP basic auth on EVERY request (reads included) before forwarding. Combined with
+# the `triplestore` internal compose network — on which Oxigraph is the only member
+# besides this proxy — it means the triplestore is unreachable without credentials.
+#
+# The username comes from {$SPARQL_AUTH_USER}; the bcrypt hash from {$SPARQL_AUTH_HASH},
+# which the container generates at startup from the plaintext SPARQL_AUTH_PASS (see the
+# `command:` in docker-compose.yml) so no password hash is ever committed.
+{
+	auto_https off
+	admin off
+}
+
+:7878 {
+	basic_auth {
+		{$SPARQL_AUTH_USER} {$SPARQL_AUTH_HASH}
+	}
+	reverse_proxy oxigraph:7878
+}

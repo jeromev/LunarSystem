@@ -1,13 +1,14 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.20-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.21-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
-> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.20-alpha) closed
+> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.21-alpha) closed
 > the major issues — bcrypt passwords, CSRF tokens, session-fixation defence, SQLi fixes,
-> security headers, per-target admin authorization, a per-IP login throttle — but a
-> residual gap remains (the **SPARQL write endpoint is unauthenticated**), so keep it on
-> `localhost` and off the public internet. See [docs/security.md](docs/security.md).
+> security headers, per-target admin authorization, an authenticated SPARQL proxy, a
+> per-IP login throttle — but it ships with demo credentials and is not hardened for any
+> networked deployment, so keep it on `localhost` and off the public internet. See
+> [docs/security.md](docs/security.md).
 > The Docker stack binds every host port to `127.0.0.1` (and keeps the semantic-web
 > services off the host entirely); **do not change that or otherwise expose `8080` /
 > `3307` to a public or untrusted network.** It is not hardened for any networked or
@@ -23,7 +24,7 @@ docker-compose up --build -d
 
 Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 
-> The Docker stack also starts a **triplestore** (Oxigraph) and a virtual **SPARQL endpoint** (Ontop), both reachable only on the internal compose network (no host port — their write endpoints are unauthenticated). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
+> The Docker stack also starts a **triplestore** (Oxigraph) behind an authenticating reverse proxy (`sparql-proxy`) and a virtual **SPARQL endpoint** (Ontop), all on the internal compose network (no host port). The app reads and writes the triplestore through the proxy with credentials; the read path is served from it by default — append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
 
 Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are demo credentials shipped in the seed data — change them before exposing the app anywhere.)
 
@@ -82,14 +83,14 @@ semantic/                      Semantic-web layer (SPARQL over the unchanged MyS
 
 ## Known issues
 
-A 2026 hardening pass (0.6.9–0.8.20-alpha) closed the major security issues; a second
+A 2026 hardening pass (0.6.9–0.8.21-alpha) closed the major security issues; a second
 adversarial review graded the result *ship-with-low-risk*. See [docs/security.md](docs/security.md)
 for the full timeline and verdict. The residual, by-design limitations:
 
 | Issue | Impact | Notes |
 |---|---|---|
-| **Unauthenticated SPARQL endpoint** | Security | Oxigraph/Ontop expose an unauthenticated SPARQL write endpoint; it is kept on the internal compose network (no host port) — keep it internal |
 | **Per-IP login throttle** | Security | Per-IP only (no per-account lockout, to avoid account enumeration); bypassable by IP rotation |
+| **Ontop SPARQL is unauthenticated** | Security | The virtual (read-only) Ontop endpoint has no auth; it has no host port and stays on the internal compose network. Oxigraph's write endpoint is authenticated via `sparql-proxy` |
 | **Legacy model / hardening residue** | Design | Unsalted MD5 hashes upgrade to bcrypt transparently on next login; flat group→level authz model |
 
 The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (0.5.0-alpha migrated the DB layer from PEAR MDB2 to PDO; an earlier pass had fixed the schema's obsolete `TYPE=MyISAM` → `ENGINE=MyISAM`). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).

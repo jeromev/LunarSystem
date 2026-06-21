@@ -44,12 +44,19 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 if (!function_exists('get_magic_quotes_runtime')) { function get_magic_quotes_runtime() { return 0; } }
 if (!function_exists('set_magic_quotes_runtime')) { function set_magic_quotes_runtime($v) { return false; } }
 set_magic_quotes_runtime(0);
-// SPARQL endpoint for the read path. Default = Oxigraph (the materialised, dual-write-synced
-// triplestore — RDF-native). Override to Ontop (virtual SPARQL over MySQL) to read live from
-// the relational store instead: SPARQL_ENDPOINT=http://ontop:8080/sparql. See docs/linked-data.md.
-if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://oxigraph:7878/query'); }
-// SPARQL UPDATE endpoint for content write-through to the triplestore (Oxigraph). Best-effort.
-if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', getenv('SPARQL_UPDATE_ENDPOINT') ?: 'http://oxigraph:7878/update'); }
+// SPARQL endpoint for the read path. Default = the authenticating reverse proxy (Caddy, HTTP
+// basic auth) in front of Oxigraph (the materialised, dual-write-synced triplestore — RDF-native).
+// Override to Ontop (virtual SPARQL over MySQL) to read live from the relational store instead:
+// SPARQL_ENDPOINT=http://ontop:8080/sparql. See docs/linked-data.md.
+if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://sparql-proxy:7878/query'); }
+// SPARQL UPDATE endpoint for content write-through to the triplestore (via the proxy). Best-effort.
+if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', getenv('SPARQL_UPDATE_ENDPOINT') ?: 'http://sparql-proxy:7878/update'); }
+// Basic-auth credentials the app presents to the SPARQL proxy. The proxy authenticates every
+// request before forwarding to Oxigraph, so the triplestore's unauthenticated /update + /store are
+// never reachable without these (Oxigraph is also isolated on an internal-only compose network).
+// Demo defaults — set SPARQL_AUTH_PASS via .env / the environment for any real use.
+if (!defined('SPARQL_AUTH_USER')) { define('SPARQL_AUTH_USER', getenv('SPARQL_AUTH_USER') ?: 'luna'); }
+if (!defined('SPARQL_AUTH_PASS')) { define('SPARQL_AUTH_PASS', getenv('SPARQL_AUTH_PASS') ?: 'luna-sparql-dev'); }
 // Read routing / ACL / texts through SPARQL by default (the triplestore is authoritative for the
 // read path; MySQL stays the system of record and a fallback). Set SPARQL_READS=0 to read from SQL.
 if (!defined('SPARQL_READS')) { define('SPARQL_READS', getenv('SPARQL_READS') === '0' ? false : true); }
@@ -63,7 +70,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.20-alpha';
+	public static $lunaVersion = '0.8.21-alpha';
 	/**
 	 * instance
 	 * @var object

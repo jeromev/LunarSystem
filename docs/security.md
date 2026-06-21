@@ -99,20 +99,27 @@ against the running Docker stack.
 ## Triplestore / SPARQL surface (0.3.x)
 
 The RDF-native read/write loop (see [linked-data.md](linked-data.md)) adds a
-network surface the original CMS did not have. Status: ⬜ open — new, not yet
-hardened.
+network surface the original CMS did not have. Status: ✅ hardened — authenticating
+proxy + internal-only network + no host port.
 
-- **Unauthenticated endpoints — keep them internal.** The app talks to Oxigraph
-  over plain HTTP (`SPARQL_ENDPOINT`, `SPARQL_UPDATE_ENDPOINT` in `luna.php`) with
-  no authentication. Oxigraph's `/update` accepts arbitrary graph mutations, so it
-  must stay on the internal Docker network and never be exposed publicly — the same
-  posture as the MySQL port. Ontop (virtual SPARQL) is read-only but equally must
-  not be public. **Mitigation in place (0.8.17):** the SPARQL services have **no host port** at all
-  — Oxigraph and Ontop are reachable only on the internal compose network (by `app`),
-  never from the host or a browser, which closes the CSRF-to-localhost write vector.
-  The remaining published ports (app `8080`, MySQL `3307`) are bound to `127.0.0.1`.
-  Keep it that way: do not change the host bindings to `0.0.0.0`, and never put
-  Oxigraph's `/update` behind a public proxy.
+- **SPARQL endpoint — authenticated and network-isolated.** The app reaches Oxigraph
+  through an authenticating reverse proxy (`sparql-proxy`, Caddy) that demands HTTP
+  basic auth on **every** request — reads and writes alike — before forwarding
+  (`SPARQL_ENDPOINT`, `SPARQL_UPDATE_ENDPOINT`, `SPARQL_AUTH_USER`/`SPARQL_AUTH_PASS` in
+  `luna.php`; `sparql_auth_header()` in the model adds the `Authorization` header). Two
+  layered mitigations:
+  - *(0.8.17)* the SPARQL services have **no host port** — never reachable from the host
+    or a browser, which closes the CSRF-to-localhost write vector.
+  - *(0.8.21)* Oxigraph — which has no native auth and accepts unauthenticated writes on
+    `/update` + `/store` — is moved onto an **internal-only** compose network whose only
+    other member is the proxy, so it is unreachable except *through* the authenticated
+    proxy (the app cannot even reach `oxigraph:7878` directly). An unauthenticated request
+    to the proxy gets `401`; the bcrypt hash is generated at container start from the
+    plaintext `SPARQL_AUTH_PASS`, so **no password hash is committed**. Ontop (virtual,
+    read-only) stays on the internal network.
+
+  Keep the host bindings on `127.0.0.1`, change `SPARQL_AUTH_PASS` from its demo default
+  (via `.env`) for any real use, and never publish Oxigraph or the proxy.
 - **Hand-rolled SPARQL string assembly.** The write-through (`rdf_sync_node` /
   `rdf_delete_node`) builds updates by interpolation, escaping string literals via
   `sparql_literal()` and IRIs via `rdf_uri()` (rawurlencode'd lid); the read

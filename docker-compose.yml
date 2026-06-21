@@ -6,15 +6,21 @@ services:
     volumes:
       - .:/var/www/html
     # The read path is RDF-native by default: routing / ACL / texts are read from
-    # Oxigraph (the materialised, dual-write-synced triplestore). Override to Ontop
-    # to read live from MySQL through virtual SPARQL instead (no app change):
+    # Oxigraph (the materialised, dual-write-synced triplestore) through the
+    # authenticating `sparql-proxy`. Override to Ontop to read live from MySQL through
+    # virtual SPARQL instead (no app change):
     #   SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app
     # or set SPARQL_READS=0 to bypass SPARQL entirely and read from SQL.
     environment:
-      SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://oxigraph:7878/query}"
+      SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://sparql-proxy:7878/query}"
+      SPARQL_UPDATE_ENDPOINT: "${SPARQL_UPDATE_ENDPOINT:-http://sparql-proxy:7878/update}"
+      # Credentials presented to the proxy (demo defaults; override SPARQL_AUTH_PASS via .env).
+      SPARQL_AUTH_USER: "${SPARQL_AUTH_USER:-luna}"
+      SPARQL_AUTH_PASS: "${SPARQL_AUTH_PASS:-luna-sparql-dev}"
       SPARQL_READS: "${SPARQL_READS:-1}"
     depends_on:
       - db
+      - sparql-proxy
 
   db:
     image: mysql:8.0
@@ -60,14 +66,47 @@ services:
   oxigraph:
     image: oxigraph/oxigraph
     command: ["serve", "--location", "/data", "--bind", "0.0.0.0:7878"]
-    # No host port: Oxigraph's /update and /store are unauthenticated writes, so the store
-    # stays on the internal compose network (reachable by `app`), never the host/browser —
-    # which closes the CSRF-to-localhost write vector. (The 0.0.0.0 bind is container-internal
-    # only.) Query for dev with:
-    #   docker compose exec app curl -s http://oxigraph:7878/query --data-urlencode 'query=…'
+    # No host port AND not on the `default` network: Oxigraph has no native auth and its
+    # /update + /store accept unauthenticated writes, so it lives only on the internal
+    # `triplestore` network, reachable solely by `sparql-proxy` — which demands HTTP basic
+    # auth on every request. The app talks to the proxy, never to Oxigraph directly. This
+    # closes both the CSRF-to-localhost write vector (B2) and the unauthenticated-write
+    # vector. Dev queries go through the proxy with credentials:
+    #   docker compose exec app curl -s -u "$SPARQL_AUTH_USER:$SPARQL_AUTH_PASS" \
+    #     http://sparql-proxy:7878/query --data-urlencode 'query=ASK{}'
+    networks:
+      - triplestore
     volumes:
       - oxigraph_data:/data
+
+  # Authenticating reverse proxy in front of Oxigraph — adds the HTTP basic auth the
+  # triplestore lacks. Bridges the `default` network (where `app` lives) and the internal
+  # `triplestore` network (Oxigraph only). The bcrypt hash is generated at startup from the
+  # plaintext SPARQL_AUTH_PASS, so no password hash is committed. See
+  # semantic/sparql-proxy/Caddyfile.
+  sparql-proxy:
+    image: caddy:2-alpine
+    environment:
+      SPARQL_AUTH_USER: "${SPARQL_AUTH_USER:-luna}"
+      SPARQL_AUTH_PASS: "${SPARQL_AUTH_PASS:-luna-sparql-dev}"
+    volumes:
+      - ./semantic/sparql-proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+    command:
+      - sh
+      - -c
+      - 'export SPARQL_AUTH_HASH="$$(caddy hash-password --plaintext "$$SPARQL_AUTH_PASS")"; exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile'
+    networks:
+      - default
+      - triplestore
+    depends_on:
+      - oxigraph
 
 volumes:
   db_data:
   oxigraph_data:
+
+networks:
+  default:
+  # Oxigraph + the proxy only; `internal` = no egress, not reachable from `default`.
+  triplestore:
+    internal: true

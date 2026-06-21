@@ -250,7 +250,7 @@ The point of the whole plan: **swap the engine, not the application.** The
 `mapping.ttl` written for Phase A doubles as the materialisation script for B.
 
 ```bash
-# 1. materialise the SAME mapping into a static RDF dump (97 triples)
+# 1. materialise the SAME mapping into a static RDF dump (104 triples)
 docker exec lunarsystem-ontop-1 /opt/ontop/ontop materialize \
   -m /opt/ontop/input/mapping.ttl -p /opt/ontop/input/ontop.properties \
   -o /opt/ontop/input/dump.nt -f ntriples

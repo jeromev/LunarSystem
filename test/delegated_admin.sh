@@ -14,11 +14,21 @@
 set -u
 BASE="${BASE:-http://localhost:8080}"
 DB="${DB_CONTAINER:-lunarsystem-db-1}"
+APP="${APP_CONTAINER:-lunarsystem-app-1}"
 ADMIN_EMAIL="${ADMIN_EMAIL:-admin@lunarsystem.local}"
 ADMIN_PASS="${ADMIN_PASS:-luna}"
 DPASS='DelTest12345!'
 
 sql(){ docker exec "$DB" mysql -uroot -proot lunadb -N -e "$1" 2>/dev/null; }
+# Drop every triple mentioning a resource URI from Oxigraph, through the authenticating
+# proxy. teardown() deletes the test user with raw SQL, which bypasses the model's
+# write-through — so without this its mirrored triples (e.g. `a foaf:Person`) orphan in
+# the triplestore and accrue across runs. Mirrors lunaModel::rdf_delete_node(); best-effort.
+rdf_purge(){ # $1 = resource URI (no angle brackets)
+  docker exec "$APP" sh -c 'curl -s -u "$SPARQL_AUTH_USER:$SPARQL_AUTH_PASS" -X POST \
+    http://sparql-proxy:7878/update --data-urlencode \
+    "update=DELETE WHERE { <'"$1"'> ?p ?o } ; DELETE WHERE { ?s ?p <'"$1"'> }"' >/dev/null 2>&1
+}
 fails=0
 pass(){ printf '  \033[32mPASS\033[0m %s\n' "$1"; }
 fail(){ printf '  \033[31mFAIL\033[0m %s\n' "$1"; fails=$((fails + 1)); }
@@ -37,7 +47,7 @@ ADMINP=$(sql "SELECT nid FROM luna_nodes WHERE lid='admin' AND tid=$PT;")  # par
 rebind(){ # $1=from $2=to : move admin_groups page+mod level links (both directions)
   sql "UPDATE luna_nodes_map SET nid2=$2 WHERE nid1 IN ($ADMINP,$AGPAGE,$AGMOD) AND nid2=$1;"
   sql "UPDATE luna_nodes_map SET nid1=$2 WHERE nid2 IN ($ADMINP,$AGPAGE,$AGMOD) AND nid1=$1;"
-  docker exec lunarsystem-app-1 sh -c 'rm -f /var/www/html/luna/luna.domains/luna.default/cache/* 2>/dev/null' 2>/dev/null
+  docker exec "$APP" sh -c 'rm -f /var/www/html/luna/luna.domains/luna.default/cache/* 2>/dev/null' 2>/dev/null
 }
 teardown(){
   rebind "$LEDIT" "$LADMIN"
@@ -47,6 +57,9 @@ teardown(){
        DELETE FROM luna_nodes_map WHERE nid1=@u OR nid2=@u;
        DELETE FROM luna_users WHERE nid=@u;
        DELETE FROM luna_nodes WHERE nid=@u;"
+  # the raw SQL above bypasses the model, so also evict the user's mirrored triples
+  # from Oxigraph (lid 'delegated@test.local' -> /id/delegated%40test.local)
+  rdf_purge "${BASE%/}/id/delegated%40test.local"
 }
 trap teardown EXIT
 sql "DELETE FROM luna_login_throttle;"

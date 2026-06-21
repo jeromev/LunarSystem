@@ -745,6 +745,31 @@ class lunaTools {
 		return self::user_can_access_level(luna::$session->user, $level_nid);
 	}
 	// }}}
+	// {{{ user_can_access_group()
+	/**
+	 * True when $user holds EVERY level the group grants, so assigning this group
+	 * hands out no level the actor lacks — stops a delegated admin escalating via
+	 * group assignment. (An unknown/level-less group grants nothing, so true.)
+	 * @access public
+	 */
+	public static function user_can_access_group($user = false, $group_nid = false) {
+		if (!is_object($user) || empty($user)) { return false; }
+		$group_nid = intval($group_nid);
+		if (empty($group_nid)) { return false; }
+		$nodes = luna::get_ini('DBtables', 'NODES'); $map = luna::get_ini('DBtables', 'NODES_MAP'); $types = luna::get_ini('DBtables', 'CLASSES');
+		$res = lunaDB::query('
+			SELECT l.nid AS level_nid
+			FROM '.$map.' gl
+			JOIN '.$nodes.' l ON l.nid = gl.nid2 AND l.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('level').')
+			WHERE gl.nid1 = '.lunaDB::quote($group_nid).'
+		');
+		while ($row = $res->fetchRow()) {
+			if (!self::user_can_access_level($user, intval($row->level_nid))) { $res->free(); return false; }
+		}
+		$res->free();
+		return true;
+	}
+	// }}}
 	// {{{ user_can_act_on_text()
 	/**
 	 * True when the current user may modify/delete $text_nid — i.e. can access the

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
 	version="1.0"
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:luna="http://lunarsystem.org/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
@@ -44,7 +44,7 @@
 							</div>
 						</div>
 						<div class="submit">
-							<input type="submit" class="submit" name="submit" />
+							<input type="submit" class="submit" name="submit"/>
 						</div>
 					</div>
 				</fieldset>

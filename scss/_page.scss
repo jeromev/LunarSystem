@@ -19,6 +19,10 @@
   #Top {
     grid-area: top;
     background: var(--chrome);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: bg.h();
     h1 {
       @include bg.scale(
         "font-size",
@@ -39,9 +43,9 @@
       &::after {
         content: none;
       }
-      &:nth-child(2) {
-        background: var(--accent);
-      }
+      // &:nth-child(2) {
+      //   background: var(--accent);
+      // }
       a {
         color: #fff;
         display: block;

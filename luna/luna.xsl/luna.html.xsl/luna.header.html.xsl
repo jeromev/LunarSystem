@@ -18,7 +18,7 @@
 		indent="yes"
 		omit-xml-declaration="no"
 		doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 
 	<xsl:variable name="cleanurls"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'clean_urls']/luna:value"/></xsl:variable>
 	<xsl:variable name="site_uri"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'site_uri']/luna:value/@rdf:resource"/></xsl:variable>
@@ -55,7 +55,7 @@
 				<meta http-equiv="Content-Language">
 					<xsl:attribute name="content"><xsl:value-of select="$lang"/></xsl:attribute>
 				</meta>
-				<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+				<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"/>
 				<meta name="DC.Title">
 					<xsl:attribute name="content">
 						<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
@@ -65,8 +65,8 @@
 					<xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
 					<xsl:attribute name="xml:lang"><xsl:value-of select="$lang"/></xsl:attribute>
 				</meta>
-				<meta name="DC.Type" content="text" />
-				<meta name="DC.Format" content="text/html" />
+				<meta name="DC.Type" content="text"/>
+				<meta name="DC.Format" content="text/html"/>
 				<meta name="DC.Identifier">
 					<xsl:attribute name="content"><xsl:value-of select="$site_uri"/></xsl:attribute>
 				</meta>

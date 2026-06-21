@@ -118,7 +118,7 @@ class ARC2_MicroRDFSerializer extends ARC2_RDFSerializer
 
     public function getImageObjectValue($o, $p)
     {
-        return '<img class="rdf-value" itemprop="'.$p.'" src="'.htmlspecialchars($o['value']).'" alt="img" />';
+        return '<img class="rdf-value" itemprop="'.$p.'" src="'.htmlspecialchars($o['value']).'" alt="img"/>';
     }
 
     public function getURIObjectValue($o, $p)

@@ -97,7 +97,7 @@ class ARC2_POSHRDFSerializer extends ARC2_RDFSerializer
 
     public function getImageObjectValue($o)
     {
-        return '<img class="rdf-o" src="'.htmlspecialchars($o['value']).'" alt="img" />';
+        return '<img class="rdf-o" src="'.htmlspecialchars($o['value']).'" alt="img"/>';
     }
 
     public function getURIObjectValue($o)

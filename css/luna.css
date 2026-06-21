@@ -159,42 +159,42 @@ body {
 html {
   font-family: verdana, sans-serif;
   font-weight: 400;
-  --base-font-size: 15px;
+  --base-font-size: 14px;
   --base-line-height: 24px;
 }
 @media (min-width: 375px) {
   html {
-    --base-font-size: 16px;
+    --base-font-size: 15px;
     --base-line-height: 26px;
   }
 }
 @media (min-width: 560px) {
   html {
-    --base-font-size: 18px;
+    --base-font-size: 16px;
     --base-line-height: 28px;
   }
 }
 @media (min-width: 768px) {
   html {
-    --base-font-size: 19px;
+    --base-font-size: 17px;
     --base-line-height: 30px;
   }
 }
 @media (min-width: 1024px) {
   html {
-    --base-font-size: 20px;
+    --base-font-size: 18px;
     --base-line-height: 32px;
   }
 }
 @media (min-width: 1440px) {
   html {
-    --base-font-size: 21px;
+    --base-font-size: 19px;
     --base-line-height: 34px;
   }
 }
 @media (min-width: 2004px) {
   html {
-    --base-font-size: 22px;
+    --base-font-size: 21px;
     --base-line-height: 36px;
   }
 }
@@ -204,6 +204,9 @@ html {
   --right-side-optical-adjustment: 1;
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
+  background-size: 100% var(--base-unit);
+  background-position: left top;
 }
 html {
   /* responsive base font + the baseline unit (--base-unit) */
@@ -516,55 +519,55 @@ h6 {
 }
 
 h1 {
-  font-size: 36px;
+  font-size: 27px;
   --line-height: calc(var(--base-unit) * 3);
   line-height: var(--line-height);
 }
 @media (min-width: 375px) {
   h1 {
-    font-size: 40px;
+    font-size: 30px;
     --base-unit: 13px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 560px) {
   h1 {
-    font-size: 58px;
+    font-size: 32px;
     --base-unit: 14px;
-    --line-height: calc(var(--base-unit) * 5);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 768px) {
   h1 {
-    font-size: 76px;
+    font-size: 34px;
     --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 6);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1024px) {
   h1 {
-    font-size: 90px;
+    font-size: 37px;
     --base-unit: 16px;
-    --line-height: calc(var(--base-unit) * 6);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1440px) {
   h1 {
-    font-size: 96px;
+    font-size: 39px;
     --base-unit: 17px;
-    --line-height: calc(var(--base-unit) * 6);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 2004px) {
   h1 {
-    font-size: 110px;
+    font-size: 41px;
     --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 7);
+    --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
@@ -577,13 +580,13 @@ h1:after {
 }
 
 h2 {
-  font-size: 20px;
+  font-size: 21px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
 @media (min-width: 375px) {
   h2 {
-    font-size: 24px;
+    font-size: 23px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -591,7 +594,7 @@ h2 {
 }
 @media (min-width: 560px) {
   h2 {
-    font-size: 28px;
+    font-size: 25px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -599,33 +602,33 @@ h2 {
 }
 @media (min-width: 768px) {
   h2 {
-    font-size: 38px;
+    font-size: 27px;
     --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 3);
+    --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1024px) {
   h2 {
-    font-size: 48px;
+    font-size: 29px;
     --base-unit: 16px;
-    --line-height: calc(var(--base-unit) * 3);
+    --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1440px) {
   h2 {
-    font-size: 54px;
+    font-size: 30px;
     --base-unit: 17px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 2004px) {
   h2 {
-    font-size: 62px;
+    font-size: 32px;
     --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
@@ -644,7 +647,7 @@ h3 {
 }
 @media (min-width: 375px) {
   h3 {
-    font-size: 19px;
+    font-size: 20px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -652,7 +655,7 @@ h3 {
 }
 @media (min-width: 560px) {
   h3 {
-    font-size: 20px;
+    font-size: 21px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -660,7 +663,7 @@ h3 {
 }
 @media (min-width: 768px) {
   h3 {
-    font-size: 21px;
+    font-size: 23px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -668,7 +671,7 @@ h3 {
 }
 @media (min-width: 1024px) {
   h3 {
-    font-size: 22px;
+    font-size: 24px;
     --base-unit: 16px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -676,7 +679,7 @@ h3 {
 }
 @media (min-width: 1440px) {
   h3 {
-    font-size: 23px;
+    font-size: 26px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -684,7 +687,7 @@ h3 {
 }
 @media (min-width: 2004px) {
   h3 {
-    font-size: 24px;
+    font-size: 27px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -701,7 +704,7 @@ h3:after {
 h4,
 h5,
 h6 {
-  font-size: 16px;
+  font-size: 15px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
@@ -709,7 +712,7 @@ h6 {
   h4,
   h5,
   h6 {
-    font-size: 18px;
+    font-size: 17px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -719,7 +722,7 @@ h6 {
   h4,
   h5,
   h6 {
-    font-size: 19px;
+    font-size: 18px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -729,7 +732,7 @@ h6 {
   h4,
   h5,
   h6 {
-    font-size: 20px;
+    font-size: 19px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -814,22 +817,34 @@ h6:after {
   padding: 0;
 }
 
-.box-handle.collapsed {
+.box-handle {
+  /* The collapse/expand triangle is drawn as a BACKGROUND IMAGE rather than a
+     ::before glyph. The baseline grid (bg.set/bg.scale) reserves BOTH ::before and
+     ::after on every heading for its empty-content grid struts, so putting glyph
+     content in ::before silently destroyed the heading's baseline snap. Keeping the
+     handle off the pseudo-elements lets the grid keep them and the heading stays on
+     the baseline. The triangle is vertically centred on the first line via the grid's
+     own --line-height (no magic offset). (The nav hamburger overrides this below with
+     `background: none` + its own ::before ☰, so it is unaffected.) */
+}
+.box-handle.collapsed, .box-handle.expanded {
   cursor: pointer;
+  padding-left: calc(1.5 * var(--base-unit) * var(--width-optical-adjustment));
+  background-repeat: no-repeat;
+  background-size: 0.6rem;
+  /* Centre the triangle on the heading's CAP height (not the line box), so it
+     reads as aligned with the text. Vertically:
+       (--line-height − 1em)/2  → the leading above the first text line
+       0.636em                  → Verdana's cap-centre below the text-top (ascent − cap-height/2)
+       − 0.3rem                 → half the triangle, to centre it
+     All terms scale with the heading, so it holds across breakpoints. */
+  background-position: left calc((var(--line-height) - 1em) / 2 + 0.636em - 0.3rem);
 }
-.box-handle.collapsed::before {
-  content: "▶"; /* ▶ right-pointing triangle */
-  font-size: 0.75rem;
-  vertical-align: 0.15rem;
-  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+.box-handle.collapsed { /* ▶ right-pointing triangle */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20d='M3%202L7%205L3%208Z'%20fill='%23000'/%3E%3C/svg%3E");
 }
-.box-handle.expanded {
-  cursor: pointer;
-}
-.box-handle.expanded::before {
-  content: "▼"; /* ▼ down-pointing triangle */
-  font-size: 0.75rem;
-  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+.box-handle.expanded { /* ▼ down-pointing triangle */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20d='M2%203.5L8%203.5L5%207.5Z'%20fill='%23000'/%3E%3C/svg%3E");
 }
 
 /* ===========================================================================
@@ -857,15 +872,19 @@ h6:after {
 #Page #Top {
   grid-area: top;
   background: var(--chrome);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 #Page #Top h1 {
-  font-size: 16px;
+  font-size: 15px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
 @media (min-width: 375px) {
   #Page #Top h1 {
-    font-size: 18px;
+    font-size: 17px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -873,7 +892,7 @@ h6:after {
 }
 @media (min-width: 560px) {
   #Page #Top h1 {
-    font-size: 19px;
+    font-size: 18px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -881,7 +900,7 @@ h6:after {
 }
 @media (min-width: 768px) {
   #Page #Top h1 {
-    font-size: 20px;
+    font-size: 19px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -925,9 +944,6 @@ h6:after {
 }
 #Page #Top h1::before, #Page #Top h1::after {
   content: none;
-}
-#Page #Top h1:nth-child(2) {
-  background: var(--accent);
 }
 #Page #Top h1 a {
   color: #fff;

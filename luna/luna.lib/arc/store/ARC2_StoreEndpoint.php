@@ -1132,8 +1132,8 @@ class ARC2_StoreEndpoint extends ARC2_Store
         <textarea id="query" name="query" rows="20" cols="80">'.$q.'</textarea>
         '.$this->getHTMLDocOptions().'
         <div class="form-buttons">
-          <input type="submit" value="Send Query" />
-          <input type="reset" value="Reset" />
+          <input type="submit" value="Send Query"/>
+          <input type="reset" value="Reset"/>
         </div>
       </form>
     ';
@@ -1167,12 +1167,12 @@ class ARC2_StoreEndpoint extends ARC2_Store
 
           <dt>jsonp/callback (for JSON results)</dt>
           <dd>
-            <input type="text" id="jsonp" name="jsonp" value="'.htmlspecialchars($this->p('jsonp')).'" />
+            <input type="text" id="jsonp" name="jsonp" value="'.htmlspecialchars($this->p('jsonp')).'"/>
           </dd>
 
           <dt>API key (if required)</dt>
           <dd>
-            <input type="text" id="key" name="key" value="'.htmlspecialchars($this->p('key')).'" />
+            <input type="text" id="key" name="key" value="'.htmlspecialchars($this->p('key')).'"/>
           </dd>
 
           <dt>Show results inline: </dt>

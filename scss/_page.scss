@@ -348,19 +348,3 @@
     box-sizing: border-box;
   }
 }
-
-@media (max-width: 480px) {
-  /* footer toolbar: keep the hamburger + language + format switches on one row */
-  #Page #Nav {
-    gap: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  #Page #Nav #Options {
-    gap: 0.5rem;
-  }
-  #Page #Nav #Options ul li a {
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
-  }
-}

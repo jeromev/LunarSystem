@@ -815,15 +815,21 @@ h6:after {
 }
 
 .box-handle.collapsed {
-  padding-left: calc(2 * var(--base-unit) * var(--width-optical-adjustment));
   cursor: pointer;
-  background: url("../images/menu-collapsed.png") no-repeat 0 50%;
+}
+.box-handle.collapsed::before {
+  content: "▶"; /* ▶ right-pointing triangle */
+  font-size: 0.75rem;
+  vertical-align: 0.15rem;
+  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 .box-handle.expanded {
-  padding-left: calc(2 * var(--base-unit) * var(--width-optical-adjustment));
   cursor: pointer;
-  background: url("../images/menu-expanded.png") no-repeat 0 50%;
-  color: #744d4c;
+}
+.box-handle.expanded::before {
+  content: "▼"; /* ▼ down-pointing triangle */
+  font-size: 0.75rem;
+  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 /* ===========================================================================
@@ -1198,76 +1204,6 @@ h6:after {
 #Page #Content-main div.onecol {
   max-width: 100%;
   box-sizing: border-box;
-}
-
-@media (max-width: 480px) {
-  /* footer toolbar: keep the hamburger + language + format switches on one row */
-  #Page #Nav {
-    gap: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  #Page #Nav #Options {
-    gap: 0.5rem;
-  }
-  #Page #Nav #Options ul li a {
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
-  }
-}
-/* ===========================================================================
-   GENERATED: css/luna.css is COMPILED from this scss/ tree — do NOT edit the
-   .css directly. Edit the partials here and run `make css` (or `make css-watch`).
-   Source of truth: scss/. Build tool: Dart Sass (`sass`).
-   =========================================================================== */
-/* ////////////////////////////////////////////////////////////////  TVlists */
-/* JQuery Tree View, @ 2006 Myles Angell <mangell@cronin-co.com> See: <http://be.twixt.us/jquery/treeViewCollapsed.php> */
-ul.tv, ul.tv ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-ul.tv li {
-  position: relative;
-  margin: 0;
-  padding: calc(0.5 * var(--base-unit)) 0 calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  z-index: 10;
-}
-ul.tv div.tvca {
-  height: calc(1 * var(--base-unit));
-  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  position: absolute;
-  top: calc(0.5 * var(--base-unit));
-  left: -0.25rem;
-  cursor: pointer;
-  z-index: 50;
-}
-ul.tv li, ul.tv .tvi {
-  background: url(../images/treeView/tvi.png) calc(-1 * var(--base-unit)) 0 no-repeat;
-}
-ul.tv .tvic {
-  background-image: url(../images/treeView/tvie.png);
-}
-ul.tv .tvie {
-  background-image: url(../images/treeView/tvic.png);
-}
-ul.tv .tvil {
-  background-image: url(../images/treeView/tvil.png);
-}
-ul.tv .tvilc {
-  background-image: url(../images/treeView/tvile.png);
-}
-ul.tv .tvile {
-  background-image: url(../images/treeView/tvilc.png);
-}
-ul.tv .tvload {
-  background-image: url(../images/treeView/tviload.gif);
-}
-ul.tv .tvclosed ul, ul.tv .tvclosed li.tvclosed ul {
-  display: none;
-}
-ul.tv .tvclosed ul ul {
-  display: block;
 }
 
 /*# sourceMappingURL=luna.css.map */

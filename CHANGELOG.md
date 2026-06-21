@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.17-alpha] - 2026-06-20
+- **Security — gate the unauthenticated SPARQL endpoint (B2).** Oxigraph and Ontop no longer publish a host port; they are reachable only on the internal compose network (by `app`), never from the host or a browser. This closes the **CSRF-to-localhost write vector** against Oxigraph's unauthenticated `/update` and `/store` (a malicious page could otherwise POST a SPARQL UPDATE to `localhost:7879` and corrupt the triplestore). The app is unaffected — it already used the internal `oxigraph:7878` / `ontop:8080` service names. Verified: the host ports are now refused while the app still reads from the triplestore (`ASK{}` → true, content renders) and the regression suite is green. Manual dev queries now go through the app container (`docker-compose exec app curl http://oxigraph:7878/query …`); docs updated.
+
 ## [0.8.16-alpha] - 2026-06-20
 - **Security — drop CSP `'unsafe-inline'` (A3).** The admin UI's inline `onclick`/`onchange` handlers were externalized to **data-attributes** driven by event delegation in [js/luna.js](js/luna.js) — `[data-href]` navigable rows, `select[data-navigate]`, `select[data-submit-on-change]`, and `[data-confirm]` confirmations (16 handler sites across 9 XSL templates; the dead `confirmSubmit()` helper removed). With no inline handlers and no inline styles anywhere, the CSP tightens to **`script-src 'self'; style-src 'self'`** (no `'unsafe-inline'`). Verified with headless Chrome: **zero CSP violations** across all pages, row-click navigation / pager selects / delete confirmations all work, and the regression suite is green.
 

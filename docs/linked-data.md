@@ -135,7 +135,7 @@ Files (all under [`semantic/ontop/`](../semantic/ontop/)):
 Run it (the `db` service must be up):
 
 ```bash
-docker-compose up --build -d ontop      # SPARQL endpoint on http://localhost:8081/sparql
+docker-compose up --build -d ontop      # SPARQL endpoint at http://ontop:8080/sparql (internal compose network only)
 ```
 
 Example — pages and their article headlines, straight out of the relational
@@ -150,7 +150,7 @@ SELECT ?page ?title WHERE {
 ```
 
 ```bash
-curl -s http://localhost:8081/sparql -H 'Accept: application/sparql-results+json' \
+docker-compose exec -T app curl -s http://ontop:8080/sparql -H 'Accept: application/sparql-results+json' \
   --data-urlencode 'query=PREFIX schema: <https://schema.org/>
     SELECT ?child ?parent WHERE { ?child schema:isPartOf ?parent }'
 # → the whole page tree as a graph (admin isPartOf root, …) — the fixed owl:isChildOf
@@ -255,7 +255,7 @@ docker exec lunarsystem-ontop-1 /opt/ontop/ontop materialize \
 
 # 2. load it into a real triplestore (Oxigraph)
 docker-compose up -d oxigraph
-curl -X POST 'http://localhost:7879/store?default' \
+docker-compose exec -T app curl -X POST 'http://oxigraph:7878/store?default' \
   -H 'Content-Type: application/n-triples' --data-binary @semantic/ontop/dump.nt
 
 # 3. point the app at the triplestore — NO code change. This is now the DEFAULT

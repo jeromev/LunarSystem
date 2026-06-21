@@ -46,8 +46,9 @@ services:
       ONTOP_DEV_MODE: "true"
     volumes:
       - ./semantic/ontop:/opt/ontop/input
-    ports:
-      - "127.0.0.1:8081:8080"
+    # No host port: the SPARQL endpoint is unauthenticated, so it stays on the internal
+    # compose network (reachable by `app`), never the host/browser. Query it for dev with
+    #   docker compose exec app curl -s http://ontop:8080/sparql --data-urlencode 'query=…'
     depends_on:
       - db
 
@@ -59,8 +60,11 @@ services:
   oxigraph:
     image: oxigraph/oxigraph
     command: ["serve", "--location", "/data", "--bind", "0.0.0.0:7878"]
-    ports:
-      - "127.0.0.1:7879:7878"
+    # No host port: Oxigraph's /update and /store are unauthenticated writes, so the store
+    # stays on the internal compose network (reachable by `app`), never the host/browser —
+    # which closes the CSRF-to-localhost write vector. (The 0.0.0.0 bind is container-internal
+    # only.) Query for dev with:
+    #   docker compose exec app curl -s http://oxigraph:7878/query --data-urlencode 'query=…'
     volumes:
       - oxigraph_data:/data
 

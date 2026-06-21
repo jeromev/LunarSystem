@@ -15,8 +15,9 @@ operational (open ports), now fixed.
 
 ### Safety (Tier 0)
 - [x] **Ports loopback-bound.** `docker-compose.yml` publishes every host port on
-      `127.0.0.1` only (app `8080`, MySQL `3307`); the unauthenticated SPARQL services (Ontop, Oxigraph)
-      now have **no host port at all** — internal compose network only.
+      `127.0.0.1` only (app `8080`, MySQL `3307`); the SPARQL services (Ontop, Oxigraph,
+      and the `sparql-proxy` that fronts Oxigraph) have **no host port at all** —
+      internal compose network only.
       Previously `0.0.0.0` — which exposed an unauthenticated Oxigraph `/update`
       (open graph-write) and MySQL on a bare `docker-compose up`. *(0.4.0-alpha)*
 - [x] **Loud local-only banner** at the top of the README, before the quick start.
@@ -62,13 +63,16 @@ operational (open ports), now fixed.
 
 ## Deliberately *not* done (and why)
 
-- **Production-grade hardening beyond the 2026 pass.** The 0.6.9–0.8.6 pass added
-  CSRF tokens, bcrypt passwords, session rotation, SQLi/header fixes and a per-IP login
-  throttle (see [security.md](security.md)) — but this stays a localhost teaching
-  artifact: the admin modules still lack per-target authorization and the SPARQL
-  endpoint is unauthenticated. The fix for safety is "run it on localhost," not
+- **Production-grade hardening beyond the 2026 pass.** The 0.6.9–0.8.21 pass added
+  CSRF tokens, bcrypt passwords, session rotation, SQLi/header fixes, a per-IP login
+  throttle, per-target admin authorization, and HTTP basic auth on the triplestore
+  (see [security.md](security.md)) — but this stays a localhost teaching
+  artifact. The fix for safety is "run it on localhost," not
   "make it production-grade." 
-- **Authenticating the SPARQL endpoints.** Mitigated by loopback binding; real auth
-  belongs to the P2/P4 work if the store is ever exposed. See [roadmap.md](roadmap.md).
+- **Authenticating Ontop's virtual SPARQL endpoint.** Oxigraph's read+write surface is
+  now authenticated through the `sparql-proxy` (Caddy basic auth, since 0.8.21);
+  Ontop's endpoint stays unauthenticated, but it is read-only and internal-only.
+  Mitigated by loopback binding; real auth there belongs to the P2/P4 work if the
+  store is ever exposed. See [roadmap.md](roadmap.md).
 - **Removing the dual Ontop + Oxigraph stack.** It's the core lesson (virtual vs
   materialised SPARQL), not bloat — kept on purpose.

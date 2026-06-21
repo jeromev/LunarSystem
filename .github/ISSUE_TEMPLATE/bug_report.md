@@ -6,7 +6,7 @@ labels: bug
 assignees: ''
 ---
 
-> Reminder: LunarSystem is a local study artifact (PHP 5.3–5.6), run on
+> Reminder: LunarSystem is a local study artifact (PHP 8.3), run on
 > `localhost`. Production/deployment issues are out of scope — see SECURITY.md.
 
 **What happened**

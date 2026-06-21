@@ -22,14 +22,15 @@ safer to run locally, or better as a learning tool.
 - Turning it into production software, adding heavy frameworks, or large new deps.
   The value is that it's tiny and readable. New bundled libraries are unlikely to
   be accepted.
-- "Modernising" to PHP 7+/8 — it intentionally targets PHP 5.3–5.6 (the original
-  `mysql_*` / PEAR MDB2 stack). A port would be a *different* project.
+- Reverting the runtime — the project was migrated to **PHP 8.3 / MySQL 8.0** (PDO) in
+  0.5.0-alpha; re-introducing the old `mysql_*` / PEAR MDB2 stack or a PHP-5-only port
+  would be a *different* project.
 - Reintroducing bulk (e.g. a WYSIWYG editor) that was removed to keep it minimal.
 
 ## Development setup
 
 ```bash
-docker-compose up --build -d      # app :8080, MySQL :3307, Ontop :8081, Oxigraph :7879 (all loopback)
+docker-compose up --build -d      # app :8080, MySQL :3307 (loopback only); Ontop, Oxigraph + sparql-proxy on the internal network (no host port)
 ```
 
 See the top-level [README](README.md) and [docs/](docs/) — start with

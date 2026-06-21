@@ -4,16 +4,17 @@
 
 LunarSystem is **alpha-grade software from 2006–2010**, revived as an educational
 exploration of the Semantic Web. It reflects the security practices of its era and
-underwent a 2026 hardening pass (0.6.9–0.8.6-alpha) that closed the major weaknesses —
+underwent a 2026 hardening pass (0.6.9–0.8.21-alpha) that closed the major weaknesses —
 bcrypt passwords with upgrade-on-login, CSRF tokens, session-fixation defence, SQLi
-and header fixes, a per-IP login throttle — but **residual issues remain** (the admin
-modules perform no per-target authorization, and the **SPARQL write endpoint is
-unauthenticated**). It is meant to be **studied and run on `localhost`**, not deployed.
+and header fixes, a per-IP login throttle, per-target authorization across all admin
+modules, and HTTP basic auth on the SPARQL endpoint (via the `sparql-proxy` service).
+It is still **alpha-grade** and meant to be **studied and run on `localhost`**, not deployed.
 
-- The Docker stack binds every port to `127.0.0.1` (loopback). **Do not** change
-  that or otherwise expose `8080` / `7879` / `8081` / `3307` to a public or
-  untrusted network.
-- The full, honest list of issues — and the 2026 hardening pass (0.6.9–0.8.6-alpha) —
+- The Docker stack binds every published port to `127.0.0.1` (loopback). **Do not**
+  change that or otherwise expose `8080` (app) / `3307` (MySQL) to a public or
+  untrusted network. The semantic-web services (`ontop`, `oxigraph`, `sparql-proxy`)
+  publish no host port and are reachable only on the internal compose network.
+- The full, honest list of issues — and the 2026 hardening pass (0.6.9–0.8.21-alpha) —
   lives in **[docs/security.md](docs/security.md)**. It is intentionally public:
   the weaknesses are part of what makes this a useful teaching artifact.
 

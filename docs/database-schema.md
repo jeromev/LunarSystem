@@ -75,7 +75,7 @@ in `luna_nodes`; this table holds the rest.
 | `id` | `int unsigned` PK | — |
 | `nid` | `int unsigned` | FK to the user node |
 | `firstname` / `lastname` | `varchar(255)` | Name |
-| `password` | `varchar(32)` | **Unsalted MD5** hash (see [security.md](security.md)) |
+| `password` | `varchar(255)` | bcrypt hash (`password_hash`); legacy seed rows are MD5 and upgrade to bcrypt on first login (see [security.md](security.md)) |
 | `regis_time` / `last_time` | `int` | Registration / last-seen timestamps |
 | `last_url` | `varchar(255)` | Last visited URL |
 | `newpasswd` | `varchar(32)` | Password-reset token |
@@ -136,7 +136,7 @@ Written by `lunaLog::log()` via a direct PDO `INSERT` (the PEAR Log mdb2 handler
 | `logtime` | timestamp | When |
 | `ident` | `varchar(16)` | Source identifier |
 | `priority` | `int` | PEAR_LOG_* level |
-| `message` | `text` | Serialised exception / message |
+| `message` | `text` | JSON-encoded exception / message payload |
 
 ### `luna_nodes_seq` — id sequence
 A single-row counter table (`sequence`) used to allocate the next `nid`. Seeded

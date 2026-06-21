@@ -72,7 +72,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.25-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.26-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every
@@ -121,13 +121,21 @@ proxy + internal-only network + no host port.
 
   Keep the host bindings on `127.0.0.1`, change `SPARQL_AUTH_PASS` from its demo default
   (via `.env`) for any real use, and never publish Oxigraph or the proxy.
-- **Hand-rolled SPARQL string assembly.** The write-through (`rdf_sync_node` /
-  `rdf_delete_node`) builds updates by interpolation, escaping string literals via
-  `sparql_literal()` and IRIs via `rdf_uri()` (rawurlencode'd lid); the read
-  builders (`load_nodes_sparql` / `load_texts_sparql`) interpolate the page slug and
-  the user's level ids. Present but bespoke — treat as SPARQL-injection surface and
-  audit before trusting (same caveat as the PDO `quote()` note). User content
-  reaches RDF only through these escapers.
+- **Hand-rolled SPARQL string assembly — audited injection-safe (0.8.26).** The
+  write-through (`rdf_sync_node` / `rdf_delete_node` / `rdf_resync_all`) and the read
+  builders (`load_nodes_sparql` / `load_texts_sparql`) assemble SPARQL by string
+  interpolation, but every user-controlled value passes through one of three typed
+  wrappers around an otherwise **static** query: `rdf_str()` wraps `sparql_literal()`
+  (escapes `\`, `"`, `\n`, `\r`, `\t` — backslash first — the only characters that can
+  break a double-quoted literal) in quotes; `rdf_uri()` `rawurlencode`s the lid, so every
+  IRIREF-breaking character (`<` `>` `"` `{` `}` `|` `^` backtick `\` space, control
+  bytes) is percent-encoded and cannot escape `<…>`; `rdf_int()` `intval`s. The read
+  builders likewise `rawurlencode` the page slug and `intval` the level ids. Audited both
+  statically (every call site) and with live break-out probes against the running
+  triplestore using the actual escapers — a value crafted to close the literal and
+  smuggle a second `INSERT DATA`, and a lid crafted to break the IRI, were each stored as
+  inert data with **no injected triple** (`ASK → false`). User content reaches RDF only
+  through these escapers.
 - **Best-effort by design.** The write-through never blocks a save on a SPARQL
   failure, so MySQL stays the source of truth; a failed mirror means the graph can
   lag — reconcile with `rdf_resync_all()`.

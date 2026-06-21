@@ -205,6 +205,11 @@ class mod_admin_mods {
 		if (!luna::$model->merge_index(luna::$model->load_nodes('mod', 'page'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'mod')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval(luna::$model->get_nid(luna::$model->get_level_node($item_node))))) {
+			luna::$messages['warning'][] = _('Access denied: this module is above your access level.');
+			lunaLog::log('admin_mods: attempt to delete an inaccessible module', PEAR_LOG_WARNING);
+			return false;
+		}
 		if ($inerror) { return false; }
 		if (luna::$model->delete($_POST['modify_item_nid'])) {
 			lunaTools::purge_cache();

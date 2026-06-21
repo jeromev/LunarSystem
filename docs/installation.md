@@ -43,8 +43,8 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
 
 > **Semantic-web services (optional).** Beyond the CMS itself, `docker-compose.yml`
 > defines two more services — **ontop** (a virtual SPARQL endpoint over the
-> unchanged MySQL, host port **8081**) and **oxigraph** (a triplestore, host port
-> **7879**) — and the app gains a `SPARQL_ENDPOINT` env var. They are **not needed**
+> unchanged MySQL) and **oxigraph** (a triplestore) — both on the internal compose
+> network only (no host port; query via `docker-compose exec app`) — and the app gains a `SPARQL_ENDPOINT` env var. They are **not needed**
 > to run the CMS itself: `docker-compose up -d` will start them, but the site runs
 > entirely on **app + db**. To run only the core stack, use `docker-compose up -d
 > app db`. See [linked-data.md](linked-data.md) for what the extra services do and

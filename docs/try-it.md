@@ -14,7 +14,9 @@ docker-compose up --build -d
 ```
 
 This starts four services: the **app** (`8080`), **MySQL** (`3307`), **Ontop**
-(virtual SPARQL over MySQL, `8081`), and **Oxigraph** (the triplestore, `7879`).
+(virtual SPARQL over MySQL) and **Oxigraph** (the triplestore). The two SPARQL
+services are on the internal compose network only (no host port — query them via
+`docker-compose exec app`).
 
 Open **http://localhost:8080** — the home page. Log in (top of the site) as
 `admin@lunarsystem.local` / `luna` to see the admin pages too.
@@ -44,7 +46,7 @@ The whole site is in a triplestore you can ask arbitrary questions of. Try the
 census — every content type counted in one query:
 
 ```bash
-curl -s http://localhost:7879/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'
 ```
@@ -53,7 +55,7 @@ SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'
 a self-join for — "which pages share `admin`'s access level?":
 
 ```bash
-curl -s http://localhost:7879/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 PREFIX luna: <http://lunarsystem.org/ontology#>
 SELECT ?sibling WHERE {
@@ -72,7 +74,7 @@ in the admin UI (Edition → edit a text block, e.g. the "welcome" text on the h
 page) and save. Then read it back **straight from the triplestore**:
 
 ```bash
-curl -s http://localhost:7879/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 SELECT ?body WHERE { <http://localhost:8080/id/welcome> schema:articleBody ?body }'
 ```
@@ -99,7 +101,7 @@ You can also bypass SPARQL entirely for one request and read from the SQL joins:
 ## 5. Federation — join the triplestore against live MySQL in one query
 
 ```bash
-curl -s http://localhost:7879/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 SELECT ?name ?nid WHERE {
   ?p a schema:WebPage ; schema:name ?name .

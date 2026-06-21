@@ -105,9 +105,10 @@ hardened.
   no authentication. Oxigraph's `/update` accepts arbitrary graph mutations, so it
   must stay on the internal Docker network and never be exposed publicly — the same
   posture as the MySQL port. Ontop (virtual SPARQL) is read-only but equally must
-  not be public. **Mitigation in place:** `docker-compose.yml` publishes every host
-  port on `127.0.0.1` only (loopback) — app `8080`, Oxigraph `7879`, Ontop `8081`,
-  MySQL `3307` — so a default `docker-compose up` is unreachable from other machines.
+  not be public. **Mitigation in place (0.8.17):** the SPARQL services have **no host port** at all
+  — Oxigraph and Ontop are reachable only on the internal compose network (by `app`),
+  never from the host or a browser, which closes the CSRF-to-localhost write vector.
+  The remaining published ports (app `8080`, MySQL `3307`) are bound to `127.0.0.1`.
   Keep it that way: do not change the host bindings to `0.0.0.0`, and never put
   Oxigraph's `/update` behind a public proxy.
 - **Hand-rolled SPARQL string assembly.** The write-through (`rdf_sync_node` /

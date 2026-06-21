@@ -15,7 +15,8 @@ operational (open ports), now fixed.
 
 ### Safety (Tier 0)
 - [x] **Ports loopback-bound.** `docker-compose.yml` publishes every host port on
-      `127.0.0.1` only (app `8080`, MySQL `3307`, Ontop `8081`, Oxigraph `7879`).
+      `127.0.0.1` only (app `8080`, MySQL `3307`); the unauthenticated SPARQL services (Ontop, Oxigraph)
+      now have **no host port at all** — internal compose network only.
       Previously `0.0.0.0` — which exposed an unauthenticated Oxigraph `/update`
       (open graph-write) and MySQL on a bare `docker-compose up`. *(0.4.0-alpha)*
 - [x] **Loud local-only banner** at the top of the README, before the quick start.

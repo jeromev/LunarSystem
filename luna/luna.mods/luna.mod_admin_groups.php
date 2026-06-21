@@ -120,6 +120,10 @@ class mod_admin_groups {
 				$message = _('Unknown access level '.intval($postlevel_nid)); 
 				luna::$messages['warning'][] = $message; 
 				lunaLog::log($message, PEAR_LOG_WARNING);
+			} else if (!lunaTools::user_can_access_level(luna::$session->user, intval($postlevel_nid))) {
+				$inerror++;
+				luna::$messages['warning'][] = _('Access denied: you cannot grant a level you do not hold.');
+				lunaLog::log('admin_groups: attempt to grant an inaccessible level '.intval($postlevel_nid), PEAR_LOG_WARNING);
 			} 
 			if ($inerror) { return false; }
 		}
@@ -216,6 +220,10 @@ class mod_admin_groups {
 				$message = _('Unknown access level '.intval($postlevel_nid)); 
 				luna::$messages['warning'][] = $message; 
 				lunaLog::log($message, PEAR_LOG_WARNING);
+			} else if (!lunaTools::user_can_access_level(luna::$session->user, intval($postlevel_nid))) {
+				$inerror++;
+				luna::$messages['warning'][] = _('Access denied: you cannot grant a level you do not hold.');
+				lunaLog::log('admin_groups: attempt to grant an inaccessible level '.intval($postlevel_nid), PEAR_LOG_WARNING);
 			} 
 		}	
 		if ($inerror) { return false; }

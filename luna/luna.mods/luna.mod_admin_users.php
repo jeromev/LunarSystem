@@ -113,6 +113,10 @@ class mod_admin_users {
 					$message = _('Unknown group '.intval($postgroup_nid)); 
 					luna::$messages['warning'][] = $message; 
 					lunaLog::log($message, PEAR_LOG_WARNING);
+				} else if (!lunaTools::user_can_access_group(luna::$session->user, intval($postgroup_nid))) {
+					$inerror++;
+					luna::$messages['warning'][] = _('Access denied: you cannot assign a group that grants levels above your own.');
+					lunaLog::log('admin_users: attempt to assign an inaccessible group '.intval($postgroup_nid), PEAR_LOG_WARNING);
 				}
 			}
 		} 
@@ -225,6 +229,15 @@ class mod_admin_users {
 			if ($inerror) { return false; }
 			if (!$group_default_nid = luna::$model->get_nid_from_lid('group_default')) { throw new lunaException(_('Error: cannot load “group_default”'), PEAR_LOG_CRIT); }
 			$_POST['modify_user_groups'][$group_default_nid] = $group_default_nid;
+			// Per-target authz: refuse to assign a group that grants any level the actor lacks.
+			foreach ($_POST['modify_user_groups'] as $postgroup_nid) {
+				if (!lunaTools::user_can_access_group(luna::$session->user, intval($postgroup_nid))) {
+					$inerror++;
+					luna::$messages['warning'][] = _('Access denied: you cannot assign a group that grants levels above your own.');
+					lunaLog::log('admin_users: attempt to assign an inaccessible group '.intval($postgroup_nid), PEAR_LOG_WARNING);
+				}
+			}
+			if ($inerror) { return false; }
 			if ($node = luna::$model->update($_POST['user_nid'], $_POST['modify_user_email'], ($_POST['modify_user_is_inactive']? 0 : 1))) { 
 				luna::$model->unlink($node, 'group');
 				luna::$model->link($node, $_POST['modify_user_groups']);

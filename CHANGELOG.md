@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.13-alpha] - 2026-06-20
+- **Security — per-target authorization in the admin modules (B1).** `admin_users` and `admin_groups` linked arbitrary groups/levels to a user/group with no check the actor could access them — a privilege-escalation-via-assignment gap if admin is ever delegated to a lower tier (the two CRITICAL findings from the review's IDOR cluster; latent in the shipped single-admin config, now closed):
+  - `admin_groups` (add + modify) denies granting any level the actor does not hold (`lunaTools::user_can_access_level`).
+  - `admin_users` (add + modify) denies assigning any group that grants a level the actor does not hold, via a new `lunaTools::user_can_access_group()` helper (true iff the actor holds every level the group grants).
+  - Verified no-ops for the shipped admin (holds all three levels): regression suite green, and an admin add-user-with-group still succeeds. `admin_pages`/`admin_levels`/`admin_mods` follow the same pattern at lower severity (object IDOR rather than privesc) — noted as remaining.
+
 ## [0.8.12-alpha] - 2026-06-20
 - **CI — make the regression job deterministic.** The new `regression` job now boots only `app`+`db` with `SPARQL_READS=0` (SQL read path) instead of the full stack, so it doesn't depend on a populated Oxigraph triplestore. Verified the SQL path renders identically via the per-request `?sparql=0` toggle.
 

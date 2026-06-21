@@ -16,14 +16,20 @@
 }
 .box-handle {
 	&.collapsed {
-		padding-left: bg.h(2);
 		cursor: pointer;
-		background: url("../images/menu-collapsed.png") no-repeat 0 50%;
+		&::before {
+			content: "\25B6"; /* ▶ right-pointing triangle */
+			font-size: 0.75rem;
+			vertical-align: 0.15rem;
+			width: bg.h();
+		}
 	}
 	&.expanded {
-		padding-left: bg.h(2);
 		cursor: pointer;
-		background: url("../images/menu-expanded.png") no-repeat 0 50%;
-		color: #744d4c;
+		&::before {
+			content: "\25BC"; /* ▼ down-pointing triangle */
+			font-size: 0.75rem;
+			width: bg.h();
+		}
 	}
 }

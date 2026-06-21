@@ -96,14 +96,22 @@ The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
 
 ## `SPARQL_ENDPOINT` (semantic-web layer, optional)
 
-The app reads three extra settings, all defined as constants in
+The app reads five extra settings, all defined as constants in
 [luna.php](../luna/luna.php) (via `getenv()`) and wired through `docker-compose.yml`:
 
 - **`SPARQL_ENDPOINT`** — the read endpoint, defaulting to the Oxigraph
-  triplestore (`http://oxigraph:7878/query`); set it to `http://ontop:8080/sparql`
+  triplestore fronted by the authenticating proxy
+  (`http://sparql-proxy:7878/query`); set it to `http://ontop:8080/sparql`
   to read live over MySQL through Ontop instead (no code change).
 - **`SPARQL_UPDATE_ENDPOINT`** — where content writes mirror to
-  (`http://oxigraph:7878/update`, best-effort).
+  (`http://sparql-proxy:7878/update`, best-effort).
+- **`SPARQL_AUTH_USER`** / **`SPARQL_AUTH_PASS`** — basic-auth credentials the
+  app presents to the proxy (demo defaults `luna` / `luna-sparql-dev`). Oxigraph
+  has no native auth, so it lives only on an internal compose network reachable
+  solely by `sparql-proxy` (Caddy), which demands HTTP basic auth on every
+  request before forwarding to `oxigraph:7878`. The model adds the
+  `Authorization` header via `sparql_auth_header()` on both reads and writes.
+  Override `SPARQL_AUTH_PASS` via `.env` (gitignored) for any real use.
 - **`SPARQL_READS`** — whether the read path uses SPARQL at all (default `1`);
   `SPARQL_READS=0`, or `?sparql=0` on any URL, forces the SQL read path.
 

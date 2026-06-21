@@ -1,20 +1,26 @@
 # LunarSystem — example SPARQL queries
 #
-# These run against the triplestore the app reads from by default. With the Docker
-# stack up (`docker-compose up --build -d`), the endpoints are:
+# These run against the triplestore the app reads from by default. The semantic-web
+# services publish no host port — they live on the internal Docker network — so run
+# queries from INSIDE the app container, through the authenticating proxy
+# (`sparql-proxy`) with the app's credentials. With the stack up
+# (`docker-compose up --build -d`), the internal endpoints are:
 #
-#   Oxigraph (materialised triplestore) : http://localhost:7879/query
-#   Ontop    (virtual SPARQL over MySQL): http://localhost:8081/sparql
+#   Oxigraph (materialised triplestore), via the proxy : http://sparql-proxy:7878/query
+#   Ontop    (virtual SPARQL over MySQL)               : http://ontop:8080/sparql
 #
-# Run one with curl, e.g.:
+# Run one with curl from the app container, e.g.:
 #
-#   curl -s http://localhost:7879/query \
-#     --data-urlencode 'query=SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }' \
-#     -H 'Accept: text/csv'
+#   docker-compose exec -T app sh -c 'curl -s -u "$SPARQL_AUTH_USER:$SPARQL_AUTH_PASS" \
+#     http://sparql-proxy:7878/query \
+#     --data-urlencode "query=SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }" \
+#     -H "Accept: text/csv"'
 #
-# Every query below works against EITHER endpoint (same data, same vocabulary) —
-# that is the whole point of the SPARQL seam. The results shown are from the seed
-# data; yours will match unless you've edited content.
+# (sparql-proxy demands HTTP basic auth on every request before forwarding to Oxigraph;
+# an unauthenticated request gets 401. Ontop is read-only and unauthenticated but
+# internal-only.) Every query below works against EITHER endpoint (same data, same
+# vocabulary) — that is the whole point of the SPARQL seam. Results shown are from the
+# seed data; yours will match unless you've edited content.
 #
 # Namespaces (note: schema.org is https://, the app ontology is http://):
 #   schema: <https://schema.org/>
@@ -71,7 +77,9 @@ WHERE     { ?a a schema:Article ; schema:headline ?h . OPTIONAL { ?a schema:inLa
 
 # 7) Federation — join the triplestore against LIVE MySQL (via Ontop) in one query,
 #    on the shared /id/{slug} identity. No ETL, no shared schema.
-#    Run this against Oxigraph (:7879); it reaches Ontop over the Docker network.
+#    This runs ON Oxigraph and reaches OUT to Ontop, so the two must share a network.
+#    In the default hardened compose Oxigraph is isolated (only sparql-proxy can reach
+#    it), so to try this, add `ontop` to the `triplestore` network first.
 PREFIX schema: <https://schema.org/>
 SELECT ?name ?nid WHERE {
   ?p a schema:WebPage ; schema:name ?name .          # from Oxigraph

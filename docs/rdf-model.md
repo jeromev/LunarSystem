@@ -146,5 +146,9 @@ RDF/XML shape the templates consume.
 > HTML `<head>`), and now sources the graph from a SPARQL endpoint rather than
 > MySQL **by default** — `sparql_select()`, `load_nodes_sparql()`, and
 > `load_texts_sparql()` (with `?sparql=0` to fall back to the relational readers).
-> Content writes also mirror into the triplestore via `rdf_sync_node()`. None of
-> this changes the serialisers described above. See [linked-data.md](linked-data.md).
+> Content writes also mirror into the triplestore via `rdf_sync_node()`. Both the
+> read (`sparql_select()`) and write (`sparql_update()`) calls go through an
+> authenticating reverse proxy (`sparql-proxy`) and attach an HTTP basic-auth
+> header via `sparql_auth_header()`, using the `SPARQL_AUTH_USER` /
+> `SPARQL_AUTH_PASS` credentials. None of this changes the serialisers described
+> above. See [linked-data.md](linked-data.md).

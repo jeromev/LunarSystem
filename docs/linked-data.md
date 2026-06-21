@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.6-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.8.22-alpha`).** The semantic-web work
 > described here is now the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
@@ -211,8 +211,10 @@ the application above the endpoint.
 **Every** content write now flows into the triplestore, through a generic
 write-through wired into the model's CRUD (no longer a per-mod hook).
 [`lunaModel::sparql_update()`](../luna/luna.classes/luna.model.class.php) POSTs a
-SPARQL `UPDATE` to `SPARQL_UPDATE_ENDPOINT` (Oxigraph, best-effort, so a failed
-mirror never breaks a save). On top of it:
+SPARQL `UPDATE` to `SPARQL_UPDATE_ENDPOINT` (the authenticating `sparql-proxy` in
+front of Oxigraph — the same HTTP basic auth `sparql_select()` sends on reads,
+added by `sparql_auth_header()` from `SPARQL_AUTH_USER`/`SPARQL_AUTH_PASS`;
+best-effort, so a failed mirror never breaks a save). On top of it:
 
 - **`rdf_sync_node($nid)`** re-projects a node's *whole* description into the
   graph — `DELETE { <uri> ?p ?o } INSERT { …the triples the R2RML mapping derives… }`

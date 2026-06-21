@@ -5,7 +5,7 @@ could **not** do with the old-fashioned PHP/MySQL, RDF-as-an-output-format versi
 — and, honestly, what is not done yet.
 
 > **How to read the tags.** Each capability is marked **live** (works today on
-> `main`, 0.5.0-alpha), **one step away** (a tiny wiring step on top of what
+> `main`, 0.8.22-alpha), **one step away** (a tiny wiring step on top of what
 > exists), or **roadmap** (real work — see [roadmap.md](roadmap.md)). The concrete
 > numbers and queries below were run against the live Docker stack, not assumed.
 
@@ -101,11 +101,13 @@ endpoint is now a configuration choice.
   request back to the hand-written SQL path, and the loaders fall back to SQL
   automatically if the graph is empty/unreachable — so the graph can be authoritative
   *and* the site can't be bricked by it.
-- **Point any standard RDF tool straight at it.** Oxigraph speaks the unextended W3C
+- **Point any standard RDF tool at it.** Oxigraph speaks the unextended W3C
   SPARQL 1.1 protocol over HTTP with content negotiation (SPARQL-results JSON, CSV,
-  N-Triples …), so external tooling needs zero Luna-specific code. A vanilla app
-  exposes the proprietary MySQL wire protocol plus whatever bespoke JSON a developer
-  hand-built.
+  N-Triples …), so external tooling needs zero Luna-specific code — just standard HTTP
+  basic auth, since Oxigraph sits on an internal-only network behind an authenticating
+  reverse proxy (`sparql-proxy`, Caddy) that the app reaches with `SPARQL_AUTH_USER` /
+  `SPARQL_AUTH_PASS`. A vanilla app exposes the proprietary MySQL wire protocol plus
+  whatever bespoke JSON a developer hand-built.
 - **Swap Oxigraph for Jena / GraphDB / Blazegraph later** — an *endpoint swap*, not a
   data-layer rewrite, because nothing in the app is coupled to a SQL dialect or driver
   anymore.

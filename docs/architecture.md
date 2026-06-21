@@ -48,7 +48,7 @@ with a message instead ([luna.php:212-222](../luna/luna.php#L212)):
 
 1. **Environment setup** ([luna.php:20-40](../luna/luna.php#L20)) — `define('NOW', time())`,
    set a default timezone (honour an existing `php.ini` `date.timezone`, else UTC),
-   disable `register_globals`/`display_errors`, enable `session.use_trans_sid`, set
+   disable `register_globals`/`display_errors`, force cookie-only sessions (`use_trans_sid=0`, `use_only_cookies=1`, `use_strict_mode=1`), set
    `error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT)`, and a
    `magic_quotes` compatibility guard. (`display_errors` is turned back **on** for
    admins later when `DEBUG` is set — [luna.php:226](../luna/luna.php#L226).)
@@ -189,7 +189,7 @@ each phase and passed to `lunaLog::log()`
 ([luna.log.class.php:31](../luna/luna.classes/luna.log.class.php#L31)). The two
 output paths are **mutually exclusive**: when `DEBUG` *and* `IS_ADMIN` are set,
 `log()` dumps the exception to screen via `lunaTools::debug()` (which `die()`s),
-so the DB write is skipped; otherwise it writes a serialised record (including
-`$_SERVER` and the session — see [security.md](security.md)) to the `luna_logs`
-table via PEAR Log's `mdb2` handler. HTTP error pages (404, etc.) are produced
+so the DB write is skipped; otherwise it writes a JSON record (a small `$_SERVER`
+whitelist — remote addr, method, URI, host, UA, referer — not the session; see
+[security.md](security.md)) to the `luna_logs` table via a direct PDO `INSERT`. HTTP error pages (404, etc.) are produced
 by `lunaTools::raise_error_page()`.

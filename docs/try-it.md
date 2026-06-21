@@ -13,10 +13,13 @@ swappable underneath. No prior RDF/SPARQL experience needed.
 docker-compose up --build -d
 ```
 
-This starts four services: the **app** (`8080`), **MySQL** (`3307`), **Ontop**
-(virtual SPARQL over MySQL) and **Oxigraph** (the triplestore). The two SPARQL
-services are on the internal compose network only (no host port — query them via
-`docker-compose exec app`).
+This starts five services: the **app** (`8080`), **MySQL** (`3307`), **Ontop**
+(virtual SPARQL over MySQL), **Oxigraph** (the triplestore) and **sparql-proxy**
+(a Caddy reverse proxy that adds the HTTP basic auth Oxigraph lacks). The
+semantic-web services have no host port — Oxigraph sits on an internal-only
+network reachable solely through `sparql-proxy`, which the app talks to with
+credentials (`SPARQL_AUTH_USER` / `SPARQL_AUTH_PASS`, demo defaults
+`luna` / `luna-sparql-dev`). Query them via `docker-compose exec -T app`.
 
 Open **http://localhost:8080** — the home page. Log in (top of the site) as
 `admin@lunarsystem.local` / `luna` to see the admin pages too.
@@ -46,21 +49,23 @@ The whole site is in a triplestore you can ask arbitrary questions of. Try the
 census — every content type counted in one query:
 
 ```bash
-docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
+http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
-SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'
+SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'"
 ```
 
 → `WebPage 14`, `Article 2`, `Person 2`. Now something a SQL app would hand-write
 a self-join for — "which pages share `admin`'s access level?":
 
 ```bash
-docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
+http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 PREFIX luna: <http://lunarsystem.org/ontology#>
 SELECT ?sibling WHERE {
-  ?a schema:name "admin" ; luna:level ?l .
-  ?s luna:level ?l ; schema:name ?sibling . FILTER (?s != ?a) }'
+  ?a schema:name \"admin\" ; luna:level ?l .
+  ?s luna:level ?l ; schema:name ?sibling . FILTER (?s != ?a) }'"
 ```
 
 More to paste in [`../examples/queries.sparql`](../examples/queries.sparql):
@@ -74,9 +79,10 @@ in the admin UI (Edition → edit a text block, e.g. the "welcome" text on the h
 page) and save. Then read it back **straight from the triplestore**:
 
 ```bash
-docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
+http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
-SELECT ?body WHERE { <http://localhost:8080/id/welcome> schema:articleBody ?body }'
+SELECT ?body WHERE { <http://localhost:8080/id/welcome> schema:articleBody ?body }'"
 ```
 
 Your edit is there — the write went to MySQL **and** mirrored into the graph, and
@@ -101,11 +107,12 @@ You can also bypass SPARQL entirely for one request and read from the SQL joins:
 ## 5. Federation — join the triplestore against live MySQL in one query
 
 ```bash
-docker-compose exec -T app curl -s http://oxigraph:7878/query -H 'Accept: text/csv' --data-urlencode \
+docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
+http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
 SELECT ?name ?nid WHERE {
   ?p a schema:WebPage ; schema:name ?name .
-  SERVICE <http://ontop:8080/sparql> { ?p schema:identifier ?nid } }'
+  SERVICE <http://ontop:8080/sparql> { ?p schema:identifier ?nid } }'"
 ```
 
 Oxigraph supplies the names; Ontop supplies the live row ids from MySQL; they join

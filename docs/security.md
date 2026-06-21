@@ -5,7 +5,7 @@ maintained. It reflects the security practices of its era. Treat it as a
 historical artifact: safe to study and run locally, **not** safe to expose on the
 public internet without significant hardening.
 
-## 2026 hardening pass (0.6.9–0.8.5-alpha)
+## 2026 hardening pass (0.6.9–0.8.21-alpha)
 
 A focused, verified hardening pass closed the major issues catalogued below. Each
 fix was confirmed against the running Docker stack. The tables further down record
@@ -72,22 +72,22 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** reflects the **0.2.14-alpha** hardening pass (✅ fixed, ◐ partially
-fixed, ⬜ open). The remaining ⬜ items are the more invasive changes (CSRF
-tokens across every form, per-action authorisation, session-ID rotation) and the
-by-design WYSIWYG output; they were deliberately deferred. Every ✅ was verified
-against the running Docker stack.
+**Status** is current as of **0.8.22-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+The invasive changes that were initially deferred — CSRF tokens across every form,
+per-target authorisation, session-ID rotation — were completed during the
+0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every
+✅ was verified against the running Docker stack.
 
 | Issue | Severity | Status | Detail | Location |
 |---|---|---|---|---|
-| **No CSRF protection anywhere** | High | ⬜ open | No anti-forgery token is generated or verified. Every state-changing action (create/modify/delete users, groups, levels, pages, mods) fires on the mere presence of `submit`/`batch_submit` in the request. | dispatch [luna.php:470-487](../luna/luna.php#L470) |
+| **No CSRF protection anywhere** | High | ✅ fixed | A per-session synchroniser token is embedded in every state-changing form and verified centrally (POST-only `hash_equals`) in the dispatch before any handler runs; `?purge` is POST-only too. | dispatch [luna.php:479](../luna/luna.php#L479) (0.7.4) |
 | **SQL injection in `mod_journal`** | High | ✅ fixed | `start` is now `intval()`'d before the `LIMIT` clause and `order_by` is whitelisted before it is interpolated as a SQL identifier into `COUNT()`/`ORDER BY`. | [luna.mod_journal.php](../luna/luna.mods/luna.mod_journal.php) |
-| **Session fixation (no ID regeneration)** | High | ⬜ open | `login()` only `UPDATE`s `session_logged_in` on the *existing* session id; `session_regenerate_id()` is never called. With `use_trans_sid=1` the id can arrive from the URL, so a pre-seeded id survives authentication. (Deferred: the DB-keyed session handler needs careful manual rotation.) | [luna.mod_log.php:167-176](../luna/luna.mods/luna.mod_log.php#L167) |
-| **Submit handlers never re-check privileges** | High | ⬜ open | `check_privileges()` runs once in the constructor against the *requested page's* level only. No `submit_add/modify/delete` re-validates rights on the specific target node (whose id comes from request input). | [luna.tools.class.php:710](../luna/luna.classes/luna.tools.class.php#L710), called at [luna.php:264](../luna/luna.php#L264) |
+| **Session fixation (no ID regeneration)** | High | ✅ fixed | `login()` now calls `session_regenerate_id()` (the DB-handler row is re-keyed), so a pre-seeded id does not survive authentication; sessions are cookie-only (`use_trans_sid=0`, `use_only_cookies=1`, `use_strict_mode=1`), so an id can no longer arrive from the URL. | [luna.mod_log.php](../luna/luna.mods/luna.mod_log.php) (0.7.1 / 0.7.3) |
+| **Submit handlers never re-check privileges** | High | ✅ fixed | All five admin modules (`admin_users/groups/pages/levels/mods`) now re-check the actor against the *specific* target on every `submit_add/modify/delete` — via `user_can_access_level()`/`user_can_access_page()`/`user_can_access_group()` on the target node and on every level/group/page being assigned. No-op in the single-admin tier; blocks delegated-admin escalation. Validated by [`test/delegated_admin.sh`](../test/delegated_admin.sh). | [luna.mods/](../luna/luna.mods/) (0.8.13–0.8.20) |
 | **No login throttling** | Medium | ✅ fixed | `login()` now reads `login_attempts` and applies a capped per-account back-off (`sleep(min(attempts, 5))`); a correct password still resets the counter, so accounts are never permanently locked. | [luna.mod_log.php](../luna/luna.mods/luna.mod_log.php) |
 | **PHP object injection via `unserialize()`** | Medium | ✅ fixed | Sort cookies now use `json_encode`/`json_decode` (cannot instantiate objects); the `load_request()` path guards `unserialize()` against `O:`/`C:` object payloads. | [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php); [luna.model.class.php](../luna/luna.classes/luna.model.class.php) |
 | **Reflected XSS in the error page** | Medium | ✅ fixed | `raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the HTML response. | [luna.tools.class.php:295](../luna/luna.classes/luna.tools.class.php#L295) |
-| **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the era-2009 HTML_Safe filter applied on save. | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`) |
+| **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the HTML_Safe filter applied on save (hardened in 0.7.5 / 0.8.1 — the SVG SMIL `<animate>` bypass was closed). | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`) |
 | **`purgelogs` wipes the audit log via GET** | Medium | ✅ fixed | The `DELETE FROM luna_logs` now requires `$_POST['purgelogs']`, so a forged link/`<img>` (GET) can no longer trigger it. | [luna.mod_journal.php:81](../luna/luna.mods/luna.mod_journal.php#L81) |
 | **Sensitive data written to `luna_logs`** | Low | ✅ fixed | `lunaLog::log()` now stores only a small `$_SERVER` whitelist (remote addr, method, URI, host, UA, referer) instead of the whole array (which carried the cookie header / session id). | [luna.log.class.php](../luna/luna.classes/luna.log.class.php) |
 | **Weak/bypassable session hijack guard** | Low | ◐ partial | `encode_ip()` no longer trusts `X-Forwarded-For` (it uses `REMOTE_ADDR`), closing the IP-spoof bypass. The guard is still bound to the client-controlled User-Agent, and still breaks users behind rotating IPs. | [luna.session.class.php:322](../luna/luna.classes/luna.session.class.php#L322); [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php) |
@@ -116,7 +116,8 @@ proxy + internal-only network + no host port.
     proxy (the app cannot even reach `oxigraph:7878` directly). An unauthenticated request
     to the proxy gets `401`; the bcrypt hash is generated at container start from the
     plaintext `SPARQL_AUTH_PASS`, so **no password hash is committed**. Ontop (virtual,
-    read-only) stays on the internal network.
+    read-only) has no host port and stays on the default compose network (reachable by
+    the app, never the host); only Oxigraph sits on the internal-only `triplestore` network.
 
   Keep the host bindings on `127.0.0.1`, change `SPARQL_AUTH_PASS` from its demo default
   (via `.env`) for any real use, and never publish Oxigraph or the proxy.

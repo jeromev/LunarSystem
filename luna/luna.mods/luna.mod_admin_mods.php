@@ -105,6 +105,7 @@ class mod_admin_mods {
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['add_mod_lid'])) { return false; }
 		// make sure the level node exists
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['add_mod_level'], 'level')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['add_mod_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_mods: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each page node exists
 		if (isset($_POST['add_mod_pages']) && is_array($_POST['add_mod_pages']) && !empty($_POST['add_mod_pages'])) { 
 			foreach ($_POST['add_mod_pages'] as $page_nid) {
@@ -157,6 +158,7 @@ class mod_admin_mods {
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_mod_lid'], $_POST['modify_item_nid'])) { return false; }
 		// make sure the level node exists
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['modify_mod_level'], 'level')) { return false; }
+		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['modify_mod_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_mods: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each page node exists
 		if (isset($_POST['modify_mod_pages']) && is_array($_POST['modify_mod_pages']) && !empty($_POST['modify_mod_pages'])) { 
 			foreach ($_POST['modify_mod_pages'] as $page_nid) {

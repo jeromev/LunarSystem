@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.14-alpha] - 2026-06-20
+- **Security / UX — JSON log payloads + fix blank journal messages (B3).** `lunaLog::log()` now stores payloads as **JSON** instead of `serialize()`, so the journal read path never `unserialize()`s stored data — the object-injection sink is gone for all new logs. It also persists only a trimmed identity (`session_summary()` — firstname/lastname/email) instead of the whole session object (csrf token, levels, internals). The reader gained `decode_message()`: JSON first, with a guarded `unserialize(allowed_classes => ['lunaException','stdClass'])` fallback for pre-0.8.14 rows (transitional). This also **fixes the blank-message bug**: the earlier `allowed_classes => ['lunaException']` guard turned string-log `stdClass` payloads into `__PHP_Incomplete_Class`, so `->message` read blank — the journal list and detail now render the real messages (verified: 20 non-empty entries where there were 0, new JSON and legacy rows alike).
+
 ## [0.8.13-alpha] - 2026-06-20
 - **Security — per-target authorization in the admin modules (B1).** `admin_users` and `admin_groups` linked arbitrary groups/levels to a user/group with no check the actor could access them — a privilege-escalation-via-assignment gap if admin is ever delegated to a lower tier (the two CRITICAL findings from the review's IDOR cluster; latent in the shipped single-admin config, now closed):
   - `admin_groups` (add + modify) denies granting any level the actor does not hold (`lunaTools::user_can_access_level`).

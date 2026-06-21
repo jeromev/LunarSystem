@@ -97,8 +97,8 @@ class mod_journal {
 					id = '.lunaDB::quote(intval($log_id)).'
 			');
 			while ($row = $res->fetchRow()) { 
-				$row->message = unserialize($row->message, array('allowed_classes' => array('lunaException'))); 
-				$message = get_class($row->message) == 'lunaException'? $row->message->getMessage() : lunaTools::display_string($row->message->message);
+				$msg = self::decode_message($row->message);
+				$message = lunaTools::display_string(isset($msg->message)? $msg->message : '');
 				$var = array(
 					'type' => 'log',
 					'lid' => $row->id,
@@ -106,7 +106,7 @@ class mod_journal {
 						'message' => $message,
 						'code' => _(Log::priorityToString($row->priority)),
 						'date' => $row->logtime,
-						'content' => print_r($row->message, 1)
+						'content' => print_r($msg, 1)
 					),
 				);
 				if (!luna::$model->merge_index(luna::$model->load_var($var))) { throw new lunaException(_('Error: cannot load log entry.'), PEAR_LOG_CRIT); }
@@ -166,9 +166,8 @@ class mod_journal {
 					'.$start.', '.luna::$data['limit'].'
 			');
 			while ($row = $res->fetchRow()) {
-				// Guard object injection, mirroring the single-entry path above (line ~100).
-				$row->message = unserialize($row->message, array('allowed_classes' => array('lunaException')));
-				$message = get_class($row->message) == 'lunaException'? $row->message->getMessage() : lunaTools::display_string($row->message->message);
+				$msg = self::decode_message($row->message);
+				$message = lunaTools::display_string(isset($msg->message)? $msg->message : '');
 				$var = array(
 					'type' => 'log',
 					'lid' => $row->id,
@@ -176,7 +175,7 @@ class mod_journal {
 						'message' => $message,
 						'code' => _(Log::priorityToString($row->priority)),
 						'date' => $row->logtime,
-						'user-name' => isset($row->message->session->user->firstname)? $row->message->session->user->firstname.' '.$row->message->session->user->lastname : _(ANONYMOUS)
+						'user-name' => isset($msg->session->user->firstname)? $msg->session->user->firstname.' '.$msg->session->user->lastname : _(ANONYMOUS)
 					),
 				);
 				if (!luna::$model->merge_index(luna::$model->load_var($var))) { throw new lunaException(_('Error: cannot load log entry.'), PEAR_LOG_CRIT); }
@@ -186,6 +185,28 @@ class mod_journal {
 		}
 		// luna::$model->dump();
 		return true;
+	}
+
+	// {{{ decode_message()
+	/**
+	 * Decode a luna_logs.message to an object with at least ->message. New rows are
+	 * JSON (no object sink); pre-0.8.14 rows were PHP-serialized -> decode those with
+	 * a strict class allowlist (transitional).
+	 * @access private
+	 */
+	private static function decode_message($raw) {
+		$m = json_decode((string) $raw);
+		if (is_object($m)) { return $m; }
+		$legacy = @unserialize((string) $raw, array('allowed_classes' => array('lunaException', 'stdClass')));
+		if ($legacy instanceof lunaException) {
+			return (object) array(
+				'message' => $legacy->getMessage(),
+				'session' => isset($legacy->session) ? $legacy->session : null,
+				'server'  => isset($legacy->server) ? $legacy->server : null,
+			);
+		}
+		if (is_object($legacy)) { return $legacy; }
+		return (object) array('message' => '');
 	}
 
 	// }}}

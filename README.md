@@ -1,17 +1,17 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.19-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.20-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
-> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.6) closed the
-> major issues — bcrypt passwords, CSRF tokens, session-fixation defence, SQLi fixes,
-> security headers, a per-IP login throttle — but residual gaps remain (the admin
-> modules have no per-target authorization, and the **SPARQL write endpoint is
-> unauthenticated**), so keep it on `localhost` and off the public internet. See
-> [docs/security.md](docs/security.md).
-> The Docker stack binds every port to `127.0.0.1`; **do not change that or otherwise
-> expose `8080` / `7879` / `8081` / `3307` to a public or untrusted network.** It is not
-> hardened for any networked or production deployment. See [docs/security.md](docs/security.md).
+> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.20-alpha) closed
+> the major issues — bcrypt passwords, CSRF tokens, session-fixation defence, SQLi fixes,
+> security headers, per-target admin authorization, a per-IP login throttle — but a
+> residual gap remains (the **SPARQL write endpoint is unauthenticated**), so keep it on
+> `localhost` and off the public internet. See [docs/security.md](docs/security.md).
+> The Docker stack binds every host port to `127.0.0.1` (and keeps the semantic-web
+> services off the host entirely); **do not change that or otherwise expose `8080` /
+> `3307` to a public or untrusted network.** It is not hardened for any networked or
+> production deployment. See [docs/security.md](docs/security.md).
 
 > **Now an RDF-native Semantic Web CMS.** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and — as of 0.3.3-alpha — a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
 
@@ -23,7 +23,7 @@ docker-compose up --build -d
 
 Wait ~15 seconds for MySQL to initialise, then open **http://localhost:8080**.
 
-> The Docker stack also starts a **triplestore** (Oxigraph on host port `7879`) and a virtual **SPARQL endpoint** (Ontop on host port `8081`). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
+> The Docker stack also starts a **triplestore** (Oxigraph) and a virtual **SPARQL endpoint** (Ontop), both reachable only on the internal compose network (no host port — their write endpoints are unauthenticated). The read path is served from the triplestore by default; append `?sparql=0` to any URL to read from MySQL instead, or set `SPARQL_ENDPOINT=http://ontop:8080/sparql` to read live through Ontop. See [docs/linked-data.md](docs/linked-data.md).
 
 Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are demo credentials shipped in the seed data — change them before exposing the app anywhere.)
 
@@ -82,16 +82,15 @@ semantic/                      Semantic-web layer (SPARQL over the unchanged MyS
 
 ## Known issues
 
-A 2026 hardening pass (0.6.9–0.8.19-alpha) closed the major security issues; a second
+A 2026 hardening pass (0.6.9–0.8.20-alpha) closed the major security issues; a second
 adversarial review graded the result *ship-with-low-risk*. See [docs/security.md](docs/security.md)
 for the full timeline and verdict. The residual, by-design limitations:
 
 | Issue | Impact | Notes |
 |---|---|---|
-| **Unauthenticated SPARQL endpoint** | Security | Oxigraph/Ontop expose an unauthenticated SPARQL write endpoint; it is bound to `127.0.0.1` only — keep it internal |
-| **No per-target admin authz** | Security | Admin modules don't re-check per-target access; safe as shipped (single `level_admin` tier) but unsafe if admin is delegated to a lower level |
+| **Unauthenticated SPARQL endpoint** | Security | Oxigraph/Ontop expose an unauthenticated SPARQL write endpoint; it is kept on the internal compose network (no host port) — keep it internal |
 | **Per-IP login throttle** | Security | Per-IP only (no per-account lockout, to avoid account enumeration); bypassable by IP rotation |
-| **Legacy model / hardening residue** | Design | Unsalted MD5 hashes upgrade to bcrypt transparently on next login; flat group→level authz; the CSP still allows `'unsafe-inline'` |
+| **Legacy model / hardening residue** | Design | Unsalted MD5 hashes upgrade to bcrypt transparently on next login; flat group→level authz model |
 
 The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (0.5.0-alpha migrated the DB layer from PEAR MDB2 to PDO; an earlier pass had fixed the schema's obsolete `TYPE=MyISAM` → `ENGINE=MyISAM`). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 

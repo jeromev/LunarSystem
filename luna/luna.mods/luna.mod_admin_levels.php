@@ -111,6 +111,10 @@ class mod_admin_levels {
 				$message = _('Unknown group '.intval($postgroup_nid)); 
 				luna::$messages['warning'][] = $message; 
 				lunaLog::log($message, PEAR_LOG_WARNING);
+			} else if (!lunaTools::user_can_access_group(luna::$session->user, intval($postgroup_nid))) {
+				$inerror++;
+				luna::$messages['warning'][] = _('Access denied: you cannot admit a group that grants levels above your own.');
+				lunaLog::log('admin_levels: attempt to admit an inaccessible group '.intval($postgroup_nid), PEAR_LOG_WARNING);
 			}
 		}
 		if ($inerror) { return false; }

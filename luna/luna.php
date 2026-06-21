@@ -63,7 +63,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.18-alpha';
+	public static $lunaVersion = '0.8.19-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -554,6 +554,10 @@ class luna {
 				ANONYMOUS,
 				'node'
 			));
+			// Data outputs (xml/json/n3/jsonld) carry the content graph only — emit here,
+			// before the HTML-only chrome (current user, language/format switchers, site
+			// config + sort cookies, i18n vocabulary, request params) is merged into the model.
+			if (self::$output_format != 'html') { self::$model->dump(self::$output_format); }
 			// Insert user
 			if (!self::$model->merge_index(self::$model->load_user(self::$session->user, 1))) { throw new lunaException(_('Error: cannot load user.'), PEAR_LOG_CRIT); }
 			// Insert langs
@@ -587,17 +591,12 @@ class luna {
 				$output_formats = self::$model->merge_nodes($output_formats, $var_node);
 			}
 			self::$model->merge_index($output_formats);
-			// Insert Data. The CSRF token is HTML-form chrome (and a security token), so
-			// keep it out of the machine-readable data outputs (xml/json/n3/jsonld) — only
-			// the HTML forms need it, and a data response could be cached or shared.
-			$render_data = self::$data;
-			if (self::$output_format !== 'html') { unset($render_data['csrf_token']); }
-			self::$model->merge_index(self::$model->load_data($render_data));
+			// Insert Data
+			self::$model->merge_index(self::$model->load_data(self::$data));
 			self::$model->merge_index(self::$model->load_vocabulary(self::$vocabulary));
 			self::$model->merge_index(self::$model->load_request($_REQUEST, 'request'));
 			// If ajax is on, no need to go further
 			if (defined('AJAX') && AJAX) { die(); }
-			if (self::$output_format != 'html') { self::$model->dump(self::$output_format); }
 			// if (lunaTools::request('submit')) { self::$model->dump(); }
 			$output = false;
 			$xslok = false;

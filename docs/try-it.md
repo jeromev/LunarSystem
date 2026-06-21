@@ -45,8 +45,15 @@ schema.org / FOAF terms, so any RDF-aware tool understands it with no bespoke AP
 
 ## 2. Query the content as a graph
 
-The whole site is in a triplestore you can ask arbitrary questions of. Try the
-census — every content type counted in one query:
+The whole site is in a triplestore you can ask arbitrary questions of. The seed
+content loads via SQL, so the graph starts empty — populate it from MySQL first
+(once):
+
+```bash
+make resync-triplestore        # → bin/resync-triplestore.php; clears + re-projects every node
+```
+
+Then try the census — every content type counted in one query:
 
 ```bash
 docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
@@ -55,7 +62,7 @@ http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'"
 ```
 
-→ `WebPage 14`, `Person 2`, `Article 1`. Now something a SQL app would hand-write
+→ `WebPage 14`, `Article 2`, `Person 2`. Now something a SQL app would hand-write
 a self-join for — "which pages share `admin`'s access level?":
 
 ```bash

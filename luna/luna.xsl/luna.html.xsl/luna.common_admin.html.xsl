@@ -156,8 +156,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
@@ -165,7 +165,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td>
 									<a>
@@ -324,8 +324,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -334,7 +334,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td>
 									<a>
@@ -513,8 +513,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
@@ -523,7 +523,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td><xsl:value-of select="foaf:firstName"/></td>
 								<td><xsl:value-of select="foaf:surName"/></td>
@@ -600,8 +600,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -609,7 +609,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td>
 									<a>
@@ -696,8 +696,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -705,7 +705,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td class="nowrap">
 									<a>
@@ -788,8 +788,8 @@
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
-								<xsl:attribute name="onclick">
-									<xsl:text>document.location='</xsl:text>
+								<xsl:attribute name="data-href">
+									
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -797,7 +797,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									<xsl:text>'</xsl:text>
+									
 								</xsl:attribute>
 								<td class="nowrap">
 									<a>

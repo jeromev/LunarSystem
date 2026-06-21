@@ -167,10 +167,10 @@
 								<input type="hidden" name="modify_item_nid"><xsl:attribute name="value"><xsl:value-of select="$modify_item_nid"/></xsl:attribute></input>
 								<input type="submit" class="submit warning" name="submit">
 									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
-									<xsl:attribute name="onclick">
-										<xsl:text>return confirmSubmit('</xsl:text>
+									<xsl:attribute name="data-confirm">
+										
 										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this module?']/luna:value"/>
-										<xsl:text>');</xsl:text>
+										
 									</xsl:attribute>
 								</input>
 							</div>

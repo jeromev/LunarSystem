@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.16-alpha] - 2026-06-20
+- **Security — drop CSP `'unsafe-inline'` (A3).** The admin UI's inline `onclick`/`onchange` handlers were externalized to **data-attributes** driven by event delegation in [js/luna.js](js/luna.js) — `[data-href]` navigable rows, `select[data-navigate]`, `select[data-submit-on-change]`, and `[data-confirm]` confirmations (16 handler sites across 9 XSL templates; the dead `confirmSubmit()` helper removed). With no inline handlers and no inline styles anywhere, the CSP tightens to **`script-src 'self'; style-src 'self'`** (no `'unsafe-inline'`). Verified with headless Chrome: **zero CSP violations** across all pages, row-click navigation / pager selects / delete confirmations all work, and the regression suite is green.
+
 ## [0.8.15-alpha] - 2026-06-20
 - **Security — per-target authz in the remaining admin modules (finishes B1).** Extended the B1 pattern to the object-IDOR vectors: `admin_pages` (add/modify/delete), `admin_levels` (modify/delete) and `admin_mods` (add/modify) now refuse, via `lunaTools::user_can_access_level`, to bind a page/mod to — or modify/delete an object at — an access level the actor does not hold. Verified no-ops for the shipped admin (a page modify still succeeds; regression suite green). Latent in the single-admin config like the rest of the cluster.
 

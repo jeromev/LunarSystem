@@ -162,7 +162,7 @@
 				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/>
 				<select name="pagination" size="1" class="autowidth">
 					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/></xsl:attribute>
-					<xsl:attribute name="onchange">document.location=this[this.selectedIndex].value</xsl:attribute>
+					<xsl:attribute name="data-navigate">1</xsl:attribute>
 					<xsl:call-template name="loop1">
 						<xsl:with-param name="total"><xsl:value-of select="/rdf:RDF/luna:pager/luna:total"/></xsl:with-param>
 					</xsl:call-template>
@@ -212,7 +212,7 @@
 				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/>
 				<select name="perpage" size="1" class="autowidth">
 					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/></xsl:attribute>
-					<xsl:attribute name="onchange">document.location=this[this.selectedIndex].value</xsl:attribute>
+					<xsl:attribute name="data-navigate">1</xsl:attribute>
 					<xsl:call-template name="optionlimit">
 						<xsl:with-param name="limit">10</xsl:with-param>
 					</xsl:call-template>
@@ -456,7 +456,7 @@
 					<span class="label"><xsl:value-of select="$label"/></span>
 					<select>
 						<xsl:if test="not($onchange = '')">
-							<xsl:attribute name="onchange"><xsl:value-of select="$onchange"/></xsl:attribute>
+							<xsl:attribute name="data-navigate">1</xsl:attribute>
 						</xsl:if>
 						<xsl:attribute name="size">
 							<xsl:choose>
@@ -591,7 +591,7 @@
 			<xsl:attribute name="name">quickjump</xsl:attribute>
 			<xsl:attribute name="size">1</xsl:attribute>
 			<xsl:attribute name="id">quickjump</xsl:attribute>
-			<xsl:attribute name="onchange"><xsl:call-template name="onchange"/></xsl:attribute>
+			<xsl:attribute name="data-navigate">1</xsl:attribute>
 			<option label="" value=""><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Jump to page']"/></option>
 			<xsl:for-each select="/rdf:RDF/luna:page">
 				<xsl:if test="/node/user/accessible-levels//level = @level_id">

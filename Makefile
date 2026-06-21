@@ -8,7 +8,7 @@ CSS_OUT  := css/luna.css
 # the source map so dev tools resolve compiled rules back to _*.scss:line.
 SASS_FLAGS := --no-charset --quiet-deps --load-path=scss/vendor --embed-sources
 
-.PHONY: css css-watch css-min test test-authz
+.PHONY: css css-watch css-min test test-authz resync-triplestore
 
 css: ## Compile scss/ -> css/luna.css (+ css/luna.css.map for dev tools)
 	$(SASS) $(SCSS_SRC):$(CSS_OUT) $(SASS_FLAGS) --style=expanded
@@ -25,3 +25,6 @@ test: ## Smoke + security-regression suite (run `docker compose up -d` first)
 
 test-authz: ## Delegated-admin privilege-escalation test (per-target authz; mutates DB, self-cleans)
 	BASE=$${BASE:-http://localhost:8080} bash test/delegated_admin.sh
+
+resync-triplestore: ## Rebuild Oxigraph from MySQL: clear + re-project every node (run `docker compose up -d` first)
+	docker-compose exec -T app php bin/resync-triplestore.php

@@ -102,7 +102,11 @@ class lunaModel {
 	 * @return void
 	 */
 	private function __construct() {
-		ksort(luna::$session->user->levels); 
+		// Maintenance/CLI entrypoints (e.g. bin/resync-triplestore.php) need only the
+		// RDF write-through (rdf_sync_node / rdf_resync_all), not the web read-model:
+		// skip building the ACL-filtered page index, which requires a live session.
+		if (defined('LUNA_MAINTENANCE') && LUNA_MAINTENANCE) { return; }
+		ksort(luna::$session->user->levels);
 		$cache_rdf_name = 'luna.'.implode('-',luna::$session->user->levels).'.'.luna::$lang;
 		$this->conf = array(
 			'ns' => array(
@@ -818,19 +822,41 @@ class lunaModel {
 		return $this->sparql_update($update);
 	}
 	// }}}
+	// {{{ rdf_clear()
+	/**
+	 * Drop every triple from the triplestore (default graph). The destructive half of
+	 * a full rebuild — see rdf_resync_all($prune = true). Best-effort: a missing or
+	 * unreachable endpoint is a no-op, never a failure.
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function rdf_clear() {
+		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		return $this->sparql_update('DELETE WHERE { ?s ?p ?o }');
+	}
+	// }}}
 	// {{{ rdf_resync_all()
 	/**
 	 * Re-project every node from MySQL into the triplestore — the pure-PHP
 	 * bootstrap / repair of the graph, replacing the Ontop "materialise" step.
-	 * Reconciles MySQL → graph (every relational node is upserted); it does not
-	 * remove graph-only orphans. Run it once to seed Oxigraph, or any time the
-	 * best-effort dual-write may have drifted. See rdf_sync_node().
+	 * Reconciles MySQL → graph (every relational node is upserted). With
+	 * $prune = false (default) it does not remove graph-only orphans; pass
+	 * $prune = true for a full REBUILD that clears the store first (see rdf_clear()),
+	 * so orphans are dropped too. Run it to seed Oxigraph, to reconcile after the
+	 * best-effort dual-write drifts, or via bin/resync-triplestore.php. See
+	 * rdf_sync_node().
 	 *
 	 * @access public
+	 * @param boolean $prune clear the whole graph first (full rebuild) rather than upsert-only
 	 * @return integer the number of nodes synced
 	 */
-	public function rdf_resync_all() {
+	public function rdf_resync_all($prune = false) {
 		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return 0; }
+		// A pruning resync is a full REBUILD: drop the whole graph first so triples for
+		// nodes deleted out-of-band (e.g. a test's raw-SQL teardown) don't survive as
+		// orphans. Default ($prune = false) keeps the non-destructive upsert behaviour.
+		if ($prune) { $this->rdf_clear(); }
 		$nids = array();
 		$res = lunaDB::query('SELECT nid FROM '.luna::get_ini('DBtables', 'NODES').' ORDER BY nid');
 		if ($res) { while ($row = $res->fetchRow()) { $nids[] = intval($row->nid); } $res->free(); }

@@ -111,9 +111,10 @@ endpoint is now a configuration choice.
 - **Swap Oxigraph for Jena / GraphDB / Blazegraph later** — an *endpoint swap*, not a
   data-layer rewrite, because nothing in the app is coupled to a SQL dialect or driver
   anymore.
-- **Rebuild or repair the graph from MySQL** with `lunaModel::rdf_resync_all()`,
-  which re-projects every node — the pure-PHP reconciliation that keeps the mirror
-  honest (and the bootstrap that replaced the Ontop "materialise" step).
+- **Rebuild or repair the graph from MySQL** with `lunaModel::rdf_resync_all()`
+  (runnable as `make resync-triplestore`), which re-projects every node — the
+  pure-PHP reconciliation that keeps the mirror honest (and the bootstrap that
+  replaced the Ontop "materialise" step).
 
 ## 4. Now a small step away
 

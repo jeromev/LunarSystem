@@ -228,10 +228,16 @@ best-effort, so a failed mirror never breaks a save). On top of it:
   the old `rdf_put_article`).
 - **`rdf_delete_node($nid)`** drops every triple mentioning the resource — as
   subject *and* as object — and runs inside `delete()` before the rows go.
-- **`rdf_resync_all()`** re-projects *every* node from MySQL: the pure-PHP
-  bootstrap/repair of the store, replacing the Ontop "materialise" step. Run it
-  to seed Oxigraph or to reconcile after any out-of-band change (it upserts
-  MySQL→graph; it does not remove graph-only orphans).
+- **`rdf_resync_all($prune = false)`** re-projects *every* node from MySQL: the
+  pure-PHP bootstrap/repair of the store, replacing the Ontop "materialise" step.
+  Run it to seed Oxigraph or to reconcile after any out-of-band change — runnable
+  as **`make resync-triplestore`** (→ `bin/resync-triplestore.php`). The default
+  upserts MySQL→graph and leaves graph-only orphans in place; `$prune = true`
+  (what the make target passes) first clears the whole store via `rdf_clear()`,
+  for a full rebuild that drops orphans too. This pure-PHP projection is *fuller*
+  than the Ontop materialise — it types every text `schema:Article` (not just the
+  page-linked ones) and projects the level/group/mod nodes — so a rebuilt store
+  holds ~152 triples to the materialise's 104.
 
 So any content change in the admin UI **dual-writes**: the existing SQL to MySQL,
 plus a SPARQL `DELETE`/`INSERT` to the graph for `<base/id/{lid}>`.
@@ -270,7 +276,8 @@ docker-compose exec -T app sh -c 'curl -X POST -u "$SPARQL_AUTH_USER:$SPARQL_AUT
 
 > Since 0.3.3-alpha the Ontop materialise above is optional: `rdf_resync_all()`
 > re-projects the whole store from MySQL in pure PHP (see *Writing through SPARQL*),
-> which is how Oxigraph is now seeded and reconciled.
+> which is how Oxigraph is now seeded and reconciled — run it with
+> **`make resync-triplestore`**.
 
 The default read path is served by Oxigraph. The proof it's genuinely the
 triplestore and not MySQL-via-Ontop: **stop Ontop** and the read path keeps

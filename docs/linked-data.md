@@ -253,14 +253,17 @@ docker exec lunarsystem-ontop-1 /opt/ontop/ontop materialize \
   -m /opt/ontop/input/mapping.ttl -p /opt/ontop/input/ontop.properties \
   -o /opt/ontop/input/dump.nt -f ntriples
 
-# 2. load it into a real triplestore (Oxigraph)
-docker-compose up -d oxigraph
-docker-compose exec -T app curl -X POST 'http://oxigraph:7878/store?default' \
-  -H 'Content-Type: application/n-triples' --data-binary @semantic/ontop/dump.nt
+# 2. load it into the triplestore THROUGH the authenticating proxy. Oxigraph sits on an
+#    internal-only network and is never reachable directly, so the load presents the
+#    proxy credentials (the app container has them in its env).
+docker-compose up -d oxigraph sparql-proxy
+docker-compose exec -T app sh -c 'curl -X POST -u "$SPARQL_AUTH_USER:$SPARQL_AUTH_PASS" \
+  "http://sparql-proxy:7878/store?default" \
+  -H "Content-Type: application/n-triples" --data-binary @semantic/ontop/dump.nt'
 
 # 3. point the app at the triplestore — NO code change. This is now the DEFAULT
-#    (SPARQL_ENDPOINT defaults to Oxigraph); the override goes the other way:
-#    SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app   # read via Ontop
+#    (SPARQL_ENDPOINT defaults to the proxy in front of Oxigraph); the override goes the
+#    other way: SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app  # read via Ontop
 ```
 
 > Since 0.3.3-alpha the Ontop materialise above is optional: `rdf_resync_all()`

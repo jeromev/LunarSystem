@@ -1,6 +1,9 @@
 # Database credentials — copy db.example.ini and fill in your values
 luna/luna.domains/*/ini/db.ini
 
+# Local environment overrides (SPARQL proxy credentials, etc.) — copy .env.example
+.env
+
 # Cache files (writable dir kept, contents ignored)
 luna/luna.domains/*/cache/*
 !luna/luna.domains/*/cache/.gitkeep

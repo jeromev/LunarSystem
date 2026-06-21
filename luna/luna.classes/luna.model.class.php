@@ -564,12 +564,26 @@ class lunaModel {
 	 * @param string $query
 	 * @return array bindings (each a map of var => {type,value})
 	 */
+	/**
+	 * Build the HTTP basic-auth header the app presents to the SPARQL proxy.
+	 * Empty when no credentials are configured (so a bare, unauthenticated
+	 * endpoint still works) — see SPARQL_AUTH_USER/PASS in luna.php.
+	 *
+	 * @access private
+	 * @return string a CRLF-terminated Authorization header, or ''
+	 */
+	private function sparql_auth_header() {
+		if (defined('SPARQL_AUTH_USER') && SPARQL_AUTH_USER !== '') {
+			return 'Authorization: Basic '.base64_encode(SPARQL_AUTH_USER.':'.(defined('SPARQL_AUTH_PASS')? SPARQL_AUTH_PASS : ''))."\r\n";
+		}
+		return '';
+	}
 	public function sparql_select($query) {
 		if (!defined('SPARQL_ENDPOINT')) { return array(); }
 		$url = SPARQL_ENDPOINT.'?query='.rawurlencode($query);
 		$ctx = stream_context_create(array('http' => array(
 			'method' => 'GET',
-			'header' => "Accept: application/sparql-results+json\r\n",
+			'header' => "Accept: application/sparql-results+json\r\n".$this->sparql_auth_header(),
 			'timeout' => 5
 		)));
 		$json = @file_get_contents($url, false, $ctx);
@@ -680,7 +694,7 @@ class lunaModel {
 		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
 		$ctx = stream_context_create(array('http' => array(
 			'method'        => 'POST',
-			'header'        => "Content-Type: application/sparql-update\r\n",
+			'header'        => "Content-Type: application/sparql-update\r\n".$this->sparql_auth_header(),
 			'content'       => $update,
 			'timeout'       => 5,
 			'ignore_errors' => true

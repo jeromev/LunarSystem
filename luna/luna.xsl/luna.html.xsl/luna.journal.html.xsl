@@ -42,8 +42,8 @@
 						<tbody>
 							<xsl:for-each select="/rdf:RDF/luna:log">
 								<tr>
-									<xsl:attribute name="onclick">
-										<xsl:text>document.location='</xsl:text>
+									<xsl:attribute name="data-href">
+										
 										<xsl:call-template name="link">
 											<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
 											<xsl:with-param name="options">
@@ -51,7 +51,7 @@
 											</xsl:with-param>
 										</xsl:call-template>
 										<xsl:call-template name="onchange4"/>
-										<xsl:text>'</xsl:text>
+										
 									</xsl:attribute>
 									<xsl:attribute name="class">
 										<xsl:text>active </xsl:text>

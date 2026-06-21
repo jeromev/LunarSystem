@@ -18,8 +18,9 @@ class lunaTools {
 	// {{{ send_security_headers()
 	/**
 	 * Send a baseline set of HTTP security response headers, once, before output.
-	 * CSP still allows 'unsafe-inline' because the admin UI uses inline
-	 * onclick/onchange handlers; tighten to 'self' once those are delegated.
+	 * CSP is strict 'self' for scripts and styles: behaviour is delegated through
+	 * data-attributes in js/luna.js (no inline handlers) and there are no inline
+	 * styles, so no 'unsafe-inline' is required.
 	 *
 	 * @access public
 	 * @return void
@@ -32,7 +33,7 @@ class lunaTools {
 		header('Referrer-Policy: strict-origin-when-cross-origin');
 		header('Cross-Origin-Opener-Policy: same-origin');
 		header("Content-Security-Policy: default-src 'self'; "
-			."script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+			."script-src 'self'; style-src 'self'; "
 			."img-src 'self' data:; font-src 'self'; connect-src 'self'; "
 			."object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 	}

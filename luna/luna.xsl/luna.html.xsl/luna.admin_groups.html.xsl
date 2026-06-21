@@ -161,10 +161,10 @@
 								</input>
 								<input type="submit" class="submit warning" name="submit">
 									<xsl:attribute name="value"><xsl:value-of  select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
-									<xsl:attribute name="onclick">
-										<xsl:text>return confirmSubmit('</xsl:text>
+									<xsl:attribute name="data-confirm">
+										
 										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this group?']/luna:value"/>
-										<xsl:text>');</xsl:text>
+										
 									</xsl:attribute>
 								</input>
 							</div>
@@ -394,9 +394,7 @@
 												<xsl:attribute name="name">modify_users_action</xsl:attribute>
 												<xsl:attribute name="size">1</xsl:attribute>
 												<xsl:attribute name="id">modify_users_action</xsl:attribute>
-												<xsl:attribute name="onchange">
-													<xsl:text>this.form.submit();</xsl:text>
-												</xsl:attribute>
+												<xsl:attribute name="data-submit-on-change">1</xsl:attribute>
 												<option label="" value=""><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Choose an action']/luna:value"/></option>
 												<option>
 													<xsl:attribute name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete from the group']/luna:value"/></xsl:attribute>

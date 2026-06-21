@@ -191,10 +191,10 @@
 								</input>
 								<input type="submit" class="submit warning" name="submit">
 									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
-									<xsl:attribute name="onclick">
-										<xsl:text>return confirmSubmit('</xsl:text>
+									<xsl:attribute name="data-confirm">
+										
 										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this user?']/luna:value"/>
-										<xsl:text>');</xsl:text>
+										
 									</xsl:attribute>
 								</input>
 							</div>

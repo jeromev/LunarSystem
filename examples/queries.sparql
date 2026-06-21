@@ -30,7 +30,7 @@
 
 # 1) Census — count every content class in ONE query.
 #    (A vanilla SQL app needs a per-table UNION; here one triple pattern spans all.)
-#    → WebPage 14, Article 2, Person 2
+#    → WebPage 14, Person 2, Article 1
 PREFIX schema: <https://schema.org/>
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type ORDER BY DESC(?n)
 

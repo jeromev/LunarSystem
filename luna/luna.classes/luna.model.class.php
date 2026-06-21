@@ -442,6 +442,13 @@ class lunaModel {
 	public function dump($flavor = 'xml', $return = false, $node = false) {
 		require_once('arc/ARC2.php');
 		$index = (empty($node) || !is_array($node))? $this->index : $node;
+		// These non-HTML data responses (xml/json/n3/jsonld) are shown by the browser's
+		// built-in data viewer, which injects an inline stylesheet — the strict global CSP
+		// (style-src 'self') blocks it and the document renders as unstyled run-on text.
+		// Relax the CSP for the data response only; HTML pages keep script-src/style-src 'self'.
+		if (!$return && !headers_sent()) {
+			header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:");
+		}
 		switch($flavor) {
 			case 'json':
 				$ser = ARC2::getRDFJSONSerializer($this->conf);

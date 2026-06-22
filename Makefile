@@ -8,7 +8,7 @@ CSS_OUT  := css/luna.css
 # the source map so dev tools resolve compiled rules back to _*.scss:line.
 SASS_FLAGS := --no-charset --quiet-deps --load-path=scss/vendor --embed-sources
 
-.PHONY: css css-watch css-min test test-authz test-lockout resync-triplestore
+.PHONY: css css-watch css-min test test-authz test-lockout render-capture render-check resync-triplestore
 
 css: ## Compile scss/ -> css/luna.css (+ css/luna.css.map for dev tools)
 	$(SASS) $(SCSS_SRC):$(CSS_OUT) $(SASS_FLAGS) --style=expanded
@@ -26,6 +26,12 @@ test: ## Smoke + security-regression suite (run `docker compose up -d` first)
 
 test-authz: ## Delegated-admin privilege-escalation test (per-target authz; mutates DB, self-cleans)
 	BASE=$${BASE:-http://localhost:8080} bash test/delegated_admin.sh
+
+render-capture: ## Snapshot the normalised HTML/RDF render of every page type (baseline for the model retirement)
+	BASE=$${BASE:-http://localhost:8080} bash test/render_diff.sh capture
+
+render-check: ## Re-render and assert byte-identical to the captured baseline (proves a change is output-neutral)
+	BASE=$${BASE:-http://localhost:8080} bash test/render_diff.sh check
 
 test-lockout: ## Admin-lockout guardrail test (self-demotion / last-admin / protected nodes; mutates DB, self-cleans)
 	BASE=$${BASE:-http://localhost:8080} bash test/admin_lockout.sh

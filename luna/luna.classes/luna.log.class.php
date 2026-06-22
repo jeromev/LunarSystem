@@ -14,11 +14,19 @@
  * @package		lunarSystem
  */
 
-// PEAR Log (base class) supplies the PEAR_LOG_* priority constants used across
-// the app and Log::priorityToString() used by mod_journal. The MDB2-backed Log
-// handler is gone (MDB2 removed in 0.5.0-alpha); lunaLog::log() now writes the
-// log row directly via the PDO lunaDB layer below.
-require_once 'Log.php';
+// PEAR_LOG_* priority constants — formerly supplied by the vendored PEAR Log base
+// class (now removed). They are the severity codes passed to lunaException() /
+// lunaLog::log() across the app; lunaLog::log() writes the row directly via the PDO
+// lunaDB layer below, and lunaLog::priorityToString() (used by mod_journal) replaces
+// the old Log::priorityToString(). Values are the stable syslog levels (0–7).
+define('PEAR_LOG_EMERG',   0); // system is unusable
+define('PEAR_LOG_ALERT',   1); // immediate action required
+define('PEAR_LOG_CRIT',    2); // critical conditions
+define('PEAR_LOG_ERR',     3); // error conditions
+define('PEAR_LOG_WARNING', 4); // warning conditions
+define('PEAR_LOG_NOTICE',  5); // normal but significant
+define('PEAR_LOG_INFO',    6); // informational
+define('PEAR_LOG_DEBUG',   7); // debug-level messages
 // {{{
 class lunaException extends Exception { public $session; public $server; }
 // }}}
@@ -100,6 +108,29 @@ class lunaLog {
 		$server = array();
 		foreach ($keep as $k) { if (isset($_SERVER[$k])) { $server[$k] = $_SERVER[$k]; } }
 		return $server;
+	}
+	// }}}
+	// {{{ priorityToString()
+	/**
+	 * Map a PEAR_LOG_* priority integer to its label — replaces the removed PEAR
+	 * Log::priorityToString(); used by the journal views (the label is passed through
+	 * _() for i18n, so the strings must match the legacy ones).
+	 * @access public
+	 * @param int $priority
+	 * @return string
+	 */
+	public static function priorityToString($priority) {
+		$levels = array(
+			PEAR_LOG_EMERG   => 'emergency',
+			PEAR_LOG_ALERT   => 'alert',
+			PEAR_LOG_CRIT    => 'critical',
+			PEAR_LOG_ERR     => 'error',
+			PEAR_LOG_WARNING => 'warning',
+			PEAR_LOG_NOTICE  => 'notice',
+			PEAR_LOG_INFO    => 'info',
+			PEAR_LOG_DEBUG   => 'debug',
+		);
+		return isset($levels[$priority]) ? $levels[$priority] : 'unknown';
 	}
 	// }}}
 }

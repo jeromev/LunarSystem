@@ -54,7 +54,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 |---|---|---|
 | **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
 | **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **Vendored libs** | Maintenance | Bundles Cache_Lite, HTML_Safe and semsol/arc2 3.1.0; the PEAR Log base class is kept only for its `PEAR_LOG_*` constants. |
+| **Vendored libs** | Maintenance | Bundles Cache_Lite, HTML_Safe (+ its XML_HTMLSax3 parser) and semsol/arc2 3.1.0. PEAR **Log** was removed in 0.8.27 — its `PEAR_LOG_*` constants are now defined inline in `luna.log.class.php`; PEAR base (`PEAR.php`/`PEAR5.php`) remains only as Cache_Lite's / XML_HTMLSax3's lazy error-path fallback, to be dropped with them. |
 
 ## Security weaknesses
 
@@ -72,7 +72,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.26-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.27-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every

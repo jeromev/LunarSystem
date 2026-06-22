@@ -104,7 +104,7 @@ class mod_journal {
 					'lid' => $row->id,
 					'value' => array(
 						'message' => $message,
-						'code' => _(Log::priorityToString($row->priority)),
+						'code' => _(lunaLog::priorityToString($row->priority)),
 						'date' => $row->logtime,
 						'content' => print_r($msg, 1)
 					),
@@ -173,7 +173,7 @@ class mod_journal {
 					'lid' => $row->id,
 					'value' => array(
 						'message' => $message,
-						'code' => _(Log::priorityToString($row->priority)),
+						'code' => _(lunaLog::priorityToString($row->priority)),
 						'date' => $row->logtime,
 						'user-name' => isset($msg->session->user->firstname)? $msg->session->user->firstname.' '.$msg->session->user->lastname : _(ANONYMOUS)
 					),

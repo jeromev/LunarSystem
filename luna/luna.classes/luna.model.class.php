@@ -122,7 +122,7 @@ class lunaModel {
 			'serializer_type_nodes' => 1,
 		);
 		$this->node_path = lunaTools::link('node', true);
-		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new lunaCache(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($cache_rdf_name))) {
 			$array = unserialize($cache_str, array('allowed_classes' => false));
 			$this->index = $array['index'];
@@ -2518,7 +2518,7 @@ class lunaModel {
 	 */
 	public function transform($xslfile = false) {
 		$code_str = md5(serialize(array($this->conf, $this->index)));
-		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new lunaCache(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($code_str))) {
 			$res = unserialize($cache_str, array('allowed_classes' => false));
 		} else { 

@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.28-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.29-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.21-alpha) closed
@@ -68,9 +68,10 @@ luna/
     luna.session.class.php     DB-backed session handler
     luna.tools.class.php       Utilities (sanitisation, URL building, i18n, ACL)
     luna.log.class.php         Error logging (direct PDO INSERT)
+    luna.cache.class.php       Native file cache (replaced PEAR Cache_Lite)
   luna.mods/                   Pluggable page modules (admin, journal, node, …)
   luna.xsl/luna.html.xsl/      Built-in XSLT templates (HTML output)
-  luna.lib/                    Vendored libraries: semsol/arc2 3.1.0, Cache_Lite, PEAR base (Cache_Lite's error-path fallback)
+  luna.lib/                    Vendored library: semsol/arc2 3.1.0 (RDF/SPARQL — the last in-tree lib)
   luna.domains/
     luna.default/              Fallback site configuration (used for local/Docker)
   luna.sql/luna.mysql.sql      Database schema + seed data

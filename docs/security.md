@@ -37,7 +37,7 @@ the **original** findings; several are now fixed or partially fixed as noted her
 
 A fresh multi-agent review audited the post-0.8.4 tree across 8 dimensions (SQLi, authn/timing, session, authz/IDOR, CSRF, XSS/sanitizer, disclosure/deploy, fix-regression). Each finding was independently voted on by two skeptics — one proving exploitability, one trying to refute — then synthesised.
 
-**Verdict: ship-with-low-risk.** No remotely-exploitable critical/high in the stock configuration. 29 raw findings → 2 real defects fixed (both in 0.8.5, above) + 1 latent gap, since closed (below). The rest were dismissed with reasons: the 8-finding admin "IDOR/privilege-escalation" cluster is not reachable as shipped (single admin tier, below); the SameSite=Lax/`validateId`-rebind/regenerate-race session findings are defended in depth by the **mandatory UA+IP binding** in `get_user_data()` (a mismatch yields zero rows → demotion to anonymous); the legacy-MD5 timing leak is mitigated by the dummy bcrypt verify and is below network noise; the `Cache_Lite`/`ARC2_Store` deserialization sinks are dead/unreachable vendor code; and all host ports bind `127.0.0.1` (Oxigraph's `0.0.0.0:7878` is container-internal only).
+**Verdict: ship-with-low-risk.** No remotely-exploitable critical/high in the stock configuration. 29 raw findings → 2 real defects fixed (both in 0.8.5, above) + 1 latent gap, since closed (below). The rest were dismissed with reasons: the 8-finding admin "IDOR/privilege-escalation" cluster is not reachable as shipped (single admin tier, below); the SameSite=Lax/`validateId`-rebind/regenerate-race session findings are defended in depth by the **mandatory UA+IP binding** in `get_user_data()` (a mismatch yields zero rows → demotion to anonymous); the legacy-MD5 timing leak is mitigated by the dummy bcrypt verify and is below network noise; the `ARC2_Store` deserialization sink is dead/unreachable vendor code (the `Cache_Lite` one is gone — that library was replaced by a native cache in 0.8.29); and all host ports bind `127.0.0.1` (Oxigraph's `0.0.0.0:7878` is container-internal only).
 
 **Resolved since the review:**
 - **Admin modules now enforce per-target authorization in their submit handlers** (0.8.13–0.8.20). `mod_admin_users/groups/pages/levels/mods` re-check the actor against the *specific* target — `user_can_access_level()` / `user_can_access_page()` / `user_can_access_group()` on the node being modified/deleted **and** on every level/group/page being assigned — mirroring the `edit_texts`/`mod_node` per-target pattern. This is a no-op in the shipped single-admin tier (the admin holds every level, so each check passes), but it closes the privilege-escalation/IDOR vector if an operator **delegates admin by re-binding an admin page/mod to a lower level**: a lower-tier admin can no longer grant a level/group above their own, nor act on a target above their access. Validated by [`test/delegated_admin.sh`](../test/delegated_admin.sh), which manufactures a `level_edition`-only admin and asserts it cannot grant `level_admin` to a group (the attempt is denied and no link is written).
@@ -54,7 +54,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 |---|---|---|
 | **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
 | **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **Vendored libs** | Maintenance | In-tree: Cache_Lite and semsol/arc2 3.1.0. PEAR **Log** (removed 0.8.27, constants inlined) and PEAR **HTML_Safe** + **XML_HTMLSax3** (removed 0.8.28, replaced by **HTMLPurifier** via Composer) are gone; PEAR base (`PEAR.php`/`PEAR5.php`) remains only as Cache_Lite's lazy error-path fallback, to be dropped with it. The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
+| **Vendored libs** | Maintenance | The only in-tree vendored library left is **semsol/arc2 3.1.0** (RDF/SPARQL). Removed in the libs cleanup: PEAR **Log** (0.8.27, constants inlined), **HTML_Safe** + **XML_HTMLSax3** (0.8.28 → HTMLPurifier), and **Cache_Lite** + PEAR base (0.8.29 → a native file cache, `luna.cache.class.php`). The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
 
 ## Security weaknesses
 
@@ -72,7 +72,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.28-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.29-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every

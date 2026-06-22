@@ -592,7 +592,7 @@
 			<xsl:attribute name="size">1</xsl:attribute>
 			<xsl:attribute name="id">quickjump</xsl:attribute>
 			<xsl:attribute name="data-navigate">1</xsl:attribute>
-			<option label="" value=""><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Jump to page']"/></option>
+			<option label="" value=""><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Jump to page']/ui:value"/></option>
 			<xsl:for-each select="/rdf:RDF/schema:WebPage">
 				<xsl:if test="/node/user/accessible-levels//level = @level_id">
 					<option>

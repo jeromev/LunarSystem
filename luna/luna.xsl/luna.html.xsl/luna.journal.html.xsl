@@ -45,7 +45,7 @@
 									<xsl:attribute name="data-href">
 
 										<xsl:call-template name="link">
-											<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+											<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 											<xsl:with-param name="options">
 												<xsl:text>log_id=</xsl:text><xsl:value-of select="luna:lid"/>
 											</xsl:with-param>
@@ -61,7 +61,7 @@
 										<a>
 											<xsl:attribute name="href">
 												<xsl:call-template name="link">
-													<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+													<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 													<xsl:with-param name="options">
 														<xsl:text>log_id=</xsl:text><xsl:value-of select="luna:lid"/>
 													</xsl:with-param>

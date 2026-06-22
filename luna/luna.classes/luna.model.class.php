@@ -2612,8 +2612,12 @@ class lunaModel {
 	 * @param array $index an ARC2 index keyed by node URI
 	 * @return array the same graph, re-keyed on /id/{slug}
 	 */
-	private function project_to_slug($index) {
+	private function project_to_schema($index) {
 		$luna   = $this->conf['ns']['luna'];
+		$schema = $this->conf['ns']['schema'];
+		// reuse standard schema.org predicates where one exists (luna: kept only for the
+		// genuinely app-specific: lid/slug, isActive, level, alias).
+		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody');
 		$base   = rtrim(luna::$site_uri, '/').'/id/';
 		$prefix = $this->node_path.'/';
 		$map = array();
@@ -2627,9 +2631,10 @@ class lunaModel {
 		foreach ($index as $uri => $node) {
 			$nuri = isset($map[$uri])? $map[$uri] : $uri;
 			foreach ($node as $pred => $vals) {
+				$npred = isset($predmap[$pred])? $predmap[$pred] : $pred;
 				foreach ($vals as $v) {
 					if (isset($v['type'], $v['value']) && $v['type'] === 'uri' && isset($map[$v['value']])) { $v['value'] = $map[$v['value']]; }
-					$out[$nuri][$pred][] = $v;
+					$out[$nuri][$npred][] = $v;
 				}
 			}
 		}
@@ -2651,7 +2656,7 @@ class lunaModel {
 			include_once('arc/ARC2.php');
 			$ser = ARC2::getRDFXMLSerializer($this->conf);
 			$this->dom = new DomDocument;
-			$this->dom->loadXML($ser->getSerializedIndex($this->project_to_slug($this->index)));
+			$this->dom->loadXML($ser->getSerializedIndex($this->project_to_schema($this->index)));
 			$this->xslprocessor = new XsltProcessor();
 			$this->xslprocessor->importStyleSheet($this->xsl);
 			$res = $this->xslprocessor->transformToXML($this->dom);

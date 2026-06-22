@@ -119,7 +119,7 @@
 						<h2 class="box-handle expanded">
 							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify the text']/luna:value"/>
 							<xsl:text> </xsl:text>
-							<em><xsl:value-of select="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/luna:lid"/></em>
+							<em><xsl:value-of select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/luna:lid"/></em>
 						</h2>
 						<div class="box-content">
 							<div class="onecol">
@@ -129,7 +129,7 @@
 									<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/></xsl:with-param>
 									<xsl:with-param name="default-value">
 										<xsl:choose>
-											<xsl:when test="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/luna:isActive = '1'">
+											<xsl:when test="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/luna:isActive = '1'">
 												<xsl:text>0</xsl:text>
 											</xsl:when>
 											<xsl:otherwise>
@@ -144,7 +144,7 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_text_lid</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/luna:lid"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/luna:lid"/></xsl:with-param>
 									</xsl:call-template>
 								</div>
 								<div class="col">
@@ -154,7 +154,7 @@
 										<xsl:with-param name="mode">data</xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/luna:lang"/>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Language']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/rdfs:label/@xml:lang"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/rdfs:label/@xml:lang"/>
 									</xsl:call-template>
 								</div>
 								<div class="onecol">
@@ -162,7 +162,7 @@
 										<xsl:with-param name="name">modify_text_title</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'title']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="class">big</xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/rdfs:label"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/rdfs:label"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
 									<xsl:call-template name="forminput">
@@ -171,7 +171,7 @@
 										<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'content']/luna:value"/>
 										<xsl:with-param name="class">big</xsl:with-param>
 										<xsl:with-param name="wysiwyg">1</xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text/luna:content"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text/schema:articleBody"/></xsl:with-param>
 									</xsl:call-template>
 								</div>
 								<div class="col">
@@ -183,7 +183,7 @@
 										<xsl:with-param name="option-value">name</xsl:with-param>
 										<xsl:with-param name="multiple">yes</xsl:with-param>
 										<xsl:with-param name="size" select="count(/rdf:RDF/luna:page)"/>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[luna:nid = $modify_item_nid]/luna:page"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/luna:page"/>
 									</xsl:call-template>
 								</div>
 							</div>

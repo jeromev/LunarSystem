@@ -154,6 +154,9 @@ class mod_admin_mods {
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'mod')) { return false; }
 		if ($inerror) { return false; }
+		// admin-lockout guardrail: the modules that power the admin pages must not be
+		// renamed, relevelled, deactivated or unbound from their pages.
+		if (!$protected_lid = luna::$model->check_if_lid_is_protected($item_node, array('mod_admin', 'mod_admin_groups', 'mod_admin_levels', 'mod_admin_mods', 'mod_admin_pages', 'mod_admin_users', 'mod_journal'))) { return false; }
 		// check if the identifier is already used by another item
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_mod_lid'], $_POST['modify_item_nid'])) { return false; }
 		// make sure the level node exists
@@ -205,6 +208,8 @@ class mod_admin_mods {
 		if (!luna::$model->merge_index(luna::$model->load_nodes('mod', 'page'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'mod')) { return false; }
+		// admin-lockout guardrail: the modules that power the admin pages cannot be deleted.
+		if (!$protected_lid = luna::$model->check_if_lid_is_protected($item_node, array('mod_admin', 'mod_admin_groups', 'mod_admin_levels', 'mod_admin_mods', 'mod_admin_pages', 'mod_admin_users', 'mod_journal'))) { return false; }
 		if (!lunaTools::user_can_access_level(luna::$session->user, intval(luna::$model->get_nid(luna::$model->get_level_node($item_node))))) {
 			luna::$messages['warning'][] = _('Access denied: this module is above your access level.');
 			lunaLog::log('admin_mods: attempt to delete an inaccessible module', PEAR_LOG_WARNING);

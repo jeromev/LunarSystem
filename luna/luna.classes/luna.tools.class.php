@@ -791,6 +791,32 @@ class lunaTools {
 		return true;
 	}
 	// }}}
+	// {{{ active_admin_count()
+	/**
+	 * Count active user accounts that are members of the admin group (group_admin).
+	 * Used by the admin-lockout guardrails to refuse any change that would leave the
+	 * site with no one able to administer it. $exclude_user_nid omits one user from
+	 * the tally (to ask "would ANY OTHER admin remain after this change?").
+	 * @access public
+	 * @return integer
+	 */
+	public static function active_admin_count($exclude_user_nid = null) {
+		$ga = luna::$model->get_nid_from_lid('group_admin');
+		if (empty($ga)) { return 0; }
+		$nodes = luna::get_ini('DBtables', 'NODES'); $map = luna::get_ini('DBtables', 'NODES_MAP'); $types = luna::get_ini('DBtables', 'CLASSES');
+		$sql = '
+			SELECT COUNT(DISTINCT u.nid) AS n
+			FROM '.$map.' m
+			JOIN '.$nodes.' u ON u.nid = m.nid2 AND u.is_active = 1 AND u.tid = (SELECT id FROM '.$types.' WHERE lid = '.lunaDB::quote('user').')
+			WHERE m.nid1 = '.lunaDB::quote(intval($ga));
+		if ($exclude_user_nid !== null) { $sql .= ' AND u.nid <> '.lunaDB::quote(intval($exclude_user_nid)); }
+		$res = lunaDB::query($sql);
+		$row = $res->fetchRow();
+		$n = isset($row->n)? intval($row->n) : 0;
+		$res->free();
+		return $n;
+	}
+	// }}}
 	// {{{ user_can_act_on_text()
 	/**
 	 * True when the current user may modify/delete $text_nid — i.e. can access the

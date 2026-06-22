@@ -68,7 +68,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.29-alpha';
+	public static $lunaVersion = '0.8.30-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -82,11 +82,18 @@ class luna {
 	 */
 	public static $messages = array();
 	/**
-	 * protected_lids
+	 * protected_lids — structural nodes the admin tier depends on. Deleting or
+	 * repurposing any of them can lock every administrator out of the site, so
+	 * lid_is_protected() and the central guard in lunaModel::delete() refuse to
+	 * touch these whichever handler asks.
 	 * @var		array
 	 * @access	private
 	 */
-	private static $protected_lids = array('admin', 'admin_groups', 'admin_levels', 'admin_users', 'admin_mods', 'admin_pages', 'login', 'logout');
+	private static $protected_lids = array(
+		'admin', 'admin_groups', 'admin_levels', 'admin_users', 'admin_mods', 'admin_pages', 'journal', 'login', 'logout',
+		'group_admin', 'group_default', 'level_admin', 'level_public',
+		'mod_admin', 'mod_admin_groups', 'mod_admin_levels', 'mod_admin_mods', 'mod_admin_pages', 'mod_admin_users', 'mod_journal',
+	);
 	/**
 	 * requested_nid
 	 * @var		integer

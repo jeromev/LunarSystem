@@ -5,7 +5,7 @@ could **not** do with the old-fashioned PHP/MySQL, RDF-as-an-output-format versi
 — and, honestly, what is not done yet.
 
 > **How to read the tags.** Each capability is marked **live** (works today on
-> `main`, 0.8.29-alpha), **one step away** (a tiny wiring step on top of what
+> `main`, 0.8.30-alpha), **one step away** (a tiny wiring step on top of what
 > exists), or **roadmap** (real work — see [roadmap.md](roadmap.md)). The concrete
 > numbers and queries below were run against the live Docker stack, not assumed.
 

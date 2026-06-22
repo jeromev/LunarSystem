@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -46,12 +46,12 @@
 					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/schema:name"/></caption>
 					<thead>
 						<tr>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lastname']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'email']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'IP']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'session_url']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'last_time']/luna:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'firstname']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'lastname']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'email']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'IP']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'session_url']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'last_time']/ui:value"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -124,7 +124,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modules']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Modules']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -139,11 +139,11 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modules']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Modules']/ui:value"/></caption>
 					<thead>
 						<tr>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'name']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Access level']/luna:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'name']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Access level']/ui:value"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -210,7 +210,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Texts']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Texts']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -225,7 +225,7 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Texts']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Texts']/ui:value"/></caption>
 					<thead>
 						<tr>
 							<td colspan="5">
@@ -244,11 +244,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'lid'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'lid'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Literal identifier']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Literal identifier']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -264,11 +264,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'title'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'title']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'title'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'title']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'title']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'title']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -284,11 +284,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'lang'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lang']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'lang'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'lang']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lang']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'lang']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -304,11 +304,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'last_time'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'modified']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'last_time'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'modified']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'modified']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'modified']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -379,7 +379,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Users']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Users']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -394,7 +394,7 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Users']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Users']/ui:value"/></caption>
 					<thead>
 						<tr>
 							<td colspan="5">
@@ -413,11 +413,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'firstname'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'firstname'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'firstname']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'firstname']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -433,11 +433,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'lastname'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lastname']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'lastname'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'lastname']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lastname']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'lastname']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -453,11 +453,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'email'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'email']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'email'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'email']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'email']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'email']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -473,11 +473,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'regis_time'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'regis_time']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'regis_time'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'regis_time']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'regis_time']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'regis_time']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -493,11 +493,11 @@
 										</xsl:call-template>
 									</xsl:attribute>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value = 'last_time'">
-											<strong><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'last_time']/luna:value"/></strong>
+										<xsl:when test="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value = 'last_time'">
+											<strong><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'last_time']/ui:value"/></strong>
 										</xsl:when>
 										<xsl:otherwise>
-											<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'last_time']/luna:value"/>
+											<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'last_time']/ui:value"/>
 										</xsl:otherwise>
 									</xsl:choose>
 								</a>
@@ -571,7 +571,7 @@
 						<xsl:otherwise><xsl:text> collapsed</xsl:text></xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Pages']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -582,12 +582,12 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Pages']/ui:value"/></caption>
 					<thead>
 						<tr>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'name']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Access level']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modules']/luna:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'name']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Access level']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Modules']/ui:value"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -664,7 +664,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Groups']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Groups']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -679,11 +679,11 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Groups']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Groups']/ui:value"/></caption>
 					<thead>
 						<tr>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'name']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Accessible levels']/luna:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'name']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Accessible levels']/ui:value"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -756,7 +756,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Levels']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Levels']/ui:value"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -771,11 +771,11 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Levels']/luna:value"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Levels']/ui:value"/></caption>
 					<thead>
 						<tr>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'name']/luna:value"/></th>
-							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Groups admitted to this level']/luna:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'name']/ui:value"/></th>
+							<th><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Groups admitted to this level']/ui:value"/></th>
 						</tr>
 					</thead>
 					<tbody>

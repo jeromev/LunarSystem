@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -21,21 +21,21 @@
 			<xsl:attribute name="action"><xsl:value-of select="$pageurl"/></xsl:attribute>
 			<div class="box">
 				<fieldset id="Login">
-					<h2 class="box-handle expanded"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Connection form']/luna:value"/></h2>
+					<h2 class="box-handle expanded"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Connection form']/ui:value"/></h2>
 					<div class="box-content">
 						<div class="fields">
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">email</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Email']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Email']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">password</xsl:with-param>
 								<xsl:with-param name="type">password</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Password']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Password']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<input type="hidden" name="last_url">
 								<xsl:attribute name="value">
-									<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'last_url']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'last_url']/ui:value"/>
 								</xsl:attribute>
 							</input>
 						</div>

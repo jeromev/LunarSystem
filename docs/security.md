@@ -56,7 +56,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 |---|---|---|
 | **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
 | **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **Vendored libs** | Maintenance | The only in-tree vendored library left is **semsol/arc2 3.1.0** (RDF/SPARQL). Removed in the libs cleanup: PEAR **Log** (0.8.27, constants inlined), **HTML_Safe** + **XML_HTMLSax3** (0.8.28 → HTMLPurifier), and **Cache_Lite** + PEAR base (0.8.29 → a native file cache, `luna.cache.class.php`). The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
+| **Vendored libs** | Maintenance | The only in-tree vendored library left is **semsol/arc2 3.1.0** (RDF/SPARQL), kept vendored on purpose: it carries local PHP-8 patches the upstream lacks (stock 3.1.0 fatals on `?output=n3`), so it is not a drop-in Composer package — see [`luna.lib/arc/VENDOR.txt`](../luna/luna.lib/arc/VENDOR.txt). Removed in the libs cleanup: PEAR **Log** (0.8.27, constants inlined), **HTML_Safe** + **XML_HTMLSax3** (0.8.28 → HTMLPurifier), and **Cache_Lite** + PEAR base (0.8.29 → a native file cache, `luna.cache.class.php`). The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
 
 ## Security weaknesses
 
@@ -74,7 +74,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.30-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.31-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every

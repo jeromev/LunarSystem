@@ -11,11 +11,14 @@ MDB2 to PDO in 0.5.0-alpha (MDB2 dropped); PEAR **Log** was removed in 0.8.27-al
 **HTML_Safe** + **XML_HTMLSax3** were replaced by **HTMLPurifier** (Composer) in
 0.8.28-alpha; and PEAR **Cache_Lite** — the last consumer of PEAR base — was replaced by
 a small native file cache (`luna.classes/luna.cache.class.php`) in 0.8.29-alpha, removing
-both. **ARC2 is now the only vendored in-tree library.**
+both. **ARC2 is the only vendored in-tree library, and stays vendored on purpose:** unlike
+HTMLPurifier it carries local PHP-8 patches the upstream 3.1.0 lacks (stock 3.1.0 fatals on
+`?output=n3`), so it is not a drop-in Composer package — see
+[`luna.lib/arc/VENDOR.txt`](luna/luna.lib/arc/VENDOR.txt).
 
 | Component | Location | Upstream | License (per file headers / upstream) |
 |---|---|---|---|
-| **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
+| **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License. **Locally PHP-8/UTF-8 patched** (N-Triples serializer); see [`VENDOR.txt`](luna/luna.lib/arc/VENDOR.txt). |
 | **HTMLPurifier** (input sanitiser) | `vendor/ezyang/htmlpurifier/` (Composer) | github.com/ezyang/htmlpurifier | ezyang/htmlpurifier 4.19.0 — LGPL-2.1-or-later (© Edward Z. Yang) |
 
 **jQuery has been removed** (0.6.8-alpha). The front-end is now dependency-free

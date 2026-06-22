@@ -79,11 +79,11 @@ All hooks are optional except `singleton()`. `load_mods()` checks for each with
 
 On a submit the dispatcher calls the generic `submit()` **first** (if defined),
 *then* the mode-specific hook selected by the `$_POST['mode']` switch — they are
-not alternatives, both fire ([luna.php:470-488](../luna/luna.php#L470)).
+not alternatives, both fire ([luna.php:498-514](../luna/luna.php#L498)).
 
 After **any** submit (when the request is not AJAX), `load_mods()` runs
 `lunaDB::optimise()` (an `OPTIMIZE TABLE`) on the nodes/map/actions tables —
-regardless of whether the submit actually succeeded ([luna.php:490](../luna/luna.php#L490)).
+regardless of whether the submit actually succeeded ([luna.php:516-521](../luna/luna.php#L516)).
 
 ### Injecting data into the model
 
@@ -91,9 +91,12 @@ A mod reaches the singleton model at `luna::$model` and merges nodes in. The
 common calls (see [rdf-model.md](rdf-model.md)):
 
 - `luna::$model->merge_index(...)` — merge nodes into the store.
-- `luna::$model->load_data($array, $label)` — flatten a PHP array into variable
-  nodes.
-- `luna::$model->load_var($spec)` — create a single blank-node variable.
+- `luna::$model->load_data($array, $label)` — flatten a PHP array into
+  render-model variable nodes (blank nodes in the `ui:` namespace,
+  `https://jeromev.github.io/LunarSystem/render#`).
+- `luna::$model->load_var($spec)` — create a single `ui:` render-model blank
+  node (the i18n/form/list scaffolding the XSLT chrome reads; it never reaches
+  the published content graph).
 - `luna::$model->load_nodes($type1, $type2, $nid)` — pull typed nodes + edges
   from the DB.
 - `luna::$model->set_property($node, $lid, $value)` — set a property.

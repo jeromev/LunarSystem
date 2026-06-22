@@ -2,7 +2,12 @@
 #
 # Namespace IRI:  https://jeromev.github.io/LunarSystem/ontology#
 # Single source of truth in code: lunaModel::LUNA_NS (luna/luna.classes/luna.model.class.php);
-# the 16 XSLT `xmlns:luna="…"` declarations and semantic/ontop/mapping.ttl must match it.
+# the 15 XSLT `xmlns:luna="…"` declarations and semantic/ontop/mapping.ttl must match it.
+#
+# This `luna:` namespace holds app-specific CONTENT terms only. The UI render-model — the
+# i18n strings and XSLT-chrome scaffolding — lives in a SEPARATE namespace,
+# ui: <https://jeromev.github.io/LunarSystem/render#> (ui:vocabulary, ui:data, ui:request,
+# ui:pager, ui:message, ui:log, …), and never reaches any published graph.
 #
 # LunarSystem publishes content with standard vocabularies — schema.org, Dublin Core, FOAF,
 # SIOC, PROV-O. As projected into the triplestore (R2RML + the model's write-through), the
@@ -11,9 +16,12 @@
 # schema:headline / schema:articleBody / schema:isPartOf / schema:hasPart / schema:inLanguage /
 # foaf:name. That minimalism is deliberate — reuse standards, invent as little as possible.
 #
-# (owl:isChildOf, luna:is_active and /node/{nid} URIs live only in the app's internal in-memory
-#  model, which drives the XSLT rendering — they are not published. ?output=xml/n3/json serves
-#  this same clean schema.org projection, matching the triplestore.)
+# (There is effectively ONE model now: the legacy terms owl:isChildOf, luna:is_active and the
+#  /node/{nid} integer URIs are GONE everywhere — rendered, published and triplestore alike.
+#  The integer nid survives only as schema:identifier and as the loaders' internal DB key.
+#  project_to_schema() re-keys the in-memory graph to /id/{slug} and maps the content vocabulary
+#  to schema.org at the serialisation boundary, so the XSLT renders from the same schema.org/slug
+#  graph that ?output=xml/n3/json/jsonld serves and that matches the triplestore.)
 
 @prefix luna: <https://jeromev.github.io/LunarSystem/ontology#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -37,5 +45,5 @@ luna:level a rdf:Property, owl:ObjectProperty ;
 
 luna:content a rdf:Property, owl:DatatypeProperty ;
     rdfs:label "content" ;
-    rdfs:comment "The raw HTML body of a text block, as authored. Standard consumers can read the same value from schema:articleBody / schema:text." ;
+    rdfs:comment "The raw HTML body of a text block, as authored. schema:articleBody is the published, stripped-plain-text projection of this value; standard consumers read that." ;
     rdfs:range rdfs:Literal .

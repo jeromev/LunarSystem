@@ -10,7 +10,7 @@ here, per language under `<lang>/LC_MESSAGES/`:
 | `luna`  | `luna.po` / `luna.mo`  | **committed**  | the CMS engine's UI vocabulary (`_()`)          |
 | `local` | `local.po` / `local.mo`| **git-ignored**| this site's page labels, layered over `luna`    |
 
-`lunaTools::label($lid)` resolves a page/node label: it tries the `local`
+`lunaTools::label($lid)` resolves a page label by its lid (slug): it tries the `local`
 domain first, falls back to the engine `luna` catalog, then to the raw lid.
 So site-specific page-label translations never enter the engine repo.
 

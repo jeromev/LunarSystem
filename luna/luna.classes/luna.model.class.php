@@ -564,10 +564,12 @@ class lunaModel {
 	 * Project the current page (and its text blocks) into a clean, standards-based ARC2
 	 * index — the same schema.org/FOAF shape as the triplestore: slug IRIs (/id/{slug}),
 	 * schema:WebPage / schema:Article, schema:isPartOf / hasPart, and the three luna: terms
-	 * (isActive, level, content). This is what ?output=xml/n3/json serialise, so the public
-	 * RDF matches the triplestore instead of the legacy in-memory render model (/node/{nid},
-	 * owl:isChildOf, luna:is_active), which stays internal to the XSLT pipeline. to_jsonld()
-	 * is the JSON-LD form of the same projection.
+	 * (isActive, level, content). This is what ?output=xml/n3/json serialise. Since the Phase
+	 * 1-4 retirement of the legacy model the XSLT-facing graph is the SAME schema.org/slug
+	 * shape — project_to_schema() re-keys /node/{nid} subjects to /id/{slug} and maps the
+	 * content vocabulary to schema.org at the transform() boundary — so /node/{nid},
+	 * owl:isChildOf and luna:is_active are gone everywhere, not just from the published RDF.
+	 * to_jsonld() is the JSON-LD form of the same projection.
 	 *
 	 * @access private
 	 * @return array an ARC2 index (uri => predicate => [ {value,type,datatype?,lang?} ])

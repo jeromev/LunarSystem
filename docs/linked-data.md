@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.45-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.8.46-alpha`).** The semantic-web work
 > described here is the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
@@ -54,8 +54,11 @@ Rules that must not change between phases:
 - Content negotiation, not `?output=`, is the long-term mechanism (the `?output=`
   query param stays as a convenience/debug alias).
 
-> Today's model already uses real HTTP node URIs (`{base}/node/{nid}`). Phase 0
-> introduces the `nid`-free `/id/{slug}` form; A and B inherit it verbatim.
+> The pre-migration model used real HTTP node URIs (`{base}/node/{nid}`). Phase 0
+> introduced the `nid`-free `/id/{slug}` form, and the legacy-model retirement is now
+> **complete**: `/id/{slug}` is the identity everywhere a consumer sees — rendered,
+> published, and in the triplestore. The integer `nid` survives only as the
+> `schema:identifier` property and as the loaders' internal DB key.
 
 ## Decision 2 — Vocabulary mapping (reuse, don't invent)
 
@@ -107,9 +110,16 @@ this time the representation is correct, standards-based Linked Data:
   (Google/Bing rich results, knowledge-graph ingestion).
 - `?output=xml/n3/json` serve the **same clean projection**
   ([`lunaModel::build_schema_index()`](../luna/luna.classes/luna.model.class.php)) — slug
-  IRIs, `schema:WebPage`/`Article`, the three `luna:` terms — so the whole public RDF
-  surface matches the triplestore. The legacy in-memory model (`/node/{nid}`,
-  `owl:isChildOf`, `luna:is_active`) stays internal to the XSLT pipeline.
+  IRIs, `schema:WebPage`/`Article`, the `luna:` terms — so the whole public RDF
+  surface matches the triplestore. The legacy-model retirement is now complete, so
+  there is effectively **one model**: the loaders build an `nid`-keyed in-memory graph,
+  but [`lunaModel::project_to_schema()`](../luna/luna.classes/luna.model.class.php)
+  re-keys it to `/id/{slug}` and maps the content vocabulary to schema.org at the
+  `transform()` serialisation boundary, so **the XSLT renders from the schema.org /
+  `/id/{slug}` graph too** — not from a legacy `/node/{nid}` view. The made-up
+  `owl:isChildOf` is gone everywhere (now `schema:isPartOf`, including the internal
+  graph), and the active flag is `luna:isActive` throughout. The `nid` survives only as
+  the `schema:identifier` property and the loaders' internal DB key.
 
 Implementation: [`lunaModel::to_jsonld()`](../luna/luna.classes/luna.model.class.php)
 applies the Decision-2 mapping to the page node + its text blocks and emits a

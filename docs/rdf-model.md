@@ -26,18 +26,21 @@ $index[ subject_uri ][ predicate_uri ][ n ] = array(
 
 So a single "node" is one `subject_uri` key whose value is a map of predicates,
 each holding an ordered list of value objects. A second array,
-`lunaModel::$aliases`, maps URL paths to node IDs for routing.
+`lunaModel::$aliases`, maps URL paths to subject IRIs for routing.
 
 Conceptually, a page node looks like:
 
 ```
-/node/9
-  luna:nid          → "9"            (literal)
-  luna:lid          → "root"         (literal)
-  rdf:type          → luna:page      (uri)
-  rdfs:label        → "Home" @en     (literal, lang-tagged)
-  owl:isChildOf     → /node/9        (uri)
+/id/root
+  schema:identifier   → "9"            (literal)
+  luna:lid            → "root"         (literal)
+  rdf:type            → schema:WebPage (uri)
+  schema:name         → "Home" @en     (literal, lang-tagged)
+  schema:isPartOf     → /id/root       (uri)
 ```
+
+The integer `nid` survives only as the `schema:identifier` literal and as the
+loaders' internal DB key; every subject a consumer sees is an `/id/{slug}` IRI.
 
 ## Namespaces
 
@@ -47,22 +50,32 @@ custom namespace:
 | Prefix | URI | Used for |
 |---|---|---|
 | `rdf` | `http://www.w3.org/1999/02/22-rdf-syntax-ns#` | `rdf:type`, descriptions |
-| `rdfs` | `http://www.w3.org/2000/01/rdf-schema#` | `rdfs:label` |
-| `foaf` | `http://xmlns.com/foaf/0.1/` | users → `foaf:Person`, `foaf:name`, `foaf:mbox` |
-| `owl` | `http://www.w3.org/2002/07/owl#` | `owl:isChildOf` (page hierarchy) |
+| `rdfs` | `http://www.w3.org/2000/01/rdf-schema#` | (legacy `rdfs:label`, projected to `schema:name`) |
+| `schema` | `https://schema.org/` | content classes/predicates: `schema:WebPage`, `schema:Article`, `schema:name`, `schema:identifier`, `schema:isPartOf`/`hasPart`, `schema:headline`, `schema:articleBody`, `schema:inLanguage` |
+| `foaf` | `http://xmlns.com/foaf/0.1/` | users → `foaf:Person`, `foaf:name`, `foaf:firstName`, `foaf:surName`, `foaf:mbox` |
+| `owl` | `http://www.w3.org/2002/07/owl#` | declared, but no `owl:` term is used by the content model |
 | `dc` | `http://purl.org/dc/elements/1.1/` | Dublin Core (metadata) |
 | `dcterms` | `http://purl.org/dc/terms/` | Dublin Core terms |
-| **`luna`** | **`https://jeromev.github.io/LunarSystem/ontology#`** | **all system predicates**: `nid`, `lid`, `is_active`, `content`, `user`, `group`, `level`, `alias`, `value`, `code`, … |
+| **`luna`** | **`https://jeromev.github.io/LunarSystem/ontology#`** | **app-specific CONTENT predicates** with no standard equivalent: `lid`, `isActive`, `content`, `level`, `alias`, `url`, plus user metadata (`ip`, `last-visit`, `registration-date`) and the `luna:group`/`luna:level`/`luna:mod` classes |
+| **`ui`** | **`https://jeromev.github.io/LunarSystem/render#`** | **UI render-model** (chrome only, never published): `ui:vocabulary`/`data`/`request`/`pager`/`message`/`log`/`lang`/`config` + `ui:value`/`lid`/`perpage`/`total`/`link`/`selected`/`code`/… |
 
-The `luna:` namespace string is exposed as `lunaModel::$lunaNameSpace` and used
-throughout the loaders.
+The `luna:` namespace string is exposed as `lunaModel::$lunaNameSpace`; the `ui:`
+render namespace as the `lunaModel::LUNA_RENDER_NS` constant. Both are registered
+in the constructor's `$conf['ns']` map.
 
-> This table describes the **internal** in-memory model that drives the XSLT (hence
-> `owl:isChildOf`, `luna:is_active`, `/node/{nid}`). The **published** RDF is narrower and
-> standards-clean: `?output=xml/n3/json` and the triplestore project the page + its texts to
-> `schema:WebPage`/`Article` with slug IRIs, `schema:isPartOf`/`hasPart`, and only
-> `luna:isActive`/`level`/`content` — see
-> [`build_schema_index()`](../luna/luna.classes/luna.model.class.php) and [linked-data.md](linked-data.md).
+> There is effectively **one** content model. At the `transform()` serialisation
+> boundary, [`project_to_schema()`](../luna/luna.classes/luna.model.class.php)
+> re-keys every node to an `/id/{slug}` IRI and maps the content vocabulary to
+> schema.org (`luna:page`→`schema:WebPage`, `luna:text`→`schema:Article`,
+> `luna:nid`→`schema:identifier`, `rdfs:label`→`schema:name`,
+> `luna:page`-edge→`schema:isPartOf`), so the XSLT renders from the
+> schema.org/slug graph. The **published** RDF (`?output=xml/n3/json/jsonld` and
+> the triplestore, via [`build_schema_index()`](../luna/luna.classes/luna.model.class.php)
+> / [`to_jsonld()`](../luna/luna.classes/luna.model.class.php)) is the same
+> vocabulary, additionally stripping `luna:content` HTML to the plain-text
+> `schema:articleBody` projection. The `ui:` render-model bnodes (chrome) are the
+> only triples that stay XSLT-internal and never reach the published graph. See
+> [linked-data.md](linked-data.md).
 
 ## SQL → RDF projection
 
@@ -71,8 +84,8 @@ graph, and the model's job is to read it back as triples. The key mapping:
 
 | SQL | RDF |
 |---|---|
-| `luna_nodes` row | a subject node with `luna:nid`, `luna:lid`, `rdfs:label`, `luna:is_active`, `owl:isChildOf` (parent) |
-| `luna_nodes.tid` → `luna_types.lid` | `rdf:type` (e.g. `luna:page`, `luna:text`) |
+| `luna_nodes` row | a subject node with `schema:identifier`, `luna:lid`, `schema:name`, `luna:isActive`, `schema:isPartOf` (parent) |
+| `luna_nodes.tid` → `luna_types.lid` | `rdf:type` (e.g. `schema:WebPage`, `schema:Article`) |
 | `luna_nodes_map (nid1, nid2)` | a typed predicate edge between two nodes (e.g. mod→level, user→group) |
 | `luna_texts` row | a `luna:content` property (lang-tagged) on the text node |
 | `luna_users` row | a `foaf:Person` with `foaf:name`, `foaf:mbox` (`mailto:`), `luna:ip`, `luna:last-visit` |
@@ -96,7 +109,7 @@ The trick that makes a single edge table work as RDF: `load_nodes()` reconstruct
   `get_page_node_from_alias($path)` — fetch nodes.
 - `get_nid($node)`, `get_lid($node)`, `get_type($node)` — extract identity.
 - `get_parent_node()`, `get_children_nodes()`, `get_children_nids()` — traverse
-  the page hierarchy (via `owl:isChildOf`).
+  the page hierarchy (via `schema:isPartOf`).
 - `get_level_node($node)` — the access level a node requires.
 - `get_nid_from_lid($lid)` — direct DB lookup, slug → id.
 
@@ -112,8 +125,11 @@ The trick that makes a single edge table work as RDF: `load_nodes()` reconstruct
 - `load_text()` / `load_texts()` — content blocks (lang-tagged `luna:content`).
 - `load_data()`, `load_var()`, `load_request()`, `load_vocabulary()` — flatten
   PHP arrays (config, `$_REQUEST`, i18n strings) into blank-node variables under
-  the `luna:` namespace, so the view layer can reach them.
-- `load_messages()`, `load_pager()` — flash messages and pagination metadata.
+  the `ui:` render namespace (`ui:data`/`request`/`vocabulary`/…), so the view
+  layer can reach them.
+- `load_messages()`, `load_pager()` — flash messages (`ui:message`) and
+  pagination metadata (`ui:pager`), also built via `load_var()` under the `ui:`
+  render namespace.
 
 ### Validation helpers
 - `check_requested_node()`, `check_if_node_exists()`,

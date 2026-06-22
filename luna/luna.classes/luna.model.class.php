@@ -2599,6 +2599,43 @@ class lunaModel {
 		return true;
 	}
 	// }}}
+	// {{{ project_to_slug()
+	/**
+	 * Project the working (nid-keyed) in-memory model to slug identity before it is
+	 * serialised for the XSLT: every <base/node/{nid}> subject and every node-valued
+	 * @rdf:resource becomes <base/id/{lid}>, so the renderer consumes the same /id/{slug}
+	 * graph as the triplestore and ?output=*. The loaders keep building in nid-space (the
+	 * relational FKs are nid-based); nid survives as the luna:nid property the admin forms
+	 * post. The UI render-model and any non-node subjects are left untouched.
+	 *
+	 * @access private
+	 * @param array $index an ARC2 index keyed by node URI
+	 * @return array the same graph, re-keyed on /id/{slug}
+	 */
+	private function project_to_slug($index) {
+		$luna   = $this->conf['ns']['luna'];
+		$base   = rtrim(luna::$site_uri, '/').'/id/';
+		$prefix = $this->node_path.'/';
+		$map = array();
+		foreach ($index as $uri => $node) {
+			if (strpos($uri, $prefix) === 0 && isset($node[$luna.'lid'][0]['value']) && $node[$luna.'lid'][0]['value'] !== '') {
+				$map[$uri] = $base.rawurlencode($node[$luna.'lid'][0]['value']);
+			}
+		}
+		if (empty($map)) { return $index; }
+		$out = array();
+		foreach ($index as $uri => $node) {
+			$nuri = isset($map[$uri])? $map[$uri] : $uri;
+			foreach ($node as $pred => $vals) {
+				foreach ($vals as $v) {
+					if (isset($v['type'], $v['value']) && $v['type'] === 'uri' && isset($map[$v['value']])) { $v['value'] = $map[$v['value']]; }
+					$out[$nuri][$pred][] = $v;
+				}
+			}
+		}
+		return $out;
+	}
+	// }}}
 	// {{{ transform()
 	/**
 	 * @param string $xslfile
@@ -2614,7 +2651,7 @@ class lunaModel {
 			include_once('arc/ARC2.php');
 			$ser = ARC2::getRDFXMLSerializer($this->conf);
 			$this->dom = new DomDocument;
-			$this->dom->loadXML($ser->getSerializedIndex($this->index));
+			$this->dom->loadXML($ser->getSerializedIndex($this->project_to_slug($this->index)));
 			$this->xslprocessor = new XsltProcessor();
 			$this->xslprocessor->importStyleSheet($this->xsl);
 			$res = $this->xslprocessor->transformToXML($this->dom);

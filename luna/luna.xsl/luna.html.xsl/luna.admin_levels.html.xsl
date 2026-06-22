@@ -100,7 +100,7 @@
 						<h2 class="box-handle expanded">
 							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify the level']/luna:value"/>
 							<xsl:text> </xsl:text>
-							<em><xsl:value-of select="/rdf:RDF/luna:level[schema:identifier = $modify_item_nid]/rdfs:label"/></em>
+							<em><xsl:value-of select="/rdf:RDF/luna:level[schema:identifier = $modify_item_nid]/schema:name"/></em>
 						</h2>
 						<div class="box-content">
 							<div class="fields">

@@ -478,9 +478,9 @@
 						<xsl:for-each select="$foreach">
 							<!--xsl:choose>
 								<xsl:when test="$mode = 'data'"><xsl:sort select="luna:lid"/></xsl:when>
-								<xsl:otherwise><xsl:sort select="rdfs:label"/></xsl:otherwise>
+								<xsl:otherwise><xsl:sort select="schema:name"/></xsl:otherwise>
 							</xsl:choose-->
-							<xsl:sort select="rdfs:label"/>
+							<xsl:sort select="schema:name"/>
 							<option>
 								<xsl:choose>
 									<xsl:when test="$mode = 'data'">
@@ -510,7 +510,7 @@
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:variable name="option_nid"><xsl:value-of select="schema:identifier"/></xsl:variable>
-										<xsl:attribute name="label"><xsl:value-of select="rdfs:label"/></xsl:attribute>
+										<xsl:attribute name="label"><xsl:value-of select="schema:name"/></xsl:attribute>
 										<xsl:attribute name="value"><xsl:value-of select="$option_nid"/></xsl:attribute>
 										<xsl:choose>
 											<xsl:when test="$multiple = 'yes' or $multiple = '1'">
@@ -552,7 +552,7 @@
 												</xsl:choose>
 											</xsl:otherwise>
 										</xsl:choose>
-										<xsl:value-of select="rdfs:label"/>
+										<xsl:value-of select="schema:name"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</option>
@@ -667,12 +667,12 @@
 								<xsl:attribute name="href">
 									<xsl:call-template name="link"><xsl:with-param name="alias" select="luna:alias"/></xsl:call-template>
 								</xsl:attribute>
-								<xsl:value-of select="rdfs:label"/>
+								<xsl:value-of select="schema:name"/>
 							</a>
 							<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $root]) &gt; 0">
 								<ul class="tv">
 									<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $root and @rdf:about != $root]">
-										<xsl:sort select="rdfs:label"/>
+										<xsl:sort select="schema:name"/>
 										<xsl:variable name="child"><xsl:value-of select="@rdf:about"/></xsl:variable>
 										<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
 											<li>
@@ -680,7 +680,7 @@
 													<xsl:attribute name="href">
 														<xsl:call-template name="link"><xsl:with-param name="alias" select="luna:alias"/></xsl:call-template>
 													</xsl:attribute>
-													<xsl:value-of select="rdfs:label"/>
+													<xsl:value-of select="schema:name"/>
 												</a>
 												<xsl:call-template name="recursesitemap"><xsl:with-param name="index" select="$child"/></xsl:call-template>
 											</li>
@@ -701,7 +701,7 @@
 			<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $index]) &gt; 0">
 				<ul class="tv">
 					<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $index]">
-						<xsl:sort select="rdfs:label"/>
+						<xsl:sort select="schema:name"/>
 						<xsl:variable name="childindex"><xsl:value-of select="@rdf:about"/></xsl:variable>
 						<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
 							<li>
@@ -709,7 +709,7 @@
 									<xsl:attribute name="href">
 										<xsl:call-template name="link"><xsl:with-param name="alias" select="luna:alias"/></xsl:call-template>
 									</xsl:attribute>
-									<xsl:value-of select="rdfs:label"/>
+									<xsl:value-of select="schema:name"/>
 								</a>
 								<xsl:call-template name="recursesitemap"><xsl:with-param name="index" select="$childindex"/></xsl:call-template>
 							</li>

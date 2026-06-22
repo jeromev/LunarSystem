@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.42-alpha] - 2026-06-22
+- **Legacy-model retirement, Phase 3b — `schema:name` for the rendered label.** The boundary projection now maps `rdfs:label` → `schema:name`, so the 16 stylesheets read the standard name property (45 references) uniformly — no fragile per-type classification in the XSLT. For parity the published projections (`build_schema_index`, `to_jsonld`) now also carry `schema:name` on articles alongside the existing `schema:headline`, so both the rendered graph and `?output=*` agree on `schema:name` while articles keep the richer headline. Rendered HTML byte-identical (the only output deltas are the intended `schema:name` triple in `?output=*` and the embedded JSON-LD); regression + admin-lockout suites pass.
+
 ## [0.8.41-alpha] - 2026-06-22
 - **Legacy-model retirement, Phase 3a — schema.org predicates (`identifier`, `articleBody`).** Extended the serialisation-boundary projection (`lunaModel::project_to_slug` → `project_to_schema`) with a predicate map that swaps app-specific terms for standard schema.org ones where an equivalent exists: `luna:nid` → `schema:identifier`, `luna:content` → `schema:articleBody`. The 16 HTML stylesheets now read the standard predicates (88 + 7 references). `luna:lid` (the URL slug), `luna:isActive`, `luna:level` and `luna:alias` stay luna: — they are genuinely app-specific and have no standard equivalent. Render byte-identical; regression + admin-lockout suites pass.
 

@@ -533,7 +533,7 @@ class lunaModel {
 				if (!$belongs) { continue; }
 				$part = array('@type' => 'Article');
 				$headline = $first($node, $rdfs.'label');
-				if ($headline !== null) { $part['headline'] = $headline; }
+				if ($headline !== null) { $part['headline'] = $headline; $part['name'] = $headline; }
 				if (isset($node[$luna.'content'][0]['value'])) {
 					$part['articleBody'] = trim(strip_tags($node[$luna.'content'][0]['value']));
 					if (isset($node[$luna.'content'][0]['lang'])) { $part['inLanguage'] = $node[$luna.'content'][0]['lang']; }
@@ -614,7 +614,7 @@ class lunaModel {
 			$turi = $base.'/id/'.rawurlencode($tslug);
 			$index[$turi][$rdf.'type'][] = array('value'=>$schema.'Article', 'type'=>'uri');
 			if (($tnid = $first($node, $luna.'nid')) !== null) { $index[$turi][$schema.'identifier'][] = array('value'=>(string)$tnid, 'type'=>'literal', 'datatype'=>$xint); }
-			if (($head = $first($node, $rdfs.'label')) !== null) { $index[$turi][$schema.'headline'][] = array('value'=>(string)$head, 'type'=>'literal'); }
+			if (($head = $first($node, $rdfs.'label')) !== null) { $index[$turi][$schema.'headline'][] = array('value'=>(string)$head, 'type'=>'literal'); $index[$turi][$schema.'name'][] = array('value'=>(string)$head, 'type'=>'literal'); }
 			if (isset($node[$luna.'content'][0]['value'])) {
 				$body = $node[$luna.'content'][0]['value'];
 				$lang = isset($node[$luna.'content'][0]['lang'])? $node[$luna.'content'][0]['lang'] : '';
@@ -2615,9 +2615,10 @@ class lunaModel {
 	private function project_to_schema($index) {
 		$luna   = $this->conf['ns']['luna'];
 		$schema = $this->conf['ns']['schema'];
+		$rdfs   = $this->conf['ns']['rdfs'];
 		// reuse standard schema.org predicates where one exists (luna: kept only for the
 		// genuinely app-specific: lid/slug, isActive, level, alias).
-		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody');
+		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody', $rdfs.'label' => $schema.'name');
 		$base   = rtrim(luna::$site_uri, '/').'/id/';
 		$prefix = $this->node_path.'/';
 		$map = array();

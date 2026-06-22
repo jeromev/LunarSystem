@@ -28,7 +28,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/rdfs:label"/>
+				<xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/schema:name"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -43,7 +43,7 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/rdfs:label"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/schema:name"/></caption>
 					<thead>
 						<tr>
 							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/></th>
@@ -148,7 +148,7 @@
 					</thead>
 					<tbody>
 						<xsl:for-each select="/rdf:RDF/luna:mod">
-							<xsl:sort select="rdfs:label"/>
+							<xsl:sort select="schema:name"/>
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
@@ -177,12 +177,12 @@
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
-										<xsl:value-of select="rdfs:label"/>
+										<xsl:value-of select="schema:name"/>
 									</a>
 								</td>
 								<td>
 									<xsl:variable name="level-resource" select="luna:level/@rdf:resource"/>
-									<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $level-resource]/rdfs:label"/>
+									<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $level-resource]/schema:name"/>
 								</td>
 							</tr>
 						</xsl:for-each>
@@ -350,8 +350,8 @@
 										<xsl:value-of select="luna:lid"/>
 									</a>
 								</td>
-								<td><xsl:value-of select="rdfs:label"/></td>
-								<td><xsl:value-of select="rdfs:label/@xml:lang"/></td>
+								<td><xsl:value-of select="schema:name"/></td>
+								<td><xsl:value-of select="schema:name/@xml:lang"/></td>
 								<td class="nowrap"><xsl:value-of select="luna:save_time"/></td>
 							</tr>
 						</xsl:for-each>
@@ -592,7 +592,7 @@
 					</thead>
 					<tbody>
 						<xsl:for-each select="/rdf:RDF/luna:page">
-							<xsl:sort select="rdfs:label"/>
+							<xsl:sort select="schema:name"/>
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
@@ -621,18 +621,18 @@
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
-										<xsl:value-of select="rdfs:label"/>
+										<xsl:value-of select="schema:name"/>
 									</a>
 								</td>
 								<td>
 									<xsl:variable name="level-resource" select="luna:level/@rdf:resource"/>
-									<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $level-resource]/rdfs:label"/>
+									<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $level-resource]/schema:name"/>
 								</td>
 								<td>
 									<xsl:for-each select="luna:mod">
 										<xsl:sort select="@rdf:resource"/>
 										<xsl:variable name="resource" select="@rdf:resource"/>
-										<xsl:value-of select="/rdf:RDF/luna:mod[@rdf:about = $resource]/rdfs:label"/>
+										<xsl:value-of select="/rdf:RDF/luna:mod[@rdf:about = $resource]/schema:name"/>
 										<xsl:if test="not(position() = last())">
 											<xsl:text>, </xsl:text>
 										</xsl:if>
@@ -688,7 +688,7 @@
 					</thead>
 					<tbody>
 						<xsl:for-each select="/rdf:RDF/luna:group">
-							<xsl:sort select="rdfs:label"/>
+							<xsl:sort select="schema:name"/>
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
@@ -717,14 +717,14 @@
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
-										<xsl:value-of select="rdfs:label"/>
+										<xsl:value-of select="schema:name"/>
 									</a>
 								</td>
 								<td>
 									<xsl:for-each select="luna:level">
 										<xsl:sort select="@rdf:resource"/>
 										<xsl:variable name="res" select="@rdf:resource"/>
-										<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $res]/rdfs:label"/>
+										<xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $res]/schema:name"/>
 										<xsl:if test="not(position() = last())">
 											<xsl:text>, </xsl:text>
 										</xsl:if>
@@ -780,7 +780,7 @@
 					</thead>
 					<tbody>
 						<xsl:for-each select="/rdf:RDF/luna:level">
-							<xsl:sort select="rdfs:label"/>
+							<xsl:sort select="schema:name"/>
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
@@ -809,14 +809,14 @@
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
-										<xsl:value-of select="rdfs:label"/>
+										<xsl:value-of select="schema:name"/>
 									</a>
 								</td>
 								<td>
 									<xsl:for-each select="luna:group">
 										<xsl:sort select="/rdf:RDF/luna:group[@rdf:about = @rdf:resource]/luna:lid"/>
 										<xsl:variable name="resource" select="@rdf:resource"/>
-										<xsl:value-of select="/rdf:RDF/luna:group[@rdf:about = $resource]/rdfs:label"/>
+										<xsl:value-of select="/rdf:RDF/luna:group[@rdf:about = $resource]/schema:name"/>
 										<xsl:if test="not(position() = last())">
 											<xsl:text>, </xsl:text>
 										</xsl:if>

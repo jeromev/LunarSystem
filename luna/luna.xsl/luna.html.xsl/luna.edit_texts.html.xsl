@@ -154,7 +154,7 @@
 										<xsl:with-param name="mode">data</xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/luna:lang"/>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Language']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/rdfs:label/@xml:lang"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/schema:name/@xml:lang"/>
 									</xsl:call-template>
 								</div>
 								<div class="onecol">
@@ -162,7 +162,7 @@
 										<xsl:with-param name="name">modify_text_title</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'title']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="class">big</xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/rdfs:label"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:text[schema:identifier = $modify_item_nid]/schema:name"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
 									<xsl:call-template name="forminput">

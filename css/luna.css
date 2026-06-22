@@ -1041,11 +1041,10 @@ h6:after {
   width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
 #Page #Messages p {
-  color: #f9f9f9;
-  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
-  margin: 0 0 calc(1 * var(--base-unit));
+  color: var(--bg);
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   font-weight: bold;
-  border-radius: calc(0.5 * var(--base-unit));
+  max-width: 100%;
 }
 #Page div.message {
   padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));

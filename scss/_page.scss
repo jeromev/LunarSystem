@@ -187,11 +187,11 @@
     }
   }
   #Messages p {
-    color: #f9f9f9;
-    padding: bg.v() bg.h() bg.v(0.5);
-    margin: 0 0 bg.v();
+    color: var(--bg);
+    padding: 0 bg.h();
+    // margin-bottom: bg.v(-1);
     font-weight: bold;
-    border-radius: bg.v(0.5);
+    max-width: 100%;
   }
   div.message {
     padding: bg.v(0.5) bg.h();

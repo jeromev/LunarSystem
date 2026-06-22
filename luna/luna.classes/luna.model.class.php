@@ -2232,8 +2232,18 @@ class lunaModel {
 	 * @param integer $nid
 	 * @return boolean
 	 */
-	public function delete($nid = false) { 
+	public function delete($nid = false) {
 		if (empty($nid) || !is_integer(intval($nid))) { return false; }
+		$nid = intval($nid);
+		// Admin-lockout defense-in-depth: never delete a structural node the admin tier
+		// depends on (the admin pages/mods, group_admin/level_admin, …), no matter which
+		// handler asks. See luna::$protected_lids / luna::lid_is_protected().
+		$res = lunaDB::query('SELECT lid FROM '.luna::get_ini('DBtables', 'NODES').' WHERE nid = '.lunaDB::quote($nid).' LIMIT 1');
+		$row = $res->fetchRow();
+		if (isset($row->lid) && luna::lid_is_protected($row->lid)) {
+			lunaLog::log('Refused to delete protected node “'.$row->lid.'” (#'.$nid.').', PEAR_LOG_WARNING);
+			return false;
+		}
 		$this->rdf_delete_node($nid);
 		$res = lunaDB::query('
 			DELETE FROM

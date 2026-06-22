@@ -238,7 +238,29 @@ class mod_admin_users {
 				}
 			}
 			if ($inerror) { return false; }
-			if ($node = luna::$model->update($_POST['user_nid'], $_POST['modify_user_email'], ($_POST['modify_user_is_inactive']? 0 : 1))) { 
+			// --- admin-lockout guardrails: never let this edit strip the actor's own
+			// admin access, nor the site's last active administrator (mirrors the
+			// self-deactivation guard above). ---
+			$group_admin_nid = luna::$model->get_nid_from_lid('group_admin');
+			if (!empty($group_admin_nid)) {
+				$submitted_groups = array_map('intval', (array) $_POST['modify_user_groups']);
+				$keeps_admin   = in_array(intval($group_admin_nid), $submitted_groups, true) && !$_POST['modify_user_is_inactive'];
+				$total_admins  = lunaTools::active_admin_count();
+				$other_admins  = lunaTools::active_admin_count($_POST['user_nid']);
+				$target_is_admin = ($total_admins > $other_admins); // target is an active member of group_admin
+				if ($target_is_admin && !$keeps_admin) {
+					if ($_POST['user_nid'] == luna::$session->user->nid) {
+						$message = _('You cannot remove your own administrator access.');
+						luna::$messages['warning'][] = $message; lunaLog::log($message, PEAR_LOG_WARNING);
+						return false;
+					} else if ($other_admins < 1) {
+						$message = _('You cannot remove the last administrator: the site would be left with no one able to administer it.');
+						luna::$messages['warning'][] = $message; lunaLog::log($message, PEAR_LOG_WARNING);
+						return false;
+					}
+				}
+			}
+			if ($node = luna::$model->update($_POST['user_nid'], $_POST['modify_user_email'], ($_POST['modify_user_is_inactive']? 0 : 1))) {
 				luna::$model->unlink($node, 'group');
 				luna::$model->link($node, $_POST['modify_user_groups']);
 				$res = lunaDB::query('
@@ -308,6 +330,18 @@ class mod_admin_users {
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			if ($inerror) { return false; }
+			// admin-lockout guardrail: never delete the last active administrator
+			// (self-deletion is already blocked above; this covers delegated admins).
+			$group_admin_nid = luna::$model->get_nid_from_lid('group_admin');
+			if (!empty($group_admin_nid)) {
+				$total_admins = lunaTools::active_admin_count();
+				$other_admins = lunaTools::active_admin_count($_POST['user_nid']);
+				if (($total_admins > $other_admins) && $other_admins < 1) {
+					$message = _('You cannot delete the last administrator.');
+					luna::$messages['warning'][] = $message; lunaLog::log($message, PEAR_LOG_WARNING);
+					return false;
+				}
+			}
 			if (luna::$model->delete($_POST['user_nid'])) {
 				$res = lunaDB::query('
 					DELETE FROM

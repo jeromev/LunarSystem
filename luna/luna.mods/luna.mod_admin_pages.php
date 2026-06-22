@@ -298,6 +298,14 @@ class mod_admin_pages {
 			luna::$messages['warning'][] = $message;
 			lunaLog::log($message, PEAR_LOG_NOTICE);
 		}
+		// admin-lockout guardrail: protected admin pages cannot be deleted (submit_modify
+		// already guards modify; this closes the delete path, backstopped by lunaModel::delete()).
+		if (luna::lid_is_protected($page_lid)) {
+			$message = sprintf(_('You cannot delete the protected page “%1$s”.'), _($page_lid));
+			luna::$messages['warning'][] = $message;
+			lunaLog::log($message, PEAR_LOG_WARNING);
+			return false;
+		}
 		if ($inerror) { return false; }
 		$page_nid = luna::$model->get_nid($item_node);
 		if (luna::$model->delete($page_nid)) {

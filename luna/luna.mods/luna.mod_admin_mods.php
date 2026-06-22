@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -88,7 +88,7 @@ class mod_admin_mods {
 	 * @access public
 	 * @return boolean
 	 */
-	public function submit_add() { 
+	public function submit_add() {
 		// initialise the errors counter
 		$inerror = 0;
 		// clean things
@@ -107,7 +107,7 @@ class mod_admin_mods {
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['add_mod_level'], 'level')) { return false; }
 		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['add_mod_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_mods: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each page node exists
-		if (isset($_POST['add_mod_pages']) && is_array($_POST['add_mod_pages']) && !empty($_POST['add_mod_pages'])) { 
+		if (isset($_POST['add_mod_pages']) && is_array($_POST['add_mod_pages']) && !empty($_POST['add_mod_pages'])) {
 			foreach ($_POST['add_mod_pages'] as $page_nid) {
 				if (!$item_page_node = luna::$model->check_if_node_exists($page_nid, 'page')) { return false; }
 			}
@@ -115,7 +115,7 @@ class mod_admin_mods {
 			$_POST['add_mod_pages'] = array();
 		}
 		if ($inerror) { return false; }
-		if ($node = luna::$model->insert('mod', $_POST['add_mod_lid'], ($_POST['add_mod_is_inactive']? 0 : 1))) { 
+		if ($node = luna::$model->insert('mod', $_POST['add_mod_lid'], ($_POST['add_mod_is_inactive']? 0 : 1))) {
 			luna::$model->link($node, $_POST['add_mod_pages']);
 			luna::$model->link($node, array($_POST['add_mod_level']));
 			lunaTools::purge_cache();
@@ -136,7 +136,7 @@ class mod_admin_mods {
 	 * @access public
 	 * @return boolean
 	 */
-	public function submit_modify() { 
+	public function submit_modify() {
 		// initialise the errors counter
 		$inerror = 0;
 		// clean things
@@ -163,7 +163,7 @@ class mod_admin_mods {
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['modify_mod_level'], 'level')) { return false; }
 		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['modify_mod_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_mods: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each page node exists
-		if (isset($_POST['modify_mod_pages']) && is_array($_POST['modify_mod_pages']) && !empty($_POST['modify_mod_pages'])) { 
+		if (isset($_POST['modify_mod_pages']) && is_array($_POST['modify_mod_pages']) && !empty($_POST['modify_mod_pages'])) {
 			foreach ($_POST['modify_mod_pages'] as $page_nid) {
 				if (!$item_page_node = luna::$model->check_if_node_exists($page_nid, 'page')) { return false; }
 			}
@@ -236,7 +236,7 @@ class mod_admin_mods {
 	 * @access public
 	 * @return boolean
 	 */
-	public function load() { 
+	public function load() {
 		$inerror = 0;
 		if (!luna::$model->merge_index(luna::$model->load_nodes('mod', 'level'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
 		if (!luna::$model->merge_index(luna::$model->load_nodes('mod', 'page'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }

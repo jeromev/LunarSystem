@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -47,7 +47,7 @@ class mod_log {
 	 * @access	private
 	 * @return boolean
 	 */
-	private function __construct() { 
+	private function __construct() {
 		lunaTools::add_vocabulary(array(
 			'Connection form',
 			'Email',
@@ -78,11 +78,11 @@ class mod_log {
 	 * @access public
 	 * @return boolean
 	 */
-	public function load() { 
-		switch(luna::$data['lid']) { 
-			case 'logout': $this->logout(); 
-				break; 
-		} 
+	public function load() {
+		switch(luna::$data['lid']) {
+			case 'logout': $this->logout();
+				break;
+		}
 		return true;
 	}
 	// }}}
@@ -182,8 +182,8 @@ class mod_log {
 				luna::$messages['warning'][] = $generic;
 				lunaLog::log('Login failed: wrong password for '.$user->email, PEAR_LOG_WARNING);
 				$res = lunaDB::query('
-					UPDATE 
-						'.luna::get_ini('DBtables', 'USERS').' 
+					UPDATE
+						'.luna::get_ini('DBtables', 'USERS').'
 					SET
 						login_attempts = login_attempts + 1
 					WHERE
@@ -211,24 +211,24 @@ class mod_log {
 			lunaDB::query('UPDATE '.luna::get_ini('DBtables', 'SESSIONS').' SET csrf_token = '.lunaDB::quote($new_csrf).' WHERE session_id = '.lunaDB::quote($new_sid).'');
 			luna::$session->user->csrf_token = $new_csrf;
 			$res = lunaDB::query('
-				UPDATE 
-					'.luna::get_ini('DBtables', 'SESSIONS').' 
+				UPDATE
+					'.luna::get_ini('DBtables', 'SESSIONS').'
 				SET
-					session_user_nid = '.lunaDB::quote($user->nid).', 
-					session_logged_in = '.lunaDB::quote(true).'  
+					session_user_nid = '.lunaDB::quote($user->nid).',
+					session_logged_in = '.lunaDB::quote(true).'
 				WHERE
 					session_id = '.lunaDB::quote(luna::$session->user->session_id).'
 			');
 			$res = lunaDB::query('
-				DELETE FROM 
-					'.luna::get_ini('DBtables', 'SESSIONS').' 
-				WHERE 
+				DELETE FROM
+					'.luna::get_ini('DBtables', 'SESSIONS').'
+				WHERE
 					session_user_nid = '.lunaDB::quote($user->nid).'
 					AND session_id <> '.lunaDB::quote(luna::$session->user->session_id).'
 			');
 			$res = lunaDB::query('
-				UPDATE 
-					'.luna::get_ini('DBtables', 'USERS').' 
+				UPDATE
+					'.luna::get_ini('DBtables', 'USERS').'
 				SET
 					login_attempts =  0
 				WHERE
@@ -256,15 +256,15 @@ class mod_log {
 	 */
 	public function go_guest() {
 		$res = lunaDB::query('
-			UPDATE 
-				'.luna::get_ini('DBtables', 'SESSIONS').' 
+			UPDATE
+				'.luna::get_ini('DBtables', 'SESSIONS').'
 			SET
-				session_user_nid = '.lunaDB::quote(ANONYMOUS).', 
-				session_logged_in = '.lunaDB::quote(false).'  
+				session_user_nid = '.lunaDB::quote(ANONYMOUS).',
+				session_logged_in = '.lunaDB::quote(false).'
 			WHERE
 				session_id = '.lunaDB::quote(luna::$session->user->session_id).'
 		');
-		   
+
 		luna::$session->user = luna::$session->get_user_data(luna::$session->user->session_id);
 		return true;
 	}

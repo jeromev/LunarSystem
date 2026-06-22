@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
 	version="1.0"
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:luna="http://lunarsystem.org/ontology#"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -142,7 +142,7 @@
 										<xsl:with-param name="name">modify_user_lastname</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lastname']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:surName"/></xsl:with-param>
-									</xsl:call-template>                                                                                       
+									</xsl:call-template>
 									<br/>
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_user_email</xsl:with-param>
@@ -192,9 +192,9 @@
 								<input type="submit" class="submit warning" name="submit">
 									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
 									<xsl:attribute name="data-confirm">
-										
+
 										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this user?']/luna:value"/>
-										
+
 									</xsl:attribute>
 								</input>
 							</div>

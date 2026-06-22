@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -47,7 +47,7 @@ class mod_example {
 	 * @access	private
 	 * @return boolean
 	 */
-	private function __construct() { 
+	private function __construct() {
 		lunaTools::add_vocabulary(array(
 			'example'
 		));
@@ -71,7 +71,7 @@ class mod_example {
 	 * @access public
 	 * @return boolean
 	 */
-	public function load() { 
+	public function load() {
 		// load things
 		return true;
 	}

@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -83,17 +83,17 @@ class mod_admin {
 		$submits = array();
 		foreach (luna::$ini['config'] as $key => $value) {
 			$submitvalue = false;
-			if ($submitvalue = lunaTools::request($key, array($_POST))) { 
+			if ($submitvalue = lunaTools::request($key, array($_POST))) {
 				if ($submitvalue != $value) { $submits[$key] = $submitvalue; }
 			}
 		}
-		if (luna::get_ini('config', 'disable')) { 
-			if (!$disable = lunaTools::request('disable', array($_POST))) { $submits['disable'] = 0; } 
+		if (luna::get_ini('config', 'disable')) {
+			if (!$disable = lunaTools::request('disable', array($_POST))) { $submits['disable'] = 0; }
 		}
 		if (!empty($submits)) {
 			$sql_delete = '';
 			$sql_insert = '';
-			foreach ($submits as $key => $value) {  
+			foreach ($submits as $key => $value) {
 				$sql_delete .= lunaDB::quote($key).',';
 				$sql_insert .= '('.lunaDB::quote($key).', '.lunaDB::quote($value).'),';
 				luna::$ini['config'][$key] = $value;
@@ -103,7 +103,7 @@ class mod_admin {
 			$res = lunaDB::query('
 				DELETE FROM
 					'.luna::get_ini('DBtables', 'CONFIG').'
-				WHERE 
+				WHERE
 					name IN ('.$sql_delete.')
 			');
 			$res = lunaDB::query('
@@ -131,11 +131,11 @@ class mod_admin {
 	 * load()
 	 * @return boolean
 	 */
-	public function load() { 
+	public function load() {
 		luna::$model->merge_index(luna::$model->load_data(luna::$ini['config'], 'config'));
 		return true;
 	}
-	
+
 	// }}}
 }
 // }}}

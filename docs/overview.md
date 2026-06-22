@@ -3,9 +3,9 @@
 ## What LunarSystem is
 
 LunarSystem is a small, self-contained PHP content-management system written
-between **2006 and 2010** by "Odradek" (lunarsystem.org). It was released on
+between **2006 and 2010** by Odradek. It was released on
 SourceForge as alpha software and reached version **0.2.7-alpha** in 2010; this
-archival revival carries the version forward to **0.8.33-alpha**.
+archival revival carries the version forward to **0.8.34-alpha**.
 
 Functionally it is a Drupal-like CMS: a tree of pages, a pluggable module
 system, users/groups/access-levels, editable text content, and i18n. What makes
@@ -63,7 +63,7 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
 | **text** | A content block (`luna_texts`), one row per language, attached to a page. |
 | **domain** | A per-host configuration directory under `luna/luna.domains/`. |
 | **model** | The `lunaModel` singleton — the in-memory RDF triple store for the current request. |
-| **the `luna:` namespace** | The custom RDF ontology, `http://lunarsystem.org/ontology#`, used for system predicates (`nid`, `lid`, `content`, `level`, …). |
+| **the `luna:` namespace** | The custom RDF ontology, `https://jeromev.github.io/LunarSystem/ontology#`, used for system predicates (`nid`, `lid`, `content`, `level`, …). |
 
 ## What it is *not*
 

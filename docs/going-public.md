@@ -28,8 +28,6 @@ ports), which are loopback-bound.
 ### Minimal & focused (Tier 2)
 - [x] **No CKEditor** — admin editor is a plain `<textarea>`; the front-end is
       dependency-free vanilla JS (`js/luna.js`).
-- [x] **No `lunarsystem.org` production domain** (theme + the real-looking
-      on-disk `db.ini`); the demo uses `luna.default`.
 
 ### A real testing unit (Tier 1)
 - [x] **[try-it.md](try-it.md)** — a ~10-minute hands-on lab (data views → SPARQL →

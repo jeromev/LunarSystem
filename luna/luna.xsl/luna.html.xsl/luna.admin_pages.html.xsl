@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
 	version="1.0"
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:luna="http://lunarsystem.org/ontology#"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -142,7 +142,7 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_parent_nid</xsl:with-param>
 										<xsl:with-param name="type">select</xsl:with-param>
-										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Parent page']/luna:value"/></xsl:with-param> 
+										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Parent page']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/luna:page"/>
 										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:page[@rdf:about = $parent-resource]/luna:nid"/></xsl:with-param>
 									</xsl:call-template>
@@ -178,9 +178,9 @@
 								<input type="submit" class="submit warning" name="submit">
 									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
 									<xsl:attribute name="data-confirm">
-										
+
 										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this page?']/luna:value"/>
-										
+
 									</xsl:attribute>
 								</input>
 							</div>

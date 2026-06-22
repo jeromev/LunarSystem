@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.33-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.8.34-alpha`).** The semantic-web work
 > described here is the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
@@ -84,6 +84,15 @@ Namespaces in play: `schema:` `https://schema.org/`, `dcterms:`
 `http://xmlns.com/foaf/0.1/`, `prov:` `http://www.w3.org/ns/prov#`, `skos:`
 `http://www.w3.org/2004/02/skos/core#`. A small `luna:` survives for what nobody
 else models.
+
+The `luna:` namespace IRI is **`https://jeromev.github.io/LunarSystem/ontology#`**, defined
+once as `lunaModel::LUNA_NS` and documented in [`ontology/`](../ontology/) (its README covers
+publishing it via GitHub Pages so the IRI dereferences). Three URI roles stay distinct: this
+**vocabulary** namespace (project-level, stable); **resource/instance** IRIs (`/id/{slug}`,
+which follow the deployment host via `luna::$site_uri`); and the project **homepage**
+(`https://github.com/jeromev/LunarSystem`). Only the vocabulary namespace is published RDF
+identity — pointing it at the bare code repo would conflate it with the homepage and wouldn't
+dereference to a vocabulary.
 
 ## What's built in Phase 0 (this branch)
 

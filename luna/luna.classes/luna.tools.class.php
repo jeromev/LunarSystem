@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -156,19 +156,19 @@ class lunaTools {
 	 * @param string $str
 	 * @return string
 	 */
-	public static function prepare_lid($str = false) { 
+	public static function prepare_lid($str = false) {
 		if (!defined('INPUT_SANITIZED') || INPUT_SANITIZED != true) { self::sanitize_inputs(); }
 		if (empty($str) || !is_string($str)) { return false; }
 		$str = self::remove_accents($str);
-		$str = strtolower(trim($str)); 
+		$str = strtolower(trim($str));
 		$search = array(
-			'@\s+@', 
-			'@\?|\.|\,|\:+@', 
+			'@\s+@',
+			'@\?|\.|\,|\:+@',
 			"@\'@"
 		);
 		$replace = array(
-			'_', 
-			'', 
+			'_',
+			'',
 			'-'
 		);
 		return preg_replace($search, $replace, $str);
@@ -180,9 +180,9 @@ class lunaTools {
 	 * @param array $lids
 	 * @return boolean
 	 */
-	public static function add_vocabulary($lids = false, $bindtextdomain = false) { 
+	public static function add_vocabulary($lids = false, $bindtextdomain = false) {
 		if (empty($lids) || !is_array($lids)) { return false; }
-		foreach ($lids as $lid) { 
+		foreach ($lids as $lid) {
 			if (!empty($bindtextdomain) && is_string($bindtextdomain)) {
 				luna::$vocabulary["$lid"] = dgettext("$bindtextdomain", "$lid");
 			} else {
@@ -197,25 +197,25 @@ class lunaTools {
 	 * @access public
 	 * @return string
 	 */
-	public static function set_output_format() { 
-		$output = false; 
-		if (empty(luna::$path)) { $output = luna::$output_formats[0]; } 
-		if (in_array(luna::$path, luna::$output_formats)) { 
+	public static function set_output_format() {
+		$output = false;
+		if (empty(luna::$path)) { $output = luna::$output_formats[0]; }
+		if (in_array(luna::$path, luna::$output_formats)) {
 			$output = luna::$path;
 			luna::$path = '';
-		} else if (strpos(luna::$path, '/') === false) { 
-			$output = false; 
-		} else { 
-			$patharray = explode('/', luna::$path); 
+		} else if (strpos(luna::$path, '/') === false) {
+			$output = false;
+		} else {
+			$patharray = explode('/', luna::$path);
 			foreach ($patharray as $k => $v) { if (empty($v)) { unset($patharray[$k]); } }
 			$subdir = array_pop($patharray);
-			if (in_array($subdir, luna::$output_formats)) { 
+			if (in_array($subdir, luna::$output_formats)) {
 				luna::$path = implode('/', $patharray);
-				$output = "$subdir"; 
+				$output = "$subdir";
 			}
 		}
 		$request = self::request('output');
-		if (!empty($request) && in_array("$request", luna::$output_formats)) { $output = "$request"; } 
+		if (!empty($request) && in_array("$request", luna::$output_formats)) { $output = "$request"; }
 		if (empty($output)) { $output = $output = luna::$output_formats[0]; }
 		// die($output);
 		return $output;
@@ -223,7 +223,7 @@ class lunaTools {
 	// }}}
 	// {{{ format_date()
 	/**
-	 * @access public 
+	 * @access public
 	 * @param integer $time
 	 * @param string $format
 	 * @return string
@@ -237,7 +237,7 @@ class lunaTools {
 	// }}}
 	// {{{ display_string()
 	/**
-	 * @access public 
+	 * @access public
 	 * @param string $string
 	 * @return $string
 	 */
@@ -250,7 +250,7 @@ class lunaTools {
 	// }}}
 	// {{{ insert_alphabet_nav()
 	/**
-	 * @access public 
+	 * @access public
 	 * @param array $letters
 	 * @param string $theletter
 	 * @param string $tagname
@@ -259,7 +259,7 @@ class lunaTools {
 	public static function insert_alphabet_nav($letters, $theletter = 'A', $tagname = 'alphabeticlist') {
 		if (is_object($xml) && is_array($letters) && is_string($theletter) && is_string($tagname)) {
 			$parentnode = $xml->appendChild($xml->getItem($xml->query('/node')), $xml->createElement($tagname));
-			foreach ($letters as $letter) { 
+			foreach ($letters as $letter) {
 				$childnode = $xml->appendChild($parentnode, $xml->createElement('letter'));
 				$xml->setAttributes($childnode, array('value' => $letter, 'current' => (($letter == $theletter)? '1' : '0')));
 			}
@@ -312,14 +312,14 @@ class lunaTools {
 			501 => "HTTP/1.1 501 Not Implemented",
 			502 => "HTTP/1.1 502 Bad Gateway",
 			503 => "HTTP/1.1 503 Service Unavailable",
-			504 => "HTTP/1.1 504 Gateway Time-out"		 
+			504 => "HTTP/1.1 504 Gateway Time-out"
 		);
 		$errormsg = $http[$error].' "'.$path.'"';
 		// lunaLog::log($errormsg, PEAR_LOG_NOTICE);
 		$message = sprintf(_($http[$error].": %1\$s."), htmlspecialchars($path, ENT_QUOTES));
 		luna::$messages['warning'][] = $message;
 		lunaLog::log($message, PEAR_LOG_NOTICE);
-		header($http[$error]); 
+		header($http[$error]);
 		die($message);
 	}
 	// }}}
@@ -470,7 +470,7 @@ class lunaTools {
 	public static function check_email($email = '') { return (preg_match('/^[A-z0-9][\w.-]*@[A-z0-9][\w\-\.]+\.[A-z0-9]{2,6}$/', $email)); }
 	// }}}
 	// {{{
-	/** 
+	/**
 	 * echo_screen
 	 *
 	 * @access public
@@ -497,7 +497,7 @@ class lunaTools {
 			while ($row = $res->fetchRow()) { $config[$row->name] = $row->value; }
 			$res->free();
 			// parse langs
-			$langs = explode(',', str_replace(' ', '', $config['langs'])); 
+			$langs = explode(',', str_replace(' ', '', $config['langs']));
 			foreach($langs as $v) { $config['site_langs'][] = self::format_language($v); }
 			// unset($config['langs']);
 			if (luna::$cache) { $cache_obj->save(serialize($config)); }
@@ -525,8 +525,8 @@ class lunaTools {
 			$regions = array('en' => 'US');
 			$str .= $replace.(isset($regions[$lc])? $regions[$lc] : strtoupper($lc));
 		} else {
-			$str_array = explode($replace, $str); 
-			$str = substr($str_array[0], 0, 2).$replace.strtoupper(substr($str_array[1], 0, 2)); 
+			$str_array = explode($replace, $str);
+			$str = substr($str_array[0], 0, 2).$replace.strtoupper(substr($str_array[1], 0, 2));
 		}
 		return $str;
 	}
@@ -539,12 +539,12 @@ class lunaTools {
 	 */
 	public static function set_language() {
 		$lang = false;
-		$lang_requested = self::format_language(self::request('lang')); 
-		$site_langs = luna::get_ini('config', 'site_langs'); 
+		$lang_requested = self::format_language(self::request('lang'));
+		$site_langs = luna::get_ini('config', 'site_langs');
 		luna::$session->user->session_lang = self::format_language(luna::$session->user->session_lang);
 		$httplangs = array();
 		if (empty($lang_requested) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-			$http_accept_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']); 
+			$http_accept_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 			$qcandidat = 0;
 			$nblang = count($http_accept_languages);
 			for ($i = 0; $i < $nblang; $i++) {
@@ -559,13 +559,13 @@ class lunaTools {
 						if ($q > $qcandidat) {
 							$candidat = preg_replace('/(.*);.*/', '$1', $http_accept_language);
 							$qcandidat = $q;
-							$indicecandidat = $j;     
+							$indicecandidat = $j;
 						}
 					}
 				}
 				$httplangs[$i] = self::format_language($candidat);
 				$qcandidat=0;
-				unset($http_accept_languages[$indicecandidat]);   
+				unset($http_accept_languages[$indicecandidat]);
 				$http_accept_languages = array_values($http_accept_languages);
 			}
 		}
@@ -577,7 +577,7 @@ class lunaTools {
 			$lang = luna::$session->user->session_lang;
 		}
 		if (!isset($lang) || empty($lang)) { $lang = $site_langs[0]; }
-		$lang_ = self::format_language($lang, '_'); 
+		$lang_ = self::format_language($lang, '_');
 		putenv('LANGUAGE='.$lang_.'.UTF-8');
 		putenv('LANG='.$lang_.'.UTF-8');
 		setlocale(LC_ALL, $lang_.'.UTF-8');
@@ -596,7 +596,7 @@ class lunaTools {
 		bind_textdomain_codeset('local', 'UTF-8');
 		$_SESSION['lang'] = $lang;
 		lunaTools::set_cookie('lang', $lang);
-		define('LANG', $lang); 
+		define('LANG', $lang);
 		if (function_exists('locale_set_default')) { locale_set_default($lang_); }
 		return $lang;
 	}
@@ -713,7 +713,7 @@ class lunaTools {
 		$minutes -= $hours * 60;
 		$days = floor($hours / 24);
 		$hours -= $days * 24;
-		$years = floor($days / 365.25); 
+		$years = floor($days / 365.25);
 		$days -= floor($years * 365.25);
 		if ($years)		{ return ($years.' '.($abrv? substr(($years > 1 ? _('years') : _('year')), 0, 1).'.' : ($years > 1 ? _('years') : _('year'))).' '); }
 		if ($days)		{ return ($days.' '.			($abrv? substr(($days > 1 ? _('days') : _('day')), 0, 1).'.' : ($days > 1 ? _('days') : _('day'))).' '); }
@@ -728,7 +728,7 @@ class lunaTools {
 	 * @param integer $level_nid
 	 * @return boolean
 	 */
-	public static function check_privileges($level_nid = false) { 
+	public static function check_privileges($level_nid = false) {
 		$level_nid = intval($level_nid);
 		if (empty($level_nid)) {
 			if (!$level_nid = luna::$model->get_nid(luna::$model->get_level_node(luna::$page_node))) { return false; }
@@ -749,7 +749,7 @@ class lunaTools {
 	 * @param mixed $level
 	 * @return boolean
 	 */
-	public static function user_can_access_level($user = false, $level = false) { 
+	public static function user_can_access_level($user = false, $level = false) {
 		if (!is_object($user) || empty($user)) { return false; }
 		if (empty($level)) { return false; }
 		if (is_string($level)) { $level = luna::$model->get_nid_from_lid($level); }
@@ -923,7 +923,7 @@ class lunaTools {
 	 * @access public
 	 * @param array $array
 	 * @return array
-	 * @source http://www.lost-in-code.com/39/php-array-to-object/ Posted on May 6th, 2008 by lost-in-code 
+	 * @source http://www.lost-in-code.com/39/php-array-to-object/ Posted on May 6th, 2008 by lost-in-code
 	 */
 	public static function array_to_object($array = array()) {
 		if (!empty($array)) {

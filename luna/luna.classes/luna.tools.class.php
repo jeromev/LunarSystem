@@ -421,8 +421,6 @@ class lunaTools {
 	 * @return mixed
 	 */
 	public static function sanitize($stuff = false) {
-		// require PEAR HTML_Safe Class
-		if (!require_once 'HTML/Safe.php') { throw new lunaException(_('Error: cannot find lib: ').'PEAR HTML_Safe', PEAR_LOG_CRIT); }
 		if (empty($stuff)) { return false; }
 		if (is_array($stuff)) {
 			foreach ($stuff as $k => $v) { $stuff[$k] = self::sanitize($v); }
@@ -431,10 +429,34 @@ class lunaTools {
 			$array = self::sanitize($array);
 			$stuff = self::array_to_object($array);
 		} else {
-			$safehtml = new HTML_Safe();
-			if (!$stuff = $safehtml->parse($stuff)) { throw new lunaException(_('Error: cannot sanitize input.'), PEAR_LOG_CRIT); }
+			$stuff = self::html_purifier()->purify((string) $stuff);
 		}
 		return $stuff;
+	}
+	// }}}
+	// {{{ html_purifier()
+	/**
+	 * A single, lazily-built and cached HTMLPurifier instance (constructing one per
+	 * call is expensive). Replaces the legacy PEAR HTML_Safe denylist sanitiser: it
+	 * parses to a real DOM and emits only an explicit allowlist of safe tags / attrs /
+	 * URI schemes, so <script>, SVG/MathML, on* event handlers and javascript: URIs are
+	 * dropped *by construction* — closing the SVG-SMIL bypass HTML_Safe had to be
+	 * hand-patched against. The definition cache lives in a writable temp dir; if that
+	 * is unavailable the cache is disabled (correct, just slower) rather than failing.
+	 * @access private
+	 * @return HTMLPurifier
+	 */
+	private static function html_purifier() {
+		static $purifier = null;
+		if ($purifier === null) {
+			$cache = sys_get_temp_dir().'/luna-htmlpurifier';
+			if (!is_dir($cache)) { @mkdir($cache, 0700, true); }
+			$config = HTMLPurifier_Config::createDefault();
+			if (is_dir($cache) && is_writable($cache)) { $config->set('Cache.SerializerPath', $cache); }
+			else { $config->set('Cache.DefinitionImpl', null); }
+			$purifier = new HTMLPurifier($config);
+		}
+		return $purifier;
 	}
 	// }}}
 	// {{{ check_email()

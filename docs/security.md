@@ -20,7 +20,7 @@ the **original** findings; several are now fixed or partially fixed as noted her
 | **Unsalted MD5 passwords** | bcrypt (`password_hash`) with transparent upgrade-on-login; generic login errors + dummy verify (no account enumeration) | ✅ | 0.7.2 |
 | **Session fixation** | `session_regenerate_id` on login (DB-handler row re-keyed) | ✅ | 0.7.3 |
 | **No CSRF protection** | per-session synchronizer token in every state-changing form + central POST-only `hash_equals` verify in the dispatch; `?purge` POST-only | ✅ | 0.7.4 |
-| **Stored XSS** (SVG SMIL `<animate>` bypass) | HTML_Safe strips `svg`/`math`/`animate`/… + SMIL attrs; cache `unserialize(..., ['allowed_classes'=>false])` | ✅ | 0.7.5 |
+| **Stored XSS** (SVG SMIL `<animate>` bypass) | HTML_Safe stripped `svg`/`math`/`animate`/… + SMIL attrs (the whole sanitiser was **replaced by HTMLPurifier** in 0.8.28 — an allowlist parser that closes the class by construction); cache `unserialize(..., ['allowed_classes'=>false])` | ✅ | 0.7.5 / 0.8.28 |
 | **IDOR** — edit_texts text→page linking + content modify/delete | per-target `user_can_access_page()` on links; `user_can_act_on_text()` now fails **closed** (a text on a level-less or higher-level page is denied) | ✅ | 0.7.6 / 0.8.1 |
 | **2nd blind/stacked SQLi** — `load_texts` start/limit | `intval`-clamped like `load_users` (was editor-exploitable: `limit=20;SELECT SLEEP(5)`) | ✅ | 0.8.0 |
 | **Source/secret disclosure — case bypass** | `.htaccess` deny rules made case-insensitive (`[NC]`); `/.GIT/HEAD`, `/DOCKERFILE`, `/DOCKER-COMPOSE.YML`, `/DOCS/` no longer served (had leaked DB creds) | ✅ | 0.8.0 |
@@ -54,7 +54,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 |---|---|---|
 | **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
 | **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **Vendored libs** | Maintenance | Bundles Cache_Lite, HTML_Safe (+ its XML_HTMLSax3 parser) and semsol/arc2 3.1.0. PEAR **Log** was removed in 0.8.27 — its `PEAR_LOG_*` constants are now defined inline in `luna.log.class.php`; PEAR base (`PEAR.php`/`PEAR5.php`) remains only as Cache_Lite's / XML_HTMLSax3's lazy error-path fallback, to be dropped with them. |
+| **Vendored libs** | Maintenance | In-tree: Cache_Lite and semsol/arc2 3.1.0. PEAR **Log** (removed 0.8.27, constants inlined) and PEAR **HTML_Safe** + **XML_HTMLSax3** (removed 0.8.28, replaced by **HTMLPurifier** via Composer) are gone; PEAR base (`PEAR.php`/`PEAR5.php`) remains only as Cache_Lite's lazy error-path fallback, to be dropped with it. The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
 
 ## Security weaknesses
 
@@ -63,7 +63,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 | **Unsalted MD5 passwords** | High | `luna_users.password` is a bare `md5()` hash. Trivially crackable; vulnerable to rainbow tables. | Do not reuse real passwords. Don't expose the site publicly. |
 | **Session ID in URL** | High | `session.use_trans_sid = 1` ([luna.php:33](../luna/luna.php#L33)) propagates the session ID through URLs, which leak via referrers, logs, and shared links — enabling session fixation/hijacking. | Disable trans_sid; require cookies. |
 | **Weak default admin** | Medium | Seed admin is `admin@lunarsystem.local` / `luna`. | Change immediately after install. |
-| **Old sanitisation stack** | Medium | Input cleaning leans on PEAR HTML_Safe and hand-rolled filters of its era. SQL is escaped via PDO `quote()` (`lunaDB::quote`), but coverage should not be assumed complete against modern XSS/SQLi techniques. | Audit before any untrusted exposure. |
+| **Sanitisation stack** | Medium | Input HTML cleaning uses **HTMLPurifier** (0.8.28 — an allowlist DOM parser, replacing the era-2005 HTML_Safe denylist). SQL is escaped via PDO `quote()` (`lunaDB::quote`); SPARQL via `sparql_literal`/`rdf_uri` (audited 0.8.26). Modern, but coverage should still not be assumed complete against every technique. | Audit before any untrusted exposure. |
 | **`register_globals`-era assumptions** | Low | Code predates modern superglobal handling; it explicitly disables `register_globals` and guards `magic_quotes`, but the design assumptions are dated. | — |
 
 ## Additional findings (2026 code-review pass)
@@ -72,7 +72,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.27-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.28-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every
@@ -87,7 +87,7 @@ per-target authorisation, session-ID rotation — were completed during the
 | **No login throttling** | Medium | ✅ fixed | `login()` now reads `login_attempts` and applies a capped per-account back-off (`sleep(min(attempts, 5))`); a correct password still resets the counter, so accounts are never permanently locked. | [luna.mod_log.php](../luna/luna.mods/luna.mod_log.php) |
 | **PHP object injection via `unserialize()`** | Medium | ✅ fixed | Sort cookies now use `json_encode`/`json_decode` (cannot instantiate objects); the `load_request()` path guards `unserialize()` against `O:`/`C:` object payloads. | [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php); [luna.model.class.php](../luna/luna.classes/luna.model.class.php) |
 | **Reflected XSS in the error page** | Medium | ✅ fixed | `raise_error_page()` now `htmlspecialchars()`-escapes the requested path before it reaches the HTML response. | [luna.tools.class.php:295](../luna/luna.classes/luna.tools.class.php#L295) |
-| **Stored content rendered unescaped** | Medium | ⬜ open | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety rests on the HTML_Safe filter applied on save (hardened in 0.7.5 / 0.8.1 — the SVG SMIL `<animate>` bypass was closed). | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`) |
+| **Stored content rendered unescaped** | Medium | ◐ partial | `luna:content` (WYSIWYG HTML from `luna_texts`) is emitted with `disable-output-escaping="yes"`, so stored HTML is injected verbatim. By design (rich text) — safety now rests on **HTMLPurifier** (0.8.28), an allowlist DOM sanitiser applied to every input on save: `<script>`, SVG/MathML, `on*` handlers and `javascript:` URIs are dropped *by construction*, so the whole denylist-bypass class (incl. the SVG-SMIL `<animate>` vector the old HTML_Safe had to be hand-patched against) is closed structurally rather than per-CVE. | [luna.default.html.xsl:28](../luna/luna.xsl/luna.html.xsl/luna.default.html.xsl#L28) (+ `luna.root`); [lunaTools::sanitize()](../luna/luna.classes/luna.tools.class.php) |
 | **`purgelogs` wipes the audit log via GET** | Medium | ✅ fixed | The `DELETE FROM luna_logs` now requires `$_POST['purgelogs']`, so a forged link/`<img>` (GET) can no longer trigger it. | [luna.mod_journal.php:81](../luna/luna.mods/luna.mod_journal.php#L81) |
 | **Sensitive data written to `luna_logs`** | Low | ✅ fixed | `lunaLog::log()` now stores only a small `$_SERVER` whitelist (remote addr, method, URI, host, UA, referer) instead of the whole array (which carried the cookie header / session id). | [luna.log.class.php](../luna/luna.classes/luna.log.class.php) |
 | **Weak/bypassable session hijack guard** | Low | ◐ partial | `encode_ip()` no longer trusts `X-Forwarded-For` (it uses `REMOTE_ADDR`), closing the IP-spoof bypass. The guard is still bound to the client-controlled User-Agent, and still breaks users behind rotating IPs. | [luna.session.class.php:322](../luna/luna.classes/luna.session.class.php#L322); [luna.tools.class.php](../luna/luna.classes/luna.tools.class.php) |

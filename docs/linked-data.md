@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.34-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.8.35-alpha`).** The semantic-web work
 > described here is the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B

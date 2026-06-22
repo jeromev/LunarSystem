@@ -7,9 +7,9 @@ minimalism, docs/onboarding, OSS hygiene), with the safety findings verified
 against the running stack.
 
 **Headline:** the irreversible risk is clear — the git history was audited and
-holds **no secrets** (25 commits; no `db.ini` ever committed; the production
-credential never appears). The source is safe to publish; the only true gate was
-operational (open ports), now fixed.
+holds **no secrets** (no `db.ini` ever committed; the production credential never
+appears). The source is safe to publish; the only true gate is operational (host
+ports), which are loopback-bound.
 
 ## Done
 
@@ -18,8 +18,6 @@ operational (open ports), now fixed.
       `127.0.0.1` only (app `8080`, MySQL `3307`); the SPARQL services (Ontop, Oxigraph,
       and the `sparql-proxy` that fronts Oxigraph) have **no host port at all** —
       internal compose network only.
-      Previously `0.0.0.0` — which exposed an unauthenticated Oxigraph `/update`
-      (open graph-write) and MySQL on a bare `docker-compose up`. *(0.4.0-alpha)*
 - [x] **Loud local-only banner** at the top of the README, before the quick start.
 - [x] **Demo-credentials note** next to the login instructions.
 - [x] **Mitigation documented** in [security.md](security.md); the new
@@ -28,9 +26,9 @@ operational (open ports), now fixed.
       `db.ini` is gitignored and was never tracked.
 
 ### Minimal & focused (Tier 2)
-- [x] **Removed CKEditor** (`js/ckeditor`, ~6 MB) — admin editor is a plain
-      `<textarea>`. Repo dropped from ~15 MB to ~8.6 MB. *(0.4.0-alpha)*
-- [x] **Removed the `lunarsystem.org` production domain** (theme + the real-looking
+- [x] **No CKEditor** — admin editor is a plain `<textarea>`; the front-end is
+      dependency-free vanilla JS (`js/luna.js`).
+- [x] **No `lunarsystem.org` production domain** (theme + the real-looking
       on-disk `db.ini`); the demo uses `luna.default`.
 
 ### A real testing unit (Tier 1)
@@ -52,9 +50,9 @@ operational (open ports), now fixed.
 
 ## Remaining — owner-only (can't be done from inside the repo)
 
-- [x] **Rotate the `dbuser@mysql.jeromev.net` database password.** It lived in a
-      working tree for years (never in git, but presume it's exposed). The file is
-      gone from the repo now; rotate the credential at the DB server regardless.
+- [x] **Rotate the `dbuser@mysql.jeromev.net` database password.** It is not in the
+      repo (and never was in git), but presume it's exposed; rotate the credential at
+      the DB server regardless.
 - [ ] **On GitHub:** flip the repo to **public**; set a description and topics
       (`semantic-web`, `sparql`, `rdf`, `linked-data`, `json-ld`, `teaching`);
       confirm the default branch is `main` (with `legacy` preserved); optionally
@@ -63,14 +61,14 @@ operational (open ports), now fixed.
 
 ## Deliberately *not* done (and why)
 
-- **Production-grade hardening beyond the 2026 pass.** The 0.6.9–0.8.21 pass added
-  CSRF tokens, bcrypt passwords, session rotation, SQLi/header fixes, a per-IP login
-  throttle, per-target admin authorization, and HTTP basic auth on the triplestore
+- **Production-grade hardening.** The app has CSRF tokens, bcrypt passwords,
+  session rotation, SQLi/header fixes, a per-IP login throttle, per-target admin
+  authorization, admin-lockout guardrails, and HTTP basic auth on the triplestore
   (see [security.md](security.md)) — but this stays a localhost teaching
   artifact. The fix for safety is "run it on localhost," not
   "make it production-grade." 
 - **Authenticating Ontop's virtual SPARQL endpoint.** Oxigraph's read+write surface is
-  now authenticated through the `sparql-proxy` (Caddy basic auth, since 0.8.21);
+  authenticated through the `sparql-proxy` (Caddy basic auth);
   Ontop's endpoint stays unauthenticated, but it is read-only and internal-only.
   Mitigated by loopback binding; real auth there belongs to the P2/P4 work if the
   store is ever exposed. See [roadmap.md](roadmap.md).

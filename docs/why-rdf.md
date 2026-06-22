@@ -5,7 +5,7 @@ could **not** do with the old-fashioned PHP/MySQL, RDF-as-an-output-format versi
 — and, honestly, what is not done yet.
 
 > **How to read the tags.** Each capability is marked **live** (works today on
-> `main`, 0.8.32-alpha), **one step away** (a tiny wiring step on top of what
+> `main`, 0.8.33-alpha), **one step away** (a tiny wiring step on top of what
 > exists), or **roadmap** (real work — see [roadmap.md](roadmap.md)). The concrete
 > numbers and queries below were run against the live Docker stack, not assumed.
 
@@ -113,8 +113,7 @@ endpoint is now a configuration choice.
   anymore.
 - **Rebuild or repair the graph from MySQL** with `lunaModel::rdf_resync_all()`
   (runnable as `make resync-triplestore`), which re-projects every node — the
-  pure-PHP reconciliation that keeps the mirror honest (and the bootstrap that
-  replaced the Ontop "materialise" step).
+  pure-PHP reconciliation that keeps the mirror honest and bootstraps the graph.
 
 ## 4. Now a small step away
 

@@ -1,8 +1,7 @@
 # Installation
 
-> LunarSystem runs on **PHP 8.3 / MySQL 8.0** (0.5.0-alpha migrated PEAR MDB2 and
-> the removed `mysql_*` extension to PDO / `pdo_mysql`). The Docker stack below
-> builds it; a modern PHP install also works directly. See
+> LunarSystem runs on **PHP 8.3 / MySQL 8.0** via PDO / `pdo_mysql`. The Docker
+> stack below builds it; a modern PHP install also works directly. See
 > [security.md](security.md).
 
 ## Requirements
@@ -13,7 +12,7 @@
 | PHP extensions | `pdo_mysql`, `xsl`, `mbstring`, `gettext` |
 | Web server | Apache 2 with `mod_rewrite` and `AllowOverride All` |
 | Database | MySQL 8.0 (run with `sql_mode=""` for the legacy MyISAM column defaults; the Docker stack sets this) |
-| Bundled libs | Cache_Lite, HTML_Safe, semsol/arc2 3.1.0 — vendored in `luna/luna.lib/`, no Composer needed |
+| Bundled libs | semsol/arc2 (locally PHP-8/UTF-8 patched) — vendored in `luna/luna.lib/arc/` |
 
 ## Option A — Docker (recommended)
 

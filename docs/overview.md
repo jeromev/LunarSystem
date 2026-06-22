@@ -5,7 +5,7 @@
 LunarSystem is a small, self-contained PHP content-management system written
 between **2006 and 2010** by "Odradek" (lunarsystem.org). It was released on
 SourceForge as alpha software and reached version **0.2.7-alpha** in 2010; this
-archival revival carries the version forward to **0.8.32-alpha**.
+archival revival carries the version forward to **0.8.33-alpha**.
 
 Functionally it is a Drupal-like CMS: a tree of pages, a pluggable module
 system, users/groups/access-levels, editable text content, and i18n. What makes
@@ -20,11 +20,10 @@ So the same model that drives the HTML page can be emitted verbatim as RDF/XML,
 JSON or N-Triples by appending `?output=xml|json|n3` to any URL. The CMS is, in
 effect, a semantic-web front end over a generic graph stored in MySQL.
 
-> **Where this is heading.** The project now extends this RDF-flavoured CMS
-> toward an RDF-native one — a JSON-LD projection and a real SPARQL read path
-> backed by Ontop and then Oxigraph. See [linked-data.md](linked-data.md). The
-> sections below describe the archival baseline (preserved on the `legacy`
-> branch); the semantic-web layer is built on top of it.
+> **Where this is heading.** The project extends this RDF-flavoured CMS toward
+> an RDF-native one — a JSON-LD projection and a real SPARQL read path backed by
+> Ontop and Oxigraph. See [linked-data.md](linked-data.md). The sections below
+> describe the relational baseline; the semantic-web layer is built on top of it.
 
 ## The core ideas
 
@@ -68,13 +67,14 @@ effect, a semantic-web front end over a generic graph stored in MySQL.
 
 ## What it is *not*
 
-- The original CMS is **not** a triplestore database. RDF lives only in memory
-  during a request; persistence is plain relational MySQL. *(The semantic-web
-  layer adds an Oxigraph triplestore that every content write now mirrors into,
-  and that the read path is served from by default — see [linked-data.md](linked-data.md).)*
-- The original CMS does **not** use a SPARQL engine. Graph queries are
-  hand-written SQL joins. *(Routing, access control and texts now run through
-  SPARQL by default — Oxigraph, or Ontop over MySQL — with `?sparql=0` to fall
-  back to the SQL joins — see [linked-data.md](linked-data.md).)*
-- It targeted **PHP 5** until 0.5.0-alpha migrated it to **PHP 8.3 / MySQL 8.0** (PEAR MDB2 → PDO). See [security.md](security.md) and
+- The relational baseline is **not** a triplestore database. RDF lives only in
+  memory during a request; relational persistence is plain MySQL. *(The
+  semantic-web layer adds an Oxigraph triplestore that every content write
+  mirrors into, and that the read path is served from by default — see
+  [linked-data.md](linked-data.md).)*
+- The relational baseline does **not** use a SPARQL engine; its graph queries are
+  hand-written SQL joins. *(Routing, access control and texts run through SPARQL
+  by default — Oxigraph, or Ontop over MySQL — with `?sparql=0` to fall back to
+  the SQL joins — see [linked-data.md](linked-data.md).)*
+- It runs on **PHP 8.3 / MySQL 8.0** via PDO. See [security.md](security.md) and
   [installation.md](installation.md).

@@ -139,17 +139,17 @@ view data and renders:
    page `lid` and output format ([luna.php:584-620](../luna/luna.php#L584)):
    domain override → built-in, page-specific → `default`.
 4. Call `lunaModel::transform($XSLfile)`, which serialises the model to RDF/XML
-   via ARC2 and runs PHP's `XSLTProcessor`. The result is cached (Cache_Lite)
-   keyed on a hash of the model.
+   via ARC2 and runs PHP's `XSLTProcessor`. The result is cached (lunaCache, the
+   native file cache) keyed on a hash of the model.
 
 The returned string is the HTTP response. See [templating.md](templating.md) for
 the stylesheet lookup order and the RDF/XML the templates expect.
 
 > **Semantic-web layer:** the model additionally exposes a JSON-LD projection — `?output=jsonld` routes through
 > `lunaModel::to_jsonld()`, and the HTML `<head>` carries an embedded
-> `<script type="application/ld+json">` block. The read path now flows through a
+> `<script type="application/ld+json">` block. The read path flows through a
 > SPARQL endpoint **by default** (routing, level-based ACL, and page content),
-> with `?sparql=0` to fall back to the archival SQL path described above, and
+> with `?sparql=0` to fall back to the SQL path described above, and
 > every content write mirrors into the triplestore. See [linked-data.md](linked-data.md).
 
 ## Request lifecycle diagram

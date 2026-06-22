@@ -1,20 +1,19 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.32-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
+A PHP/MySQL CMS (v0.8.33-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek / lunarsystem.org.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
-> 2006–2010 code revived for learning. A 2026 hardening pass (0.6.9–0.8.21-alpha) closed
-> the major issues — bcrypt passwords, CSRF tokens, session-fixation defence, SQLi fixes,
-> security headers, per-target admin authorization, an authenticated SPARQL proxy, a
-> per-IP login throttle — but it ships with demo credentials and is not hardened for any
-> networked deployment, so keep it on `localhost` and off the public internet. See
-> [docs/security.md](docs/security.md).
+> 2006–2010 code revived for learning. It has bcrypt passwords, CSRF tokens,
+> session-fixation defence, SQLi fixes, security headers, per-target admin authorization,
+> an authenticated SPARQL proxy and a per-IP login throttle — but it ships with demo
+> credentials and is not hardened for any networked deployment, so keep it on `localhost`
+> and off the public internet. See [docs/security.md](docs/security.md).
 > The Docker stack binds every host port to `127.0.0.1` (and keeps the semantic-web
 > services off the host entirely); **do not change that or otherwise expose `8080` /
 > `3307` to a public or untrusted network.** It is not hardened for any networked or
 > production deployment. See [docs/security.md](docs/security.md).
 
-> **Now an RDF-native Semantic Web CMS.** The original 2006–2010 archival CMS has been extended into a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and — as of 0.3.3-alpha — a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch (tag `v0.2.14-alpha`). See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
+> **An RDF-native Semantic Web CMS.** Beyond the archival CMS core, it is a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch. See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
 
 ## Quick start (Docker)
 
@@ -35,8 +34,6 @@ Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are dem
 ## Manual setup
 
 Requirements: Apache 2 + `mod_rewrite`, **PHP 8.3** (the tested stack), MySQL 8.0, PHP extensions: `pdo_mysql`, `xsl`, `mbstring`, `gettext`.
-
-> As of 0.5.0-alpha the app runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the `mysql_*` + PEAR MDB2 dependency that previously blocked PHP 7+ was removed.
 
 1. Copy `luna/luna.domains/luna.default/ini/db.example.ini` → `db.ini` and fill in your credentials.  
    *(The file at `luna/luna.domains/luna.default/ini/db.ini` already contains Docker defaults.)*
@@ -68,17 +65,17 @@ luna/
     luna.session.class.php     DB-backed session handler
     luna.tools.class.php       Utilities (sanitisation, URL building, i18n, ACL)
     luna.log.class.php         Error logging (direct PDO INSERT)
-    luna.cache.class.php       Native file cache (replaced PEAR Cache_Lite)
+    luna.cache.class.php       Native file cache (lunaCache)
   luna.mods/                   Pluggable page modules (admin, journal, node, …)
   luna.xsl/luna.html.xsl/      Built-in XSLT templates (HTML output)
-  luna.lib/                    Vendored library: semsol/arc2 3.1.0 (RDF/SPARQL — the last in-tree lib)
+  luna.lib/arc/                Vendored library: semsol/arc2 (RDF/SPARQL), locally PHP-8/UTF-8 patched
   luna.domains/
     luna.default/              Fallback site config + per-domain data (ini, cache, locale)
       locale/                  gettext catalogs (en_US, fr_FR): engine 'luna' + 'local' overrides
   luna.sql/luna.mysql.sql      Database schema + seed data
 vendor/                        Composer dependencies (HTMLPurifier — the input sanitiser); committed for clone-and-run
 css/                           Stylesheets
-js/                            luna.js (admin UI behaviours; dependency-free, no jQuery)
+js/                            luna.js (admin UI behaviours; dependency-free vanilla JS)
 semantic/                      Semantic-web layer (Ontop virtual SPARQL + Oxigraph triplestore)
   ontop/                       R2RML mapping + Ontop image (virtual SPARQL); Oxigraph dump
   sparql-proxy/                Caddyfile: authenticating reverse proxy in front of Oxigraph
@@ -86,9 +83,9 @@ semantic/                      Semantic-web layer (Ontop virtual SPARQL + Oxigra
 
 ## Known issues
 
-A 2026 hardening pass (0.6.9–0.8.21-alpha) closed the major security issues; a second
-adversarial review graded the result *ship-with-low-risk*. See [docs/security.md](docs/security.md)
-for the full timeline and verdict. The residual, by-design limitations:
+The major security issues are closed; an adversarial review graded the result
+*ship-with-low-risk*. See [docs/security.md](docs/security.md) for the current posture and
+verdict. The residual, by-design limitations:
 
 | Issue | Impact | Notes |
 |---|---|---|
@@ -96,7 +93,7 @@ for the full timeline and verdict. The residual, by-design limitations:
 | **Ontop SPARQL is unauthenticated** | Security | The virtual (read-only) Ontop endpoint has no auth; it has no host port and stays on the internal compose network. Oxigraph's write endpoint is authenticated via `sparql-proxy` |
 | **Legacy model / hardening residue** | Design | Unsalted MD5 hashes upgrade to bcrypt transparently on next login; flat group→level authz model |
 
-The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (0.5.0-alpha migrated the DB layer from PEAR MDB2 to PDO; an earlier pass had fixed the schema's obsolete `TYPE=MyISAM` → `ENGINE=MyISAM`). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
+The Docker stack boots cleanly on **PHP 8.3 + MySQL 8.0** (PDO). See the [changelog](CHANGELOG.md) and [docs/installation.md](docs/installation.md).
 
 ## Documentation
 

@@ -29,7 +29,7 @@ luna.domains/<domain>/
     db.ini            # database credentials
     luna.example.ini  # template (default domain only)
     db.example.ini    # template (default domain only)
-  cache/              # Cache_Lite output cache (must be web-server-writable)
+  cache/              # lunaCache output cache (must be web-server-writable)
   xsl/                # per-domain XSLT overrides (optional; empty falls back to built-ins)
   mods/               # per-domain mods (optional)
 ```
@@ -68,7 +68,7 @@ USERS     = "luna_users"
 [Constantes]
 ANONYMOUS  = "guest"   ; lid of the anonymous user
 PERPAGE    = "20"      ; default pagination size
-CACHE      = 0         ; 1 = enable Cache_Lite output cache
+CACHE      = 0         ; 1 = enable the native file cache (lunaCache) output cache
 INCLUDEPATH = ""       ; extra PHP include path(s)
 CLEAN_URLS = 1         ; 1 = /path style, 0 = ?path= query style
 DEBUG      = 1         ; 1 = display errors + dump logs to admins
@@ -115,7 +115,7 @@ The app reads five extra settings, all defined as constants in
 - **`SPARQL_READS`** — whether the read path uses SPARQL at all (default `1`);
   `SPARQL_READS=0`, or `?sparql=0` on any URL, forces the SQL read path.
 
-None of these are used by the archival CMS — see [linked-data.md](linked-data.md).
+None of these are required for the core CMS to run — see [linked-data.md](linked-data.md).
 
 ## `luna_config` (runtime config)
 

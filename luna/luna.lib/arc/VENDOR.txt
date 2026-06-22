@@ -1,3 +1,26 @@
-semsol/arc2 3.1.0 (2024-08-16), vendored for the PHP 8 upgrade.
-Upstream: https://github.com/semsol/arc2  License: see LICENSE.
-Trimmed: tests/, doc/, docker/, CI files removed; runtime tree kept.
+semsol/arc2 — RDF/SPARQL library. Vendored in-tree (NOT installed via Composer) for the
+PHP 8 upgrade. Upstream: https://github.com/semsol/arc2  (Packagist: semsol/arc2 3.1.0,
+2024-08-16).  License: see LICENSE.
+
+WHY VENDORED, NOT COMPOSER
+This copy is NOT pristine 3.1.0 — it carries local PHP-8 compatibility patches that the
+upstream release lacks. Do not replace it with the Packagist package without re-applying
+them: on stock 3.1.0 the `?output=n3` path fatals (verified — HTTP 500). ARC2 is also a
+dormant upstream (3.1.0 is the latest release), so the patches will not be upstreamed.
+That is exactly why it stays vendored rather than managed by Composer — the opposite of
+HTMLPurifier (actively maintained + unmodified → Composer).
+
+LOCAL PATCHES
+  serializers/ARC2_NTriplesSerializer.php  (search for "luna patch")
+    1. getTerm() — PHP 8: stock 3.1.0 calls preg_match() on an array term and throws a
+       TypeError on luna's index. Coerce typeless / mis-tagged-bnode terms to plain
+       literals, reproducing the pre-3.x behaviour. Without this, ?output=n3 returns 500.
+    2. getTerm() literal escaping — UTF-8: the stock "decode to ISO-8859-1" round-trip
+       mangles multibyte characters (e.g. "ç" -> "?"). luna is UTF-8 end to end, so the
+       value is escaped directly.
+
+NOTES
+  - Trimmed from the upstream tree: tests/, doc/, docker/, CI files (runtime tree kept).
+  - The app uses only the RDF/XML, RDF/JSON and N-Triples serializers (lunaModel::dump()).
+  - A few unused serializers/store files also differ from the Packagist tarball; they are
+    not on any code path the app exercises. Always `diff` before swapping this tree.

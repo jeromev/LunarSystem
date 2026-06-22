@@ -180,6 +180,7 @@ form {
 
     p {
       color: var(--muted);
+      margin-bottom: bg.v(-1);
     }
     div.box {
       padding: bg.v() bg.h();
@@ -202,13 +203,13 @@ form {
     select {
       font-weight: normal;
       border: solid 0.125rem var(--field-border);
-      padding: bg.v(0.5) bg.h(0.5) bg.v(0.5) bg.h(0.5);
-      width: bg.h(17);
-      border-radius: bg.v(0.5);
+      padding: bg.v(0.5) bg.h(0.5);
+      // width: bg.h(17);
     }
     input {
       padding: bg.v(0.5) bg.h(0.5);
-      width: bg.h(16);
+      height: bg.v(3);
+      // width: bg.h(16);
 
       font-weight: normal;
       border: solid 0.125rem var(--field-border);
@@ -217,10 +218,8 @@ form {
       &.submit {
         background: var(--chrome);
         color: #fff;
-        margin: bg.v(0.5) 0 bg.v(0.5) bg.h();
-        padding: bg.v() bg.h(0.5) bg.v(0.5);
+        padding: 0 bg.h();
         text-transform: uppercase;
-        width: bg.h(17);
         border-radius: bg.v(0.5);
 
         &:hover,

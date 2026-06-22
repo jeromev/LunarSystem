@@ -56,7 +56,6 @@
 
   #Content {
     grid-area: content;
-    background: transparent;
     position: relative;
     padding: bg.v() 0;
 
@@ -64,7 +63,7 @@
       &::before,
       &::after {
         content: none;
-      } /* same as #Top: block <a> inside, no baseline leading */
+      }
       a {
         color: #fff;
         display: block;
@@ -79,7 +78,6 @@
       color: var(--muted);
     }
     #Content-main {
-      background: transparent;
 
       div.box {
         margin: 0 0 bg.v();
@@ -113,21 +111,21 @@
           clear: both;
         }
       }
-      div.col {
-        padding: bg.v() 0 bg.v() bg.h();
-        width: bg.h(17);
+      // div.col {
+      //   padding: bg.v() 0 bg.v() bg.h();
+      //   width: bg.h(17);
 
-        &.autowidth input,
-        &.autowidth textarea,
-        &.autowidth label span.label {
-          width: auto !important;
-        }
-        label.big input,
-        label.big textarea,
-        label.big span.label {
-          width: bg.h(51);
-        }
-      }
+      //   &.autowidth input,
+      //   &.autowidth textarea,
+      //   &.autowidth label span.label {
+      //     width: auto !important;
+      //   }
+      //   label.big input,
+      //   label.big textarea,
+      //   label.big span.label {
+      //     width: bg.h(51);
+      //   }
+      // }
       form fieldset {
         background: transparent;
 
@@ -167,32 +165,20 @@
   }
 
   #Content #Content-main {
-    div.fields {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      background: rgba(0, 0, 0, 0.05);
-      border-top-left-radius: bg.v(0.5);
-      border-top-right-radius: bg.v(0.5);
-      padding: 0.0006875rem 0 0;
+    div.fields,
+    div.submit {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(bg.h(16), 1fr));
+      padding: bg.v() bg.h();
+      background-color: var(--field-overlay);
+      gap: bg.v();
     }
     div.text div.col {
-      padding: 0 bg.h() bg.v() bg.h();
-      width: bg.h(17);
-
-      &:first-child {
-        padding-left: 0;
-      }
-      &:last-child {
-        padding-right: 0;
-        border: none;
-      }
+      width: 100%;
     }
     div.submit {
-      padding: bg.v(0.5) bg.h(0.5);
-      background: rgba(0, 0, 0, 0.1);
-      border-bottom-left-radius: bg.v(0.5);
-      border-bottom-right-radius: bg.v(0.5);
+      background-color: var(--field-overlay-2);
+      // padding: bg.v() bg.h();
     }
   }
 
@@ -348,7 +334,7 @@
   span.label,
   div.col,
   div.onecol {
-    max-width: 100%;
-    box-sizing: border-box;
+    width: 100%;
+    max-width: bg.h(25);
   }
 }

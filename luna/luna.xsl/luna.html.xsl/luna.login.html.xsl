@@ -24,24 +24,20 @@
 					<h2 class="box-handle expanded"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Connection form']/luna:value"/></h2>
 					<div class="box-content">
 						<div class="fields">
-							<div class="col">
-								<xsl:call-template name="forminput">
-									<xsl:with-param name="name">email</xsl:with-param>
-									<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Email']/luna:value"/></xsl:with-param>
-								</xsl:call-template>
-								<br />
-								<xsl:call-template name="forminput">
-									<xsl:with-param name="name">password</xsl:with-param>
-									<xsl:with-param name="type">password</xsl:with-param>
-									<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Password']/luna:value"/></xsl:with-param>
-								</xsl:call-template>
-								<br />
-								<input type="hidden" name="last_url">
-									<xsl:attribute name="value">
-										<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'last_url']/luna:value"/>
-									</xsl:attribute>
-								</input>
-							</div>
+							<xsl:call-template name="forminput">
+								<xsl:with-param name="name">email</xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Email']/luna:value"/></xsl:with-param>
+							</xsl:call-template>
+							<xsl:call-template name="forminput">
+								<xsl:with-param name="name">password</xsl:with-param>
+								<xsl:with-param name="type">password</xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Password']/luna:value"/></xsl:with-param>
+							</xsl:call-template>
+							<input type="hidden" name="last_url">
+								<xsl:attribute name="value">
+									<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'last_url']/luna:value"/>
+								</xsl:attribute>
+							</input>
 						</div>
 						<div class="submit">
 							<input type="submit" class="submit" name="submit"/>

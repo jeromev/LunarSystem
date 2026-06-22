@@ -440,7 +440,7 @@
 			<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
 			<xsl:choose>
 				<xsl:when test="$type = 'textarea'">
-					<span class="label"><xsl:value-of select="$label"/></span>
+					<p class="label"><xsl:value-of select="$label"/></p>
 					<textarea>
 						<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>
@@ -453,7 +453,7 @@
 					</textarea>
 				</xsl:when>
 				<xsl:when test="$type = 'select'">
-					<span class="label"><xsl:value-of select="$label"/></span>
+					<p class="label"><xsl:value-of select="$label"/></p>
 					<select>
 						<xsl:if test="not($onchange = '')">
 							<xsl:attribute name="data-navigate">1</xsl:attribute>
@@ -574,7 +574,7 @@
 					<xsl:value-of select="$label"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<span class="label"><xsl:value-of select="$label"/></span>
+					<p class="label"><xsl:value-of select="$label"/></p>
 					<input>
 						<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>

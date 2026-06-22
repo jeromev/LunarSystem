@@ -74,7 +74,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.31-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.32-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every

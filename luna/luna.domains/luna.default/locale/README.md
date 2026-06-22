@@ -1,6 +1,9 @@
 # Locale catalogs
 
-Two gettext domains live here, per language under `<lang>/LC_MESSAGES/`:
+These catalogs belong to **this domain** (`luna.domains/luna.default/`). At request time the
+active site uses `luna.domains/<domain>/locale/` if it ships one, otherwise it falls back to
+the default domain's catalogs here (the `LOCALE_PATH` ini default). Two gettext domains live
+here, per language under `<lang>/LC_MESSAGES/`:
 
 | Domain  | Files                | Tracked?       | What                                            |
 |---------|----------------------|----------------|-------------------------------------------------|
@@ -16,13 +19,13 @@ So site-specific page-label translations never enter the engine repo.
 Edit the (git-ignored) `local.po` for each language, then recompile to `.mo`:
 
 ```
-# luna/luna.locale/fr_FR/LC_MESSAGES/local.po
+# luna/luna.domains/luna.default/locale/fr_FR/LC_MESSAGES/local.po
 msgid "about"
 msgstr "À propos"
 ```
 
 ```
-msgfmt luna/luna.locale/fr_FR/LC_MESSAGES/local.po -o luna/luna.locale/fr_FR/LC_MESSAGES/local.mo
+msgfmt luna/luna.domains/luna.default/locale/fr_FR/LC_MESSAGES/local.po -o luna/luna.domains/luna.default/locale/fr_FR/LC_MESSAGES/local.mo
 ```
 
 Then restart Apache / the container — gettext caches `.mo` files per process.

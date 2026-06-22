@@ -51,7 +51,7 @@ Parsed by `luna::load_ini()` ([luna.php:641](../luna/luna.php#L641)). Every
 [Paths]
 MODS_PATH    = "luna.mods/"      ; built-in mods directory
 CLASSES_PATH = "luna.classes/"   ; core classes
-LOCALE_PATH  = "luna.locale/"    ; gettext translations
+LOCALE_PATH  = "luna.domains/luna.default/locale/"  ; gettext catalogs (default-domain fallback; the active domain's own locale/ wins if present)
 XSL_PATH     = "luna.xsl/"       ; built-in stylesheets
 
 [DBtables]                        ; logical name → physical table

@@ -22,6 +22,7 @@ semantic/ontop/dump.nt
 .sass-cache/
 *.css.map
 
-# site-specific page-label catalogs (local gettext domain, not part of the engine)
-luna/luna.locale/*/LC_MESSAGES/local.po
-luna/luna.locale/*/LC_MESSAGES/local.mo
+# site-specific page-label catalogs (local gettext domain, not part of the engine).
+# Per-domain: each luna.domains/<domain>/locale/<lang>/LC_MESSAGES/local.* is local data.
+luna/luna.domains/*/locale/*/LC_MESSAGES/local.po
+luna/luna.domains/*/locale/*/LC_MESSAGES/local.mo

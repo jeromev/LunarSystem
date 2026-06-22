@@ -581,13 +581,18 @@ class lunaTools {
 		putenv('LANGUAGE='.$lang_.'.UTF-8');
 		putenv('LANG='.$lang_.'.UTF-8');
 		setlocale(LC_ALL, $lang_.'.UTF-8');
+		// Locale catalogs are domain-local: prefer the active domain's own
+		// luna.domains/<domain>/locale, and fall back to the default domain's catalogs
+		// (LOCALE_PATH) for domains that don't ship their own. Both the engine 'luna'
+		// catalog and the site-specific 'local' overrides are bound to the same base.
+		$locale_path = (defined('SITEPATH') && is_dir(SITEPATH.'locale'))? SITEPATH.'locale/' : LOCALE_PATH;
 		$domain = 'luna';
-		bindtextdomain($domain, LOCALE_PATH);
+		bindtextdomain($domain, $locale_path);
 		textdomain($domain);
 		bind_textdomain_codeset($domain, 'UTF-8');
 		// Site-specific page labels live in a separate, git-ignored 'local' domain,
 		// layered over the engine 'luna' catalog by lunaTools::label().
-		bindtextdomain('local', LOCALE_PATH);
+		bindtextdomain('local', $locale_path);
 		bind_textdomain_codeset('local', 'UTF-8');
 		$_SESSION['lang'] = $lang;
 		lunaTools::set_cookie('lang', $lang);

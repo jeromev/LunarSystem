@@ -1,10 +1,10 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.32-alpha`).** The semantic-web work
-> described here is now the `main` line; the untouched archival CMS (`0.2.14-alpha`)
+> **Status: the active direction (`main`, `0.8.33-alpha`).** The semantic-web work
+> described here is the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
-> triplestore swap, and **Phase C — the triplestore is now authoritative for the
+> triplestore swap, and **Phase C — the triplestore is authoritative for the
 > read path by default**. Every content write mirrors into Oxigraph through a
 > generic write-through in the model's CRUD; routing, ACL and texts are read from
 > the triplestore by default (`?sparql=0` falls back to SQL). MySQL remains the
@@ -120,7 +120,7 @@ the parent, and `/id/{slug}` resource URIs from Decision 1. It is deliberately a
 
 ## Phase A — a real SPARQL endpoint (running)
 
-The existing MySQL is now queryable as RDF with **SPARQL**, with **no schema
+The existing MySQL is queryable as RDF with **SPARQL**, with **no schema
 change and no data migration**, via [Ontop](https://ontop-vkg.org/) +
 an R2RML mapping. RDF stops being an output veneer and becomes a query surface.
 
@@ -172,8 +172,8 @@ external `owl:sameAs` to it) keeps working.
 The app can now populate its model **from the SPARQL endpoint** instead of the
 hand-written joins. [`lunaModel::sparql_select()`](../luna/luna.classes/luna.model.class.php)
 queries the endpoint, and `load_texts_sparql()` rebuilds a page's text blocks
-through the *same* `load_text()` index builder the SQL path uses. **As of
-0.3.3-alpha this is the default** (`lunaModel::sparql_reads()`, constant
+through the *same* `load_text()` index builder the SQL path uses. **This is the
+default** (`lunaModel::sparql_reads()`, constant
 `SPARQL_READS`); `?sparql=0` forces the SQL path for one request:
 
 ```text
@@ -274,9 +274,9 @@ docker-compose exec -T app sh -c 'curl -X POST -u "$SPARQL_AUTH_USER:$SPARQL_AUT
 #    other way: SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app  # read via Ontop
 ```
 
-> Since 0.3.3-alpha the Ontop materialise above is optional: `rdf_resync_all()`
+> The Ontop materialise above is optional: `rdf_resync_all()`
 > re-projects the whole store from MySQL in pure PHP (see *Writing through SPARQL*),
-> which is how Oxigraph is now seeded and reconciled — run it with
+> which is how Oxigraph is seeded and reconciled — run it with
 > **`make resync-triplestore`**.
 
 The default read path is served by Oxigraph. The proof it's genuinely the
@@ -301,7 +301,7 @@ part. The dump is generated (gitignored); regenerate it with the command above.
   SPARQL. Ontop is now the *opt-in* override (`SPARQL_ENDPOINT=…/sparql`).
 - **Phase B (done — demonstrated):** materialised `mapping.ttl` into Oxigraph and
   flipped the app at it by env var (above) — now the default endpoint.
-- **Phase C — triplestore authoritative for the read/write loop (done, 0.3.3-alpha):**
+- **Phase C — triplestore authoritative for the read/write loop (done):**
   *every* content write mirrors to the graph via the generic `rdf_sync_node` /
   `rdf_delete_node` write-through (see *Writing through SPARQL*), and reads default
   to the graph with a SQL fallback (see *Reading through SPARQL*). MySQL is still

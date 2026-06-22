@@ -5,7 +5,20 @@ maintained. It reflects the security practices of its era. Treat it as a
 historical artifact: safe to study and run locally, **not** safe to expose on the
 public internet without significant hardening.
 
-## 2026 hardening pass (0.6.9–0.8.21-alpha)
+## Current posture
+
+No remotely-exploitable critical/high issue in the stock configuration; an adversarial
+review graded it **ship-with-low-risk** (single-admin tier; all host ports bound to
+`127.0.0.1`). Controls in place: bcrypt passwords (MD5 upgrade-on-login), per-session CSRF
+tokens with POST-only state changes, session-ID regeneration on login, a strict CSP
+(`'self'`, no `unsafe-inline`), security headers, per-target admin authorization,
+admin-lockout guardrails, a per-IP login throttle, HTMLPurifier input sanitisation,
+PDO-quoted SQL, and an authenticated SPARQL proxy in front of the internal-only triplestore.
+The residual, by-design limitations are in **Residual** and **Hard compatibility limits**
+below. The version-tagged tables that follow are the **hardening record** — how each issue
+was found and closed; the canonical change history is [CHANGELOG.md](../CHANGELOG.md).
+
+## Hardening record
 
 A focused, verified hardening pass closed the major issues catalogued below. Each
 fix was confirmed against the running Docker stack. The tables further down record
@@ -37,7 +50,7 @@ the **original** findings; several are now fixed or partially fixed as noted her
 
 A fresh multi-agent review audited the post-0.8.4 tree across 8 dimensions (SQLi, authn/timing, session, authz/IDOR, CSRF, XSS/sanitizer, disclosure/deploy, fix-regression). Each finding was independently voted on by two skeptics — one proving exploitability, one trying to refute — then synthesised.
 
-**Verdict: ship-with-low-risk.** No remotely-exploitable critical/high in the stock configuration. 29 raw findings → 2 real defects fixed (both in 0.8.5, above) + 1 latent gap, since closed (below). The rest were dismissed with reasons: the 8-finding admin "IDOR/privilege-escalation" cluster is not reachable as shipped (single admin tier, below); the SameSite=Lax/`validateId`-rebind/regenerate-race session findings are defended in depth by the **mandatory UA+IP binding** in `get_user_data()` (a mismatch yields zero rows → demotion to anonymous); the legacy-MD5 timing leak is mitigated by the dummy bcrypt verify and is below network noise; the `ARC2_Store` deserialization sink is dead/unreachable vendor code (the `Cache_Lite` one is gone — that library was replaced by a native cache in 0.8.29); and all host ports bind `127.0.0.1` (Oxigraph's `0.0.0.0:7878` is container-internal only).
+**Verdict: ship-with-low-risk.** No remotely-exploitable critical/high in the stock configuration. 29 raw findings → 2 real defects fixed (both in 0.8.5, above) + 1 latent gap, since closed (below). The rest were dismissed with reasons: the 8-finding admin "IDOR/privilege-escalation" cluster is not reachable as shipped (single admin tier, below); the SameSite=Lax/`validateId`-rebind/regenerate-race session findings are defended in depth by the **mandatory UA+IP binding** in `get_user_data()` (a mismatch yields zero rows → demotion to anonymous); the legacy-MD5 timing leak is mitigated by the dummy bcrypt verify and is below network noise; the `ARC2_Store` deserialization sink is dead/unreachable vendor code (caching uses the native file cache `lunaCache`, which has no deserialization sink); and all host ports bind `127.0.0.1` (Oxigraph's `0.0.0.0:7878` is container-internal only).
 
 **Resolved since the review:**
 - **Admin modules now enforce per-target authorization in their submit handlers** (0.8.13–0.8.20). `mod_admin_users/groups/pages/levels/mods` re-check the actor against the *specific* target — `user_can_access_level()` / `user_can_access_page()` / `user_can_access_group()` on the node being modified/deleted **and** on every level/group/page being assigned — mirroring the `edit_texts`/`mod_node` per-target pattern. This is a no-op in the shipped single-admin tier (the admin holds every level, so each check passes), but it closes the privilege-escalation/IDOR vector if an operator **delegates admin by re-binding an admin page/mod to a lower level**: a lower-tier admin can no longer grant a level/group above their own, nor act on a target above their access. Validated by [`test/delegated_admin.sh`](../test/delegated_admin.sh), which manufactures a `level_edition`-only admin and asserts it cannot grant `level_admin` to a group (the attempt is denied and no link is written).
@@ -54,9 +67,9 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 
 | Issue | Impact | Detail |
 |---|---|---|
-| **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); the 0.5.0-alpha migration removed the PHP-7-blocking `mysql_*` extension and PEAR MDB2. |
-| **MyISAM storage engine** | Compatibility | The schema now uses `ENGINE=MyISAM` (the original `TYPE=MyISAM` syntax was removed back in MySQL 5.5). MySQL 8.0 also needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
-| **Vendored libs** | Maintenance | The only in-tree vendored library left is **semsol/arc2 3.1.0** (RDF/SPARQL), kept vendored on purpose: it carries local PHP-8 patches the upstream lacks (stock 3.1.0 fatals on `?output=n3`), so it is not a drop-in Composer package — see [`luna.lib/arc/VENDOR.txt`](../luna/luna.lib/arc/VENDOR.txt). Removed in the libs cleanup: PEAR **Log** (0.8.27, constants inlined), **HTML_Safe** + **XML_HTMLSax3** (0.8.28 → HTMLPurifier), and **Cache_Lite** + PEAR base (0.8.29 → a native file cache, `luna.cache.class.php`). The lone Composer dependency is HTMLPurifier (committed under `vendor/`). |
+| **Runtime** | — | Runs on **PHP 8.3 / MySQL 8.0** via PDO (`pdo_mysql`); no `mysql_*` extension or PEAR MDB2. |
+| **MyISAM storage engine** | Compatibility | The schema uses `ENGINE=MyISAM`. MySQL 8.0 needs `sql_mode=""` for the legacy column defaults — the Docker stack sets this. |
+| **Vendored libs** | Maintenance | The only in-tree vendored library left is **semsol/arc2 3.1.0** (RDF/SPARQL), kept vendored on purpose: it carries local PHP-8 patches the upstream lacks (stock 3.1.0 fatals on `?output=n3`), so it is not a drop-in Composer package — see [`luna.lib/arc/VENDOR.txt`](../luna/luna.lib/arc/VENDOR.txt). The lone Composer dependency is HTMLPurifier (committed under `vendor/`); logging, input sanitisation and caching are otherwise handled in-tree. |
 
 ## Security weaknesses
 
@@ -65,7 +78,7 @@ This remains an archival app on PHP 8.3 with a flat group→level authz model. K
 | **Unsalted MD5 passwords** | High | `luna_users.password` is a bare `md5()` hash. Trivially crackable; vulnerable to rainbow tables. | Do not reuse real passwords. Don't expose the site publicly. |
 | **Session ID in URL** | High | `session.use_trans_sid = 1` ([luna.php:33](../luna/luna.php#L33)) propagates the session ID through URLs, which leak via referrers, logs, and shared links — enabling session fixation/hijacking. | Disable trans_sid; require cookies. |
 | **Weak default admin** | Medium | Seed admin is `admin@lunarsystem.local` / `luna`. | Change immediately after install. |
-| **Sanitisation stack** | Medium | Input HTML cleaning uses **HTMLPurifier** (0.8.28 — an allowlist DOM parser, replacing the era-2005 HTML_Safe denylist). SQL is escaped via PDO `quote()` (`lunaDB::quote`); SPARQL via `sparql_literal`/`rdf_uri` (audited 0.8.26). Modern, but coverage should still not be assumed complete against every technique. | Audit before any untrusted exposure. |
+| **Sanitisation stack** | Medium | Input HTML cleaning uses **HTMLPurifier**, an allowlist DOM parser. SQL is escaped via PDO `quote()` (`lunaDB::quote`); SPARQL via `sparql_literal`/`rdf_uri` (audited injection-safe). Modern, but coverage should still not be assumed complete against every technique. | Audit before any untrusted exposure. |
 | **`register_globals`-era assumptions** | Low | Code predates modern superglobal handling; it explicitly disables `register_globals` and guards `magic_quotes`, but the design assumptions are dated. | — |
 
 ## Additional findings (2026 code-review pass)
@@ -74,7 +87,7 @@ A full read of the code after the initial assessment surfaced the issues below,
 each cited to a specific line. They are era-typical for 2006–2010 PHP and
 reinforce the "study/run locally, do not expose publicly" guidance.
 
-**Status** is current as of **0.8.32-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
+**Status** is current as of **0.8.33-alpha** (✅ fixed, ◐ partially fixed, ⬜ open).
 The invasive changes that were initially deferred — CSRF tokens across every form,
 per-target authorisation, session-ID rotation — were completed during the
 0.6.9–0.8.21 hardening pass; the only ⬜ left is the by-design WYSIWYG output. Every
@@ -98,7 +111,7 @@ per-target authorisation, session-ID rotation — were completed during the
 > `mod_node`, by contrast, **does** enforce per-node level access before dumping
 > a node ([luna.mod_node.php:71-74](../luna/luna.mods/luna.mod_node.php#L71)).
 
-## Triplestore / SPARQL surface (0.3.x)
+## Triplestore / SPARQL surface
 
 The RDF-native read/write loop (see [linked-data.md](linked-data.md)) adds a
 network surface the original CMS did not have. Status: ✅ hardened — authenticating
@@ -110,9 +123,9 @@ proxy + internal-only network + no host port.
   (`SPARQL_ENDPOINT`, `SPARQL_UPDATE_ENDPOINT`, `SPARQL_AUTH_USER`/`SPARQL_AUTH_PASS` in
   `luna.php`; `sparql_auth_header()` in the model adds the `Authorization` header). Two
   layered mitigations:
-  - *(0.8.17)* the SPARQL services have **no host port** — never reachable from the host
+  - the SPARQL services have **no host port** — never reachable from the host
     or a browser, which closes the CSRF-to-localhost write vector.
-  - *(0.8.21)* Oxigraph — which has no native auth and accepts unauthenticated writes on
+  - Oxigraph — which has no native auth and accepts unauthenticated writes on
     `/update` + `/store` — is moved onto an **internal-only** compose network whose only
     other member is the proxy, so it is unreachable except *through* the authenticated
     proxy (the app cannot even reach `oxigraph:7878` directly). An unauthenticated request
@@ -123,7 +136,7 @@ proxy + internal-only network + no host port.
 
   Keep the host bindings on `127.0.0.1`, change `SPARQL_AUTH_PASS` from its demo default
   (via `.env`) for any real use, and never publish Oxigraph or the proxy.
-- **Hand-rolled SPARQL string assembly — audited injection-safe (0.8.26).** The
+- **Hand-rolled SPARQL string assembly — audited injection-safe.** The
   write-through (`rdf_sync_node` / `rdf_delete_node` / `rdf_resync_all`) and the read
   builders (`load_nodes_sparql` / `load_texts_sparql`) assemble SPARQL by string
   interpolation, but every user-controlled value passes through one of three typed

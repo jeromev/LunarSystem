@@ -122,7 +122,9 @@ a machine-readable RDF endpoint. See [rdf-model.md](rdf-model.md).
 
 ## Caching
 
-Transformed HTML is cached via **Cache_Lite**, keyed on a hash of the serialised
+Transformed HTML is cached via **lunaCache**
+([luna/luna.classes/luna.cache.class.php](../luna/luna.classes/luna.cache.class.php)),
+the native file cache, keyed on a hash of the serialised
 model. Admin users bypass the cache (the `IS_ADMIN` path in bootstrap disables
 it), so edits are seen immediately. Caching can be toggled per domain with the
 `CACHE` constant in `luna.ini` and flushed via `lunaTools::purge_cache()`.

@@ -6,9 +6,7 @@ not hard-coded — they are mapped through the `[DBtables]` section of
 `luna.ini` (see [configuration.md](configuration.md)), but the defaults are the
 `luna_*` names below.
 
-> All tables use `ENGINE=MyISAM`. The original 2010 dump used the long-obsolete
-> `TYPE=MyISAM` syntax (removed in MySQL 5.5); it has been updated so the schema
-> imports cleanly on modern MySQL.
+> All tables use `ENGINE=MyISAM`. The schema imports cleanly on MySQL 8.0.
 
 ## The graph core
 
@@ -128,7 +126,7 @@ seeded as `en, fr` — split on `,` by `lunaTools::load_config`), `session_lengt
 `disable` / `disable_txt`.
 
 ### `luna_logs` — error log sink
-Written by `lunaLog::log()` via a direct PDO `INSERT` (the PEAR Log mdb2 handler was removed in 0.5.0-alpha); the `PEAR_LOG_*` constants still set the `priority` column.
+Written by `lunaLog::log()` via a direct PDO `INSERT`; the `PEAR_LOG_*` constants set the `priority` column.
 
 | Column | Type | Meaning |
 |---|---|---|

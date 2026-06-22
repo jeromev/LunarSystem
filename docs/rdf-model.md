@@ -6,12 +6,11 @@ an **in-memory RDF triple store** for the duration of a request, projects
 relational rows into it, and serialises it (to RDF/XML for XSLT, or to
 XML/JSON/N-Triples for raw output).
 
-> In the archival model, RDF here is a *representation*, not a storage engine: the
-> graph is rebuilt from MySQL on every request and discarded at the end. The
-> semantic-web layer changes this — as of 0.3.3-alpha every content write also
-> persists into the Oxigraph triplestore (via `rdf_sync_node()`), which is now the
-> default read source. See the "Semantic-web layer" note at the end of this file
-> and [linked-data.md](linked-data.md).
+> Within a request, the in-memory RDF graph is a *representation*, not a storage
+> engine: it is rebuilt and discarded each request. Persistence is RDF-native:
+> every content write also persists into the Oxigraph triplestore (via
+> `rdf_sync_node()`), which is the default read source. See the "Semantic-web
+> layer" note at the end of this file and [linked-data.md](linked-data.md).
 
 ## The in-memory structure
 
@@ -117,7 +116,7 @@ The trick that makes a single edge table work as RDF: `load_nodes()` reconstruct
 ## Serialisation and rendering
 
 Two output paths, both backed by the bundled **ARC2** RDF library
-([luna/luna.lib/](../luna/luna.lib/)):
+([luna/luna.lib/arc/](../luna/luna.lib/arc/)):
 
 ### `dump($flavor, $return, $node)` — raw output
 Serialises `$index` to one of:
@@ -131,7 +130,7 @@ Triggered by `?output=xml|json|n3|jsonld` on any URL. Sets the content-type head
 and exits.
 
 ### `transform($xslfile)` — HTML output
-1. Check the Cache_Lite cache, keyed on `md5(serialize([$conf, $index]))`.
+1. Check the native file cache (lunaCache), keyed on `md5(serialize([$conf, $index]))`.
 2. On a miss: serialise `$index` to RDF/XML (ARC2), load it into a `DOMDocument`,
    load the XSLT stylesheet, and run PHP's built-in `XSLTProcessor`
    (`transformToXML`).
@@ -143,9 +142,9 @@ RDF/XML shape the templates consume.
 > **Semantic-web layer:** beyond the ARC2 flavours
 > above, `lunaModel` also projects the current page to compact schema.org
 > JSON-LD via `to_jsonld()` (reached by `?output=jsonld` and embedded in every
-> HTML `<head>`), and now sources the graph from a SPARQL endpoint rather than
-> MySQL **by default** — `sparql_select()`, `load_nodes_sparql()`, and
-> `load_texts_sparql()` (with `?sparql=0` to fall back to the relational readers).
+> HTML `<head>`), and sources the graph from a SPARQL endpoint **by default** —
+> `sparql_select()`, `load_nodes_sparql()`, and `load_texts_sparql()` (with
+> `?sparql=0` to fall back to the relational MySQL readers).
 > Content writes also mirror into the triplestore via `rdf_sync_node()`. Both the
 > read (`sparql_select()`) and write (`sparql_update()`) calls go through an
 > authenticating reverse proxy (`sparql-proxy`) and attach an HTTP basic-auth

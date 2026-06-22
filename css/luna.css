@@ -808,7 +808,8 @@ h6:after {
 }
 
 .box {
-  border-radius: calc(0.5 * var(--base-unit));
+  margin: 0 0 calc(1 * var(--base-unit));
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 .box-content {
@@ -962,10 +963,6 @@ h6:after {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
-}
-#Page #Content #Content-main div.box {
-  margin: 0 0 calc(1 * var(--base-unit));
-  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 #Page #Content #Content-main div.box.text {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
@@ -1182,7 +1179,7 @@ h6:after {
 #Page #Content-main div.col,
 #Page #Content-main div.onecol {
   width: 100%;
-  max-width: calc(25 * var(--base-unit) * var(--width-optical-adjustment));
+  max-width: calc(20 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 /*# sourceMappingURL=luna.css.map */

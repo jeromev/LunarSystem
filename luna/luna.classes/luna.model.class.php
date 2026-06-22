@@ -466,12 +466,6 @@ class lunaModel {
 				if ($return) { return $doc; }
 				header('Content-Type: application/rdf+n3');
 				die($doc);
-			case 'turtle':
-				$ser = ARC2::getTurtleSerializer($this->conf);
-				$doc = $ser->getSerializedIndex($index);
-				header('Content-Type: application/rdf+turtle');
-				if ($return) { return $doc; }
-				die($doc);
 			case 'jsonld':
 				return $this->to_jsonld($return);
 			case 'xml':

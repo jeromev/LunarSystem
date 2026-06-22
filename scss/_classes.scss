@@ -7,8 +7,8 @@
 .autoscroll { overflow: auto; }
 .nowrap { white-space: nowrap; }
 .box {
-	border-radius: bg.v(0.5);
-	// box-shadow: 0.0625rem 0.0625rem 1em rgba(0, 0, 0, .1);
+	margin: 0 0 bg.v();
+  padding: 0 bg.h();
 }
 .box-content {
 	border-radius: bg.v(0.5);

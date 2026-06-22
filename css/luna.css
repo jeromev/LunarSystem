@@ -1022,7 +1022,7 @@ h6:after {
 #Page #Content #Content-main div.fields,
 #Page #Content #Content-main div.submit {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(16 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(20 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background-color: var(--field-overlay);
   gap: calc(1 * var(--base-unit));

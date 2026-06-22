@@ -165,7 +165,7 @@
     div.fields,
     div.submit {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(bg.h(16), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(bg.h(20), 1fr));
       padding: bg.v() bg.h();
       background-color: var(--field-overlay);
       gap: bg.v();

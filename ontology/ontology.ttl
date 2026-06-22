@@ -45,5 +45,5 @@ luna:level a rdf:Property, owl:ObjectProperty ;
 
 luna:content a rdf:Property, owl:DatatypeProperty ;
     rdfs:label "content" ;
-    rdfs:comment "The raw HTML body of a text block, as authored. schema:articleBody is the published, stripped-plain-text projection of this value; standard consumers read that." ;
+    rdfs:comment "The Markdown source body of a text block, as authored. The HTML view renders it to HTML on the fly; schema:articleBody is the published, stripped-plain-text projection of the rendered value, which standard consumers read." ;
     rdfs:range rdfs:Literal .

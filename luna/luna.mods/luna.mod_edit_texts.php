@@ -50,10 +50,11 @@ class mod_edit_texts {
 	private function __construct() {
 		luna::$model->merge_index(luna::$model->load_var(array(
 			'type' => 'data',
-			'lid' => 'wysiwyg',
+			'lid' => 'markdown',
 			'value' => '1'
 		)));
 		lunaTools::add_vocabulary(array(
+			'Written in Markdown (headings, bold, italics, links, lists).',
 			'Add a text',
 			'Modify the text',
 			'Add',
@@ -125,7 +126,7 @@ class mod_edit_texts {
 			$res = lunaDB::query('
 				INSERT INTO
 					'.luna::get_ini('DBtables', 'TEXTS').'
-					(nid, title, lang, content_html)
+					(nid, title, lang, content)
 				VALUES
 					(
 						'.lunaDB::quote($node).',
@@ -203,7 +204,7 @@ class mod_edit_texts {
 				SET
 					title = '.lunaDB::quote($_POST['modify_text_title']).',
 					lang = '.lunaDB::quote($_POST['modify_text_lang']).',
-					content_html = '.lunaDB::quote($_POST['modify_text_content']).'
+					content = '.lunaDB::quote($_POST['modify_text_content']).'
 				WHERE
 					nid = '.lunaDB::quote($node).'
 			');

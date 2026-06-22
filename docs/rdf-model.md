@@ -72,9 +72,11 @@ in the constructor's `$conf['ns']` map.
 > schema.org/slug graph. The **published** RDF (`?output=xml/n3/json/jsonld` and
 > the triplestore, via [`build_schema_index()`](../luna/luna.classes/luna.model.class.php)
 > / [`to_jsonld()`](../luna/luna.classes/luna.model.class.php)) is the same
-> vocabulary, additionally stripping `luna:content` HTML to the plain-text
-> `schema:articleBody` projection. The `ui:` render-model bnodes (chrome) are the
-> only triples that stay XSLT-internal and never reach the published graph. See
+> vocabulary, additionally rendering the `luna:content` Markdown to HTML and
+> stripping it to the plain-text `schema:articleBody` projection (`luna:content`
+> itself stays Markdown source). The `ui:` render-model bnodes (chrome) — plus the
+> transient `ui:content` carrying the rendered HTML for the view — are the only
+> triples that stay XSLT-internal and never reach the published graph. See
 > [linked-data.md](linked-data.md).
 
 ## SQL → RDF projection
@@ -87,7 +89,7 @@ graph, and the model's job is to read it back as triples. The key mapping:
 | `luna_nodes` row | a subject node with `schema:identifier`, `luna:lid`, `schema:name`, `luna:isActive`, `schema:isPartOf` (parent) |
 | `luna_nodes.tid` → `luna_types.lid` | `rdf:type` (e.g. `schema:WebPage`, `schema:Article`) |
 | `luna_nodes_map (nid1, nid2)` | a typed predicate edge between two nodes (e.g. mod→level, user→group) |
-| `luna_texts` row | a `luna:content` property (lang-tagged) on the text node |
+| `luna_texts` row | a `luna:content` property (lang-tagged Markdown source) on the text node |
 | `luna_users` row | a `foaf:Person` with `foaf:name`, `foaf:mbox` (`mailto:`), `luna:ip`, `luna:last-visit` |
 | `luna_actions` (joined) | author/timestamp metadata on content nodes |
 

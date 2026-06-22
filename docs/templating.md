@@ -51,7 +51,7 @@ The built-ins use a shared base + includes pattern. Sampling
 | `luna.header.html.xsl` | The XHTML skeleton (`<html>`/`<head>`/`<body>`), namespace declarations, global variables (`$site_uri`, `$lang`, `$masternodelid`, `$masternodenid`, `$cleanurls`, …), and client-side JS bootstrap vars. Matches the `/rdf:RDF` root. |
 | `luna.common.html.xsl` | Shared utility templates: string truncation (`cutstring`), form-input rendering (`forminput`, renders inputs/selects/textareas), message rendering (matches `ui:message`), pagination URL building (`buildSortURL`), loops. |
 | `luna.common_admin.html.xsl` | Admin UI helpers: list renderers (`groupslist`, `levelslist`), `online_users`. |
-| `luna.default.html.xsl` | The fallback content page — iterates `schema:Article` nodes whose `schema:isPartOf` matches the current page and emits `<div class="box text">` with the title (`schema:name`) and unescaped `luna:content`. |
+| `luna.default.html.xsl` | The fallback content page — iterates `schema:Article` nodes whose `schema:isPartOf` matches the current page and emits `<div class="box text">` with the title (`schema:name`) and the rendered `ui:content` (the article's `luna:content` Markdown converted to HTML — see below). |
 | `luna.<page>.html.xsl` | One per admin page: `admin`, `admin_groups`, `admin_levels`, `admin_mods`, `admin_pages`, `admin_users`, `edit_texts`, `journal`, `login`, `logout`, `root`. Each sets a `$mod_lid` and includes the header/common templates. |
 
 A page-specific stylesheet typically declares the `$mod_lid` it renders, includes
@@ -68,7 +68,12 @@ the app-specific UI render-model is in the `ui:` namespace
 (`https://jeromev.github.io/LunarSystem/render#`), and the `luna:` namespace carries
 only the genuinely app-specific *content* terms that survive the projection (`luna:lid`,
 `luna:content`, `luna:isActive`, `luna:alias`, `luna:level`, plus runtime flags like
-`luna:is_current`/`luna:is_guest`). A representative fragment:
+`luna:is_current`/`luna:is_guest`). `luna:content` holds the **Markdown source**; for the
+HTML view `project_to_schema()` adds a transient `ui:content` literal carrying that Markdown
+rendered to safe HTML (raw HTML escaped, unsafe links dropped), which the `default`/`root`
+templates emit with `disable-output-escaping`. The published RDF (`?output=*`) carries only
+the Markdown `luna:content` — `ui:content` never leaves the render path. A representative
+fragment:
 
 ```xml
 <rdf:RDF
@@ -91,7 +96,8 @@ only the genuinely app-specific *content* terms that survive the projection (`lu
   <schema:Article>
     <schema:isPartOf rdf:resource="https://example.org/id/root"/>
     <schema:name xml:lang="en">Welcome</schema:name>
-    <luna:content xml:lang="en"><![CDATA[<p>Hello.</p>]]></luna:content>
+    <luna:content xml:lang="en">## Hello</luna:content>
+    <ui:content xml:lang="en"><![CDATA[<h2>Hello</h2>]]></ui:content>
   </schema:Article>
 
   <foaf:Person luna:is_current="1">

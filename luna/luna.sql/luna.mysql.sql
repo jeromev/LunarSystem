@@ -86,10 +86,10 @@ CREATE TABLE `luna_texts` (
   `nid` int(11) unsigned NOT NULL default '0',
   `title` tinytext,
   `lang` char(2) default NULL,
-  `content_html` longtext,
+  `content` longtext,
   PRIMARY KEY  (`id`),
   KEY `nid` (`nid`),
-  FULLTEXT KEY `content` (`content_html`,`title`)
+  FULLTEXT KEY `content` (`content`,`title`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `luna_types`;

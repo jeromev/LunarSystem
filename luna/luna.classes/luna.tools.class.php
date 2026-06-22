@@ -391,11 +391,22 @@ class lunaTools {
 	 * @return boolean
 	 */
 	public static function sanitize_inputs() {
+		// Markdown content fields carry a non-HTML payload: HTML-purifying them would
+		// reflow whitespace and strip markdown punctuation, corrupting the source. Keep
+		// them raw here; they are sanitised at their own boundary — lunaTools::markdown()
+		// escapes raw HTML and drops unsafe links when the source is rendered, SQL writes
+		// go through lunaDB::quote(), the source is never disable-output-escaped (only the
+		// rendered ui:content is), and it is XML-escaped when echoed back into the textarea.
+		$raw_markdown = array();
+		foreach (array('add_text_content', 'modify_text_content') as $k) {
+			if (isset($_POST[$k]) && is_string($_POST[$k])) { $raw_markdown[$k] = $_POST[$k]; }
+		}
 		$_GET = isset($_GET) && !empty($_GET)? self::sanitize($_GET) : array();
 		$_POST = isset($_POST) && !empty($_POST)? self::sanitize($_POST) : array();
 		$_COOKIE = isset($_COOKIE) && !empty($_COOKIE)? self::sanitize($_COOKIE) : array();
 		$_SESSION = isset($_SESSION) && !empty($_SESSION)? self::sanitize($_SESSION) : array();
 		$_REQUEST = isset($_REQUEST)  && !empty($_REQUEST)? self::sanitize($_REQUEST) : array();
+		foreach ($raw_markdown as $k => $v) { $_POST[$k] = $v; $_REQUEST[$k] = $v; }
 		unset(
 			$GLOBALS['HTTP_POST_VARS'],
 			$GLOBALS['HTTP_GET_VARS'],
@@ -457,6 +468,47 @@ class lunaTools {
 			$purifier = new HTMLPurifier($config);
 		}
 		return $purifier;
+	}
+	// }}}
+	// {{{ markdown()
+	/**
+	 * Render Markdown source to safe HTML. The single GitHub-flavoured CommonMark
+	 * converter is built once and cached (constructing the environment per call is
+	 * wasteful). Raw HTML in the source is ESCAPED, not passed through
+	 * (html_input=escape), and unsafe URI schemes (javascript:, data:, …) are dropped
+	 * (allow_unsafe_links=false) — so the output is safe to disable-output-escape in
+	 * the XSLT without a second sanitiser. GFM adds tables, task lists, strikethrough
+	 * and autolinks on top of CommonMark.
+	 * @access public
+	 * @param string $md Markdown source
+	 * @return string rendered HTML (trailing whitespace trimmed)
+	 */
+	public static function markdown($md = '') {
+		static $converter = null;
+		if ($md === null || $md === '') { return ''; }
+		if ($converter === null) {
+			$converter = new \League\CommonMark\GithubFlavoredMarkdownConverter(array(
+				'html_input'         => 'escape',
+				'allow_unsafe_links' => false,
+			));
+		}
+		return rtrim((string) $converter->convert((string) $md));
+	}
+	// }}}
+	// {{{ markdown_to_text()
+	/**
+	 * The plain-text projection of Markdown source — what schema:articleBody carries.
+	 * Render to HTML, strip the tags, decode entities: headings/lists/emphasis collapse
+	 * to their text and links keep their label, so the result is genuine prose rather
+	 * than markdown punctuation.
+	 * @access public
+	 * @param string $md Markdown source
+	 * @return string
+	 */
+	public static function markdown_to_text($md = '') {
+		$html = self::markdown($md);
+		if ($html === '') { return ''; }
+		return trim(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 	}
 	// }}}
 	// {{{ check_email()

@@ -36,7 +36,7 @@ below; everything else is standard (<code>schema:WebPage</code>/<code>Article</c
   <tr><th>Term</th><th>Label</th><th>Meaning</th></tr>
   <tr><td><code>luna:isActive</code></td><td>is active</td><td>Whether a node (page, text, level, group, user, module) is active/published. A boolean flag, currently encoded as 1 / 0.</td></tr>
   <tr><td><code>luna:level</code></td><td>access level</td><td>Relates a node to the access level that gates it; the object is an access-level resource (e.g. <code>…/id/level_public</code>).</td></tr>
-  <tr><td><code>luna:content</code></td><td>content</td><td>The raw HTML body of a text block, as authored. Standard consumers can read the same value from <code>schema:articleBody</code> / <code>schema:text</code>.</td></tr>
+  <tr><td><code>luna:content</code></td><td>content</td><td>The Markdown source body of a text block, as authored (the HTML view renders it to HTML on the fly). Standard consumers can read the plain-text projection from <code>schema:articleBody</code> / <code>schema:text</code>.</td></tr>
 </table>
 
 <p class="muted"><strong>Note.</strong> There is effectively one content model: the

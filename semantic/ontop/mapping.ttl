@@ -49,7 +49,7 @@
 # Text blocks -> schema:Article, attached to their page
 <#TextMap>
   rr:logicalTable [ rr:sqlQuery """
-      SELECT n.nid AS nid, n.lid AS lid, t.title AS title, t.content_html AS body,
+      SELECT n.nid AS nid, n.lid AS lid, t.title AS title, t.content AS body,
              t.lang AS lang, p.lid AS page_lid
       FROM luna_nodes n
       JOIN luna_texts t     ON t.nid = n.nid
@@ -63,6 +63,9 @@
   ] ;
   rr:predicateObjectMap [ rr:predicate schema:identifier ; rr:objectMap [ rr:column "nid" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:headline ;    rr:objectMap [ rr:column "title" ] ] ;
+  # luna:content is the Markdown source (the authored truth). schema:articleBody is meant
+  # to be the plain-text projection; the app strips the rendered Markdown to text, but plain
+  # SQL cannot, so this virtual view exposes the Markdown source verbatim as a close proxy.
   rr:predicateObjectMap [ rr:predicate schema:articleBody ; rr:objectMap [ rr:column "body" ] ] ;
   rr:predicateObjectMap [ rr:predicate luna:content ;       rr:objectMap [ rr:column "body" ] ] ;
   rr:predicateObjectMap [ rr:predicate schema:inLanguage ;  rr:objectMap [ rr:column "lang" ] ] ;

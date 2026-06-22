@@ -11,10 +11,9 @@
 # schema:headline / schema:articleBody / schema:isPartOf / schema:hasPart / schema:inLanguage /
 # foaf:name. That minimalism is deliberate — reuse standards, invent as little as possible.
 #
-# (The legacy `?output=xml/n3/json` serialization mirrors the app's internal XSLT model and
-#  emits extra luna: terms — nid, lid, alias, is_active — plus a non-standard owl:isChildOf.
-#  Those are implementation detail of the rendering pipeline, NOT part of this vocabulary; the
-#  canonical RDF is the triplestore projection described here.)
+# (owl:isChildOf, luna:is_active and /node/{nid} URIs live only in the app's internal in-memory
+#  model, which drives the XSLT rendering — they are not published. ?output=xml/n3/json serves
+#  this same clean schema.org projection, matching the triplestore.)
 
 @prefix luna: <https://jeromev.github.io/LunarSystem/ontology#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .

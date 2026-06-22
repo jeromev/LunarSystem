@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.37-alpha] - 2026-06-22
+- **RDF — `?output=xml/n3/json` now serve the clean schema.org projection.** They used to dump the raw in-memory model — `/node/{nid}` integer-identity URIs, `owl:isChildOf` (a non-existent OWL term) and snake-case `luna:is_active`, plus render scaffolding. New [`lunaModel::build_schema_index()`](luna/luna.classes/luna.model.class.php) projects the page + its text blocks into the **same** standards-based shape as `?output=jsonld` and the triplestore: `/id/{slug}` IRIs, `schema:WebPage`/`Article`, `schema:isPartOf`/`hasPart`, typed literals, and just the three custom terms (`luna:isActive`/`level`/`content`). `dump()` serialises that for the three RDF formats; the legacy in-memory model (which drives the XSLT navigation via `owl:isChildOf`) and the `mod_node` node-dump path are untouched. Verified: the legacy terms are gone from all three formats, the published predicate set is **parity-exact** with the triplestore, the HTML still renders, and the regression + admin-lockout suites pass. (The full internal-model rename stays a deliberate P2.) Updated the ontology + docs notes that described the old behaviour.
+
 ## [0.8.36-alpha] - 2026-06-22
 - **GitHub Pages root landing.** The vocabulary already dereferenced at `jeromev.github.io/LunarSystem/ontology/`, but the bare Pages root 404'd. Added a static `index.html` landing (links to the ontology, repo, docs, changelog) plus `DirectoryIndex index.php` in `.htaccess` so the app keeps serving `index.php` for `/` — GitHub Pages serves the static landing, Apache never does. Verified the app still renders `/` correctly.
 

@@ -449,7 +449,7 @@ class lunaModel {
 	 */
 	public function dump($flavor = 'xml', $return = false, $node = false) {
 		require_once('arc/ARC2.php');
-		$index = (empty($node) || !is_array($node))? $this->index : $node;
+		$index = (empty($node) || !is_array($node))? $this->build_schema_index() : $node;
 		// These non-HTML data responses (xml/json/n3/jsonld) are shown by the browser's
 		// built-in data viewer, which injects an inline stylesheet — the strict global CSP
 		// (style-src 'self') blocks it and the document renders as unstyled run-on text.
@@ -554,6 +554,79 @@ class lunaModel {
 		if ($return) { return $json; }
 		header('Content-Type: application/ld+json');
 		die($json);
+	}
+	// }}}
+	// {{{ build_schema_index()
+	/**
+	 * Project the current page (and its text blocks) into a clean, standards-based ARC2
+	 * index — the same schema.org/FOAF shape as the triplestore: slug IRIs (/id/{slug}),
+	 * schema:WebPage / schema:Article, schema:isPartOf / hasPart, and the three luna: terms
+	 * (isActive, level, content). This is what ?output=xml/n3/json serialise, so the public
+	 * RDF matches the triplestore instead of the legacy in-memory render model (/node/{nid},
+	 * owl:isChildOf, luna:is_active), which stays internal to the XSLT pipeline. to_jsonld()
+	 * is the JSON-LD form of the same projection.
+	 *
+	 * @access private
+	 * @return array an ARC2 index (uri => predicate => [ {value,type,datatype?,lang?} ])
+	 */
+	private function build_schema_index() {
+		$base   = rtrim(luna::$site_uri, '/');
+		$rdf    = $this->conf['ns']['rdf'];
+		$rdfs   = $this->conf['ns']['rdfs'];
+		$luna   = $this->conf['ns']['luna'];
+		$owl    = $this->conf['ns']['owl'];
+		$schema = 'https://schema.org/';
+		$xint   = 'http://www.w3.org/2001/XMLSchema#integer';
+		$first  = function($node, $pred) { return isset($node[$pred][0]['value'])? $node[$pred][0]['value'] : null; };
+		$index  = array();
+		$pagenid = defined('PAGENID')? PAGENID : false;
+		$pinternal = $this->node_path.'/'.$pagenid;
+		// no content page (e.g. an admin screen): a minimal schema:WebSite node
+		if ($pagenid === false || !isset($this->index[$pinternal])) {
+			$site = $base.'/id/site';
+			$index[$site][$rdf.'type'][] = array('value'=>$schema.'WebSite', 'type'=>'uri');
+			if (isset(luna::$data['sitename'])) { $index[$site][$schema.'name'][] = array('value'=>(string) luna::$data['sitename'], 'type'=>'literal'); }
+			return $index;
+		}
+		$page = $this->index[$pinternal];
+		$slug = $first($page, $luna.'lid');
+		if ($slug === null) { return $index; }
+		$puri = $base.'/id/'.rawurlencode($slug);
+		$index[$puri][$rdf.'type'][] = array('value'=>$schema.'WebPage', 'type'=>'uri');
+		if (($name = $first($page, $rdfs.'label')) !== null) { $index[$puri][$schema.'name'][] = array('value'=>(string)$name, 'type'=>'literal'); }
+		if (($nid  = $first($page, $luna.'nid'))    !== null) { $index[$puri][$schema.'identifier'][] = array('value'=>(string)$nid, 'type'=>'literal', 'datatype'=>$xint); }
+		if (($act  = $first($page, $luna.'is_active')) !== null) { $index[$puri][$luna.'isActive'][] = array('value'=>(string)$act, 'type'=>'literal', 'datatype'=>$xint); }
+		if (($lvl = $first($page, $luna.'level')) !== null && isset($this->index[$lvl]) && ($lslug = $first($this->index[$lvl], $luna.'lid')) !== null) {
+			$index[$puri][$luna.'level'][] = array('value'=>$base.'/id/'.rawurlencode($lslug), 'type'=>'uri');
+		}
+		$parent = $first($page, $owl.'isChildOf');
+		if ($parent && $parent != $pinternal && isset($this->index[$parent]) && ($pslug = $first($this->index[$parent], $luna.'lid')) !== null) {
+			$index[$puri][$schema.'isPartOf'][] = array('value'=>$base.'/id/'.rawurlencode($pslug), 'type'=>'uri');
+		}
+		foreach ($this->index as $node) {
+			if ($first($node, $rdf.'type') !== $luna.'text' || !isset($node[$luna.'page'])) { continue; }
+			$belongs = false;
+			foreach ($node[$luna.'page'] as $pp) { if (isset($pp['value']) && $pp['value'] == $pinternal) { $belongs = true; break; } }
+			if (!$belongs) { continue; }
+			$tslug = $first($node, $luna.'lid');
+			if ($tslug === null) { continue; }
+			$turi = $base.'/id/'.rawurlencode($tslug);
+			$index[$turi][$rdf.'type'][] = array('value'=>$schema.'Article', 'type'=>'uri');
+			if (($tnid = $first($node, $luna.'nid')) !== null) { $index[$turi][$schema.'identifier'][] = array('value'=>(string)$tnid, 'type'=>'literal', 'datatype'=>$xint); }
+			if (($head = $first($node, $rdfs.'label')) !== null) { $index[$turi][$schema.'headline'][] = array('value'=>(string)$head, 'type'=>'literal'); }
+			if (isset($node[$luna.'content'][0]['value'])) {
+				$body = $node[$luna.'content'][0]['value'];
+				$lang = isset($node[$luna.'content'][0]['lang'])? $node[$luna.'content'][0]['lang'] : '';
+				$ab = array('value'=>trim(strip_tags($body)), 'type'=>'literal'); if ($lang !== '') { $ab['lang'] = $lang; }
+				$index[$turi][$schema.'articleBody'][] = $ab;
+				$cn = array('value'=>$body, 'type'=>'literal'); if ($lang !== '') { $cn['lang'] = $lang; }
+				$index[$turi][$luna.'content'][] = $cn;
+				if ($lang !== '') { $index[$turi][$schema.'inLanguage'][] = array('value'=>$lang, 'type'=>'literal'); }
+			}
+			$index[$turi][$schema.'isPartOf'][] = array('value'=>$puri, 'type'=>'uri');
+			$index[$puri][$schema.'hasPart'][] = array('value'=>$turi, 'type'=>'uri');
+		}
+		return $index;
 	}
 	// }}}
 	// {{{ sparql_select()

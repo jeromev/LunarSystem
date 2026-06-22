@@ -57,6 +57,13 @@ custom namespace:
 The `luna:` namespace string is exposed as `lunaModel::$lunaNameSpace` and used
 throughout the loaders.
 
+> This table describes the **internal** in-memory model that drives the XSLT (hence
+> `owl:isChildOf`, `luna:is_active`, `/node/{nid}`). The **published** RDF is narrower and
+> standards-clean: `?output=xml/n3/json` and the triplestore project the page + its texts to
+> `schema:WebPage`/`Article` with slug IRIs, `schema:isPartOf`/`hasPart`, and only
+> `luna:isActive`/`level`/`content` — see
+> [`build_schema_index()`](../luna/luna.classes/luna.model.class.php) and [linked-data.md](linked-data.md).
+
 ## SQL → RDF projection
 
 The relational schema (see [database-schema.md](database-schema.md)) is a generic

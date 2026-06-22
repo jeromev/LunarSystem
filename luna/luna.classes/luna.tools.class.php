@@ -487,7 +487,7 @@ class lunaTools {
 	 * @return mixed
 	 */
 	public static function load_config() {
-		if (luna::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
+		if (luna::$cache) { $cache_obj = new lunaCache(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get('Config'))) {
 			return unserialize($cache_str, array('allowed_classes' => false));
 		} else {
@@ -619,9 +619,7 @@ class lunaTools {
 	 * @return boolean
 	 */
 	public static function check_cache() {
-		// require PEAR Cache_lite Class
-		if (!require_once 'Cache/Lite.php') { return false; }
-		luna::$cache = CACHE? true : false; 
+		luna::$cache = CACHE? true : false;
 		if (file_exists(SITEPATH.'cache') && is_dir(SITEPATH.'cache')) {
 			define('CACHE_PATH', SITEPATH.'cache/');
 		} else {
@@ -640,8 +638,8 @@ class lunaTools {
 	 * @return boolean
 	 */
 	public static function purge_cache() {
-		$Cache_Lite = new Cache_Lite(array('cacheDir' => CACHE_PATH));
-		$Cache_Lite->clean();
+		$cache = new lunaCache(array('cacheDir' => CACHE_PATH));
+		$cache->clean();
 		luna::$cache = false;
 		return true;
 	}

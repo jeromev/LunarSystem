@@ -38,12 +38,6 @@ ini_set('arg_separator.output','&amp;');
 // code targets PHP 5.2/5.3 idioms (`=& new`, static-call style) that PHP 5.6
 // flags but which are harmless here.
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
-// magic_quotes_runtime was removed in PHP 5.4 (functions removed entirely in PHP 8).
-// Polyfill the no-op getters/setters so era-2009 vendored libs (Cache_Lite) that call
-// them unguarded keep working; on PHP < 8 the real (no-op since 5.4) functions win.
-if (!function_exists('get_magic_quotes_runtime')) { function get_magic_quotes_runtime() { return 0; } }
-if (!function_exists('set_magic_quotes_runtime')) { function set_magic_quotes_runtime($v) { return false; } }
-set_magic_quotes_runtime(0);
 // SPARQL endpoint for the read path. Default = the authenticating reverse proxy (Caddy, HTTP
 // basic auth) in front of Oxigraph (the materialised, dual-write-synced triplestore — RDF-native).
 // Override to Ontop (virtual SPARQL over MySQL) to read live from the relational store instead:
@@ -74,7 +68,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.28-alpha';
+	public static $lunaVersion = '0.8.29-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -233,8 +227,9 @@ class luna {
 			if (self::get_ini('Constantes', 'INCLUDEPATH')) { ini_set('include_path', ini_get('include_path').':'.self::get_ini('Constantes', 'INCLUDEPATH').':'); } 
 			// require lunar Classes
 			if (!require_once 'luna.classes/luna.log.class.php') { trigger_error(_('Error: cannot find lib: ').'luna.exception.class', E_USER_ERROR); } 
-			if (!require_once 'luna.classes/luna.tools.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.tools.class', PEAR_LOG_CRIT); } 
-			if (!require_once 'luna.classes/luna.db.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.db.class', PEAR_LOG_CRIT); } 
+			if (!require_once 'luna.classes/luna.tools.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.tools.class', PEAR_LOG_CRIT); }
+			if (!require_once 'luna.classes/luna.cache.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.cache.class', PEAR_LOG_CRIT); }
+			if (!require_once 'luna.classes/luna.db.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.db.class', PEAR_LOG_CRIT); }
 			if (!require_once 'luna.classes/luna.session.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.session.class', PEAR_LOG_CRIT); } 
 			if (!require_once 'luna.classes/luna.model.class.php') { throw new lunaException(_('Error: cannot find lib: ').'luna.model.class', PEAR_LOG_CRIT); } 
 			// clean $_GET, $_POST, $_COOKIE, $_SESSION & $_REQUEST
@@ -413,7 +408,7 @@ class luna {
 	 */
 	public function load_mods() {
 		try {
-			if (self::$cache) { $cache_obj = new Cache_Lite(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
+			if (self::$cache) { $cache_obj = new lunaCache(array('cacheDir' => CACHE_PATH, 'lifetime' => self::$cache_timeout)); }
 			if (self::$cache && ($cache_str = $cache_obj->get('node-'.PAGENID.'.mods'))) {
 				$nodes = unserialize($cache_str, array('allowed_classes' => false));
 			} else {

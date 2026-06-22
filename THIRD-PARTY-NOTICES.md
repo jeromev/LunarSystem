@@ -9,12 +9,12 @@ are authoritative. The app now runs on PHP 8.3 / MySQL 8.0: the DB layer moved f
 MDB2 to PDO in 0.5.0-alpha (MDB2 dropped); PEAR **Log** was removed in 0.8.27-alpha (its
 `PEAR_LOG_*` constants inlined in `luna.classes/luna.log.class.php`); and PEAR
 **HTML_Safe** + **XML_HTMLSax3** were replaced by **HTMLPurifier** (Composer) in
-0.8.28-alpha.
+0.8.28-alpha; and PEAR **Cache_Lite** — the last consumer of PEAR base — was replaced by
+a small native file cache (`luna.classes/luna.cache.class.php`) in 0.8.29-alpha, removing
+both. **ARC2 is now the only vendored in-tree library.**
 
 | Component | Location | Upstream | License (per file headers / upstream) |
 |---|---|---|---|
-| PEAR Base (`PEAR.php`, `PEAR5.php`) | `luna/luna.lib/` | pear.php.net | New BSD License (© 1997–2009 The Authors / PHP Group) — retained **only** as Cache_Lite's lazy error-path fallback (the `raiseError()` it `include`s on a cache failure); goes away when Cache_Lite does. |
-| PEAR **Cache_Lite** | `luna/luna.lib/Cache/` | pear.php.net/package/Cache_Lite | LGPL (© Fabien Marty) |
 | **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
 | **HTMLPurifier** (input sanitiser) | `vendor/ezyang/htmlpurifier/` (Composer) | github.com/ezyang/htmlpurifier | ezyang/htmlpurifier 4.19.0 — LGPL-2.1-or-later (© Edward Z. Yang) |
 

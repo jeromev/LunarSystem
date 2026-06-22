@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.8.36-alpha] - 2026-06-22
+- **GitHub Pages root landing.** The vocabulary already dereferenced at `jeromev.github.io/LunarSystem/ontology/`, but the bare Pages root 404'd. Added a static `index.html` landing (links to the ontology, repo, docs, changelog) plus `DirectoryIndex index.php` in `.htaccess` so the app keeps serving `index.php` for `/` — GitHub Pages serves the static landing, Apache never does. Verified the app still renders `/` correctly.
+
 ## [0.8.35-alpha] - 2026-06-22
 - **Ontology review + GitHub Pages prep.** Reviewed the aged `luna:` vocabulary. Finding: the persisted/queryable ontology (triplestore + R2RML) is already modern and minimal — only **three** custom terms (`luna:isActive`, `luna:level`, `luna:content`); everything else is schema.org + FOAF, with slug IRIs and `schema:isPartOf`. What is dated is the legacy `?output=xml/n3/json` serialization, which mirrors the internal XSLT model and still emits the old conventions — `owl:isChildOf` (a non-existent OWL term), `/node/{nid}` integer-identity URIs, and snake-case `luna:is_active`. Those terms are load-bearing for the XSLT navigation (the menu is built from `luna:page[owl:isChildOf …]`), so aligning that path with the clean triplestore projection is a roadmap-scale change (part of P2), not a quick rename. Corrected the published `ontology.ttl` + `index.html` to document the three canonical terms accurately (the initial scaffold had over-listed internal/legacy terms); validated the Turtle parses (18 triples). Added `.nojekyll` so GitHub Pages serves the vocabulary as static files (no Jekyll build to fail).
 

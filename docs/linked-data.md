@@ -1,6 +1,6 @@
 # Linked Data — turning LunarSystem into a real Semantic Web CMS
 
-> **Status: the active direction (`main`, `0.8.36-alpha`).** The semantic-web work
+> **Status: the active direction (`main`, `0.8.37-alpha`).** The semantic-web work
 > described here is the `main` line; the untouched archival CMS (`0.2.14-alpha`)
 > is preserved on the `legacy` branch. The plan below runs Phase 0 → A → B → C, and
 > **all are implemented**: Phase 0 JSON-LD, Phase A virtual SPARQL, Phase B
@@ -105,6 +105,11 @@ this time the representation is correct, standards-based Linked Data:
 - The same block is embedded as `<script type="application/ld+json">` in every
   HTML page's `<head>` — the part of the Semantic Web that actually *won*
   (Google/Bing rich results, knowledge-graph ingestion).
+- `?output=xml/n3/json` serve the **same clean projection**
+  ([`lunaModel::build_schema_index()`](../luna/luna.classes/luna.model.class.php)) — slug
+  IRIs, `schema:WebPage`/`Article`, the three `luna:` terms — so the whole public RDF
+  surface matches the triplestore. The legacy in-memory model (`/node/{nid}`,
+  `owl:isChildOf`, `luna:is_active`) stays internal to the XSLT pipeline.
 
 Implementation: [`lunaModel::to_jsonld()`](../luna/luna.classes/luna.model.class.php)
 applies the Decision-2 mapping to the page node + its text blocks and emits a

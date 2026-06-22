@@ -125,18 +125,20 @@ hr {
 */
 :root {
   --bg: #e2e2e2;
-  --ink: #1d1d1d;
-  --chrome: rgb(36, 36, 36); /* dark top bar / submit button */
-  --muted: #666;
-  --muted-2: #999;
+  --ink: #20201f;
+  --chrome: var(--ink);
+  --muted: color-mix(in srgb, var(--chrome) 66%, transparent);
+  --muted-2: color-mix(in srgb, var(--chrome) 50%, transparent);
   --link: #be006f; /* darkened slightly from #cc007a for AA contrast on table stripes */
   --link-hover: #ff6099;
   --accent: #0066cc; /* content header + nav hover */
   --accent-bright:#09f; /* pagination hover border */
   --ok: #007b5e; /* submit hover / "okay" message */
   --warn: #a60045; /* warning button / message */
-  --field-border: #ccc;
+  --field-border: var(--muted);
   --field-focus: #938379;
+  --field-overlay: color-mix(in srgb, var(--chrome) 15%, transparent);
+  --field-overlay-2: color-mix(in srgb, var(--chrome) 30%, transparent);
 }
 
 /* ===========================================================================
@@ -366,6 +368,7 @@ form fieldset {
 }
 form fieldset p {
   color: var(--muted);
+  margin-bottom: calc(-1 * var(--base-unit));
 }
 form fieldset div.box {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
@@ -386,13 +389,11 @@ form fieldset label span.label {
 form fieldset select {
   font-weight: normal;
   border: solid 0.125rem var(--field-border);
-  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
-  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
-  border-radius: calc(0.5 * var(--base-unit));
+  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
 }
 form fieldset input {
   padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
-  width: calc(16 * var(--base-unit) * var(--width-optical-adjustment));
+  height: calc(3 * var(--base-unit));
   font-weight: normal;
   border: solid 0.125rem var(--field-border);
   border-radius: calc(0.5 * var(--base-unit));
@@ -400,10 +401,8 @@ form fieldset input {
 form fieldset input.submit {
   background: var(--chrome);
   color: #fff;
-  margin: calc(0.5 * var(--base-unit)) 0 calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  padding: calc(1 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment)) calc(0.5 * var(--base-unit));
+  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   text-transform: uppercase;
-  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
   border-radius: calc(0.5 * var(--base-unit));
 }
 form fieldset input.submit:hover, form fieldset input.submit:focus {
@@ -831,14 +830,9 @@ h6:after {
   cursor: pointer;
   padding-left: calc(1.5 * var(--base-unit) * var(--width-optical-adjustment));
   background-repeat: no-repeat;
-  background-size: 0.6rem;
-  /* Centre the triangle on the heading's CAP height (not the line box), so it
-     reads as aligned with the text. Vertically:
-       (--line-height − 1em)/2  → the leading above the first text line
-       0.636em                  → Verdana's cap-centre below the text-top (ascent − cap-height/2)
-       − 0.3rem                 → half the triangle, to centre it
-     All terms scale with the heading, so it holds across breakpoints. */
-  background-position: left calc((var(--line-height) - 1em) / 2 + 0.636em - 0.3rem);
+  background-size: calc(1.5 * var(--base-unit));
+  background-position: left 20%;
+  margin-left: calc(-0.5 * var(--base-unit) * var(--width-optical-adjustment));
 }
 .box-handle.collapsed { /* ▶ right-pointing triangle */
   background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20d='M3%202L7%205L3%208Z'%20fill='%23000'/%3E%3C/svg%3E");
@@ -952,15 +946,11 @@ h6:after {
 }
 #Page #Content {
   grid-area: content;
-  background: transparent;
   position: relative;
   padding: calc(1 * var(--base-unit)) 0;
 }
 #Page #Content #Content-header h1::before, #Page #Content #Content-header h1::after {
   content: none;
-}
-#Page #Content #Content-header h1 {
-  /* same as #Top: block <a> inside, no baseline leading */
 }
 #Page #Content #Content-header h1 a {
   color: #fff;
@@ -972,9 +962,6 @@ h6:after {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
-}
-#Page #Content #Content-main {
-  background: transparent;
 }
 #Page #Content #Content-main div.box {
   margin: 0 0 calc(1 * var(--base-unit));
@@ -1004,18 +991,6 @@ h6:after {
 }
 #Page #Content #Content-main div.onecol label {
   clear: both;
-}
-#Page #Content #Content-main div.col {
-  padding: calc(1 * var(--base-unit)) 0 calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
-}
-#Page #Content #Content-main div.col.autowidth input, #Page #Content #Content-main div.col.autowidth textarea, #Page #Content #Content-main div.col.autowidth label span.label {
-  width: auto !important;
-}
-#Page #Content #Content-main div.col label.big input,
-#Page #Content #Content-main div.col label.big textarea,
-#Page #Content #Content-main div.col label.big span.label {
-  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
 #Page #Content #Content-main form fieldset {
   background: transparent;
@@ -1047,31 +1022,19 @@ h6:after {
   width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
   height: calc(18 * var(--base-unit));
 }
-#Page #Content #Content-main div.fields {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  background: rgba(0, 0, 0, 0.05);
-  border-top-left-radius: calc(0.5 * var(--base-unit));
-  border-top-right-radius: calc(0.5 * var(--base-unit));
-  padding: 0.0006875rem 0 0;
+#Page #Content #Content-main div.fields,
+#Page #Content #Content-main div.submit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(16 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  background-color: var(--field-overlay);
+  gap: calc(1 * var(--base-unit));
 }
 #Page #Content #Content-main div.text div.col {
-  padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  width: calc(17 * var(--base-unit) * var(--width-optical-adjustment));
-}
-#Page #Content #Content-main div.text div.col:first-child {
-  padding-left: 0;
-}
-#Page #Content #Content-main div.text div.col:last-child {
-  padding-right: 0;
-  border: none;
+  width: 100%;
 }
 #Page #Content #Content-main div.submit {
-  padding: calc(0.5 * var(--base-unit)) calc(0.5 * var(--base-unit) * var(--width-optical-adjustment));
-  background: rgba(0, 0, 0, 0.1);
-  border-bottom-left-radius: calc(0.5 * var(--base-unit));
-  border-bottom-right-radius: calc(0.5 * var(--base-unit));
+  background-color: var(--field-overlay-2);
 }
 #Page #AnalyseLog {
   padding: 0 calc(1 * var(--base-unit) * var(--width-optical-adjustment)) calc(1 * var(--base-unit)) 0;
@@ -1218,8 +1181,8 @@ h6:after {
 #Page #Content-main span.label,
 #Page #Content-main div.col,
 #Page #Content-main div.onecol {
-  max-width: 100%;
-  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(25 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 /*# sourceMappingURL=luna.css.map */

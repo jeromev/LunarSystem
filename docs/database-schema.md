@@ -60,7 +60,7 @@ The actual editable content, one row per language per text node.
 | `nid` | `int unsigned` | FK to the text node in `luna_nodes` |
 | `title` | `tinytext` | Title |
 | `lang` | `char(2)` | Language code (`en`, `fr`, …) |
-| `content_html` | `longtext` | HTML body (FULLTEXT-indexed for search) |
+| `content` | `longtext` | Markdown source body (FULLTEXT-indexed for search) |
 
 ## Users, sessions, audit
 

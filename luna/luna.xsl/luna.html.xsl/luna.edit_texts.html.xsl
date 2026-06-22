@@ -82,9 +82,10 @@
 										<xsl:with-param name="type">textarea</xsl:with-param>
 										<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'content']/ui:value"/>
 										<xsl:with-param name="class">big</xsl:with-param>
-										<xsl:with-param name="wysiwyg">1</xsl:with-param>
+										<xsl:with-param name="markdown">1</xsl:with-param>
 										<xsl:with-param name="default-value"></xsl:with-param>
 									</xsl:call-template>
+									<p class="hint"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Written in Markdown (headings, bold, italics, links, lists).']/ui:value"/></p>
 								</div>
 								<div class="col">
 									<xsl:call-template name="forminput">
@@ -170,9 +171,10 @@
 										<xsl:with-param name="type">textarea</xsl:with-param>
 										<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'content']/ui:value"/>
 										<xsl:with-param name="class">big</xsl:with-param>
-										<xsl:with-param name="wysiwyg">1</xsl:with-param>
+										<xsl:with-param name="markdown">1</xsl:with-param>
 										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/schema:Article/luna:content"/></xsl:with-param>
 									</xsl:call-template>
+									<p class="hint"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Written in Markdown (headings, bold, italics, links, lists).']/ui:value"/></p>
 								</div>
 								<div class="col">
 									<xsl:call-template name="forminput">

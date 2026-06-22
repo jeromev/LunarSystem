@@ -27,7 +27,10 @@
 				</xsl:if>
 				<div class="box-content">
 					<xsl:attribute name="xml:lang"><xsl:value-of select="luna:content/@xml:lang"/></xsl:attribute>
-					<xsl:value-of select="luna:content" disable-output-escaping="yes"/>
+					<!-- ui:content is luna:content (Markdown source) rendered to HTML for the
+					     view; see lunaModel::project_to_schema(). luna:content itself stays
+					     Markdown in the published graph. -->
+					<xsl:value-of select="ui:content" disable-output-escaping="yes"/>
 				</div>
 			</div>
 		</xsl:for-each>

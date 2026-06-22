@@ -408,7 +408,7 @@
 		<xsl:param name="type">text</xsl:param>
 		<xsl:param name="mode">node</xsl:param>
 		<xsl:param name="size">1</xsl:param>
-		<xsl:param name="wysiwyg">0</xsl:param>
+		<xsl:param name="markdown">0</xsl:param>
 		<xsl:param name="multiple">no</xsl:param>
 		<xsl:param name="foreach"/>
 		<xsl:param name="label"/>
@@ -446,8 +446,8 @@
 						<xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>
 						<xsl:attribute name="rows">80</xsl:attribute>
 						<xsl:attribute name="cols">40</xsl:attribute>
-						<xsl:if test="$wysiwyg = '1'">
-							<xsl:attribute name="class">wysiwyg</xsl:attribute>
+						<xsl:if test="$markdown = '1'">
+							<xsl:attribute name="class">markdown</xsl:attribute>
 						</xsl:if>
 						<xsl:value-of select="$value"/>
 					</textarea>

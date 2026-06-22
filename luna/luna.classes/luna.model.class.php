@@ -537,7 +537,7 @@ class lunaModel {
 				$headline = $first($node, $rdfs.'label');
 				if ($headline !== null) { $part['headline'] = $headline; $part['name'] = $headline; }
 				if (isset($node[$luna.'content'][0]['value'])) {
-					$part['articleBody'] = trim(strip_tags($node[$luna.'content'][0]['value']));
+					$part['articleBody'] = lunaTools::markdown_to_text($node[$luna.'content'][0]['value']);
 					if (isset($node[$luna.'content'][0]['lang'])) { $part['inLanguage'] = $node[$luna.'content'][0]['lang']; }
 				}
 				$parts[] = $part;
@@ -622,7 +622,7 @@ class lunaModel {
 			if (isset($node[$luna.'content'][0]['value'])) {
 				$body = $node[$luna.'content'][0]['value'];
 				$lang = isset($node[$luna.'content'][0]['lang'])? $node[$luna.'content'][0]['lang'] : '';
-				$ab = array('value'=>trim(strip_tags($body)), 'type'=>'literal'); if ($lang !== '') { $ab['lang'] = $lang; }
+				$ab = array('value'=>lunaTools::markdown_to_text($body), 'type'=>'literal'); if ($lang !== '') { $ab['lang'] = $lang; }
 				$index[$turi][$schema.'articleBody'][] = $ab;
 				$cn = array('value'=>$body, 'type'=>'literal'); if ($lang !== '') { $cn['lang'] = $lang; }
 				$index[$turi][$luna.'content'][] = $cn;
@@ -702,7 +702,7 @@ class lunaModel {
 				'lid'          => $lid,
 				'title'        => isset($r['title']['value'])? $r['title']['value'] : '',
 				'lang'         => isset($r['lang']['value'])? $r['lang']['value'] : luna::$lang,
-				'content_html' => isset($r['content']['value'])? $r['content']['value'] : (isset($r['body']['value'])? $r['body']['value'] : ''),
+				'content'      => isset($r['content']['value'])? $r['content']['value'] : (isset($r['body']['value'])? $r['body']['value'] : ''),
 				'is_active'    => 1,
 				'save_time'    => 0,
 				'pages'        => array($page_nid)
@@ -848,8 +848,8 @@ class lunaModel {
 				$po[] = 'schema:identifier '.self::rdf_int($nid);
 				if ($t = $this->rdf_text_row($nid)) {
 					$po[] = 'schema:headline '.self::rdf_str($t->title);
-					$po[] = 'schema:articleBody '.self::rdf_str(trim(strip_tags($t->content_html)));
-					$po[] = 'luna:content '.self::rdf_str($t->content_html);
+					$po[] = 'schema:articleBody '.self::rdf_str(lunaTools::markdown_to_text($t->content));
+					$po[] = 'luna:content '.self::rdf_str($t->content);
 					$po[] = 'schema:inLanguage '.self::rdf_str($t->lang);
 				}
 				foreach ($this->rdf_edges($nid, array('page')) as $e) { $po[] = 'schema:isPartOf '.self::rdf_uri($e->lid); }
@@ -1043,7 +1043,7 @@ class lunaModel {
 	 * @return mixed the row array, or false
 	 */
 	public function rdf_text_row($nid) {
-		$res = lunaDB::query('SELECT title, lang, content_html FROM '.luna::get_ini('DBtables', 'TEXTS').' WHERE nid = '.lunaDB::quote($nid));
+		$res = lunaDB::query('SELECT title, lang, content FROM '.luna::get_ini('DBtables', 'TEXTS').' WHERE nid = '.lunaDB::quote($nid));
 		if (!$res) { return false; }
 		$pick = false;
 		while ($r = $res->fetchRow()) {
@@ -1495,8 +1495,8 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = lunaTools::format_language($item['lang']);
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'isActive'][0]['value'] = $item['is_active'];
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'save_time'][0]['value'] = ($item['save_time'] == 0? '' : lunaTools::format_date($item['save_time']));
-			if (isset($item['content_html']) && !empty($item['content_html'])) {
-				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['value'] = $item['content_html'];
+			if (isset($item['content']) && !empty($item['content'])) {
+				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['value'] = $item['content'];
 				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['type'] = 'literal';
 				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['lang'] = lunaTools::format_language($item['lang']);
 			}
@@ -1548,7 +1548,7 @@ class lunaModel {
 				SELECT DISTINCT
 					t.title,
 					t.lang,
-					t.content_html,
+					t.content,
 					n.nid,
 					p.nid as page_nid,
 					n.lid,
@@ -1586,7 +1586,7 @@ class lunaModel {
 				SELECT DISTINCT
 					t.title,
 					t.lang,
-					t.content_html,
+					t.content,
 					n.nid,
 					p.nid as page_nid,
 					n.lid,
@@ -1827,7 +1827,7 @@ class lunaModel {
 			$texts[$row->nid]['user']['lastname'] = $row->lastname;
 			if (isset($row->page_nid)) { $texts[$row->nid]['pages'][$row->page_nid] = $row->page_nid; }
 			$texts[$row->nid]['save_time'] = $row->ntime;
-			if (isset($row->content_html)) { $texts[$row->nid]['content_html'] = $row->content_html; }
+			if (isset($row->content)) { $texts[$row->nid]['content'] = $row->content; }
 			if (isset($row->lang)) { $texts[$row->nid]['lang'] = $row->lang; }
 		}
 		$res->free();
@@ -2623,6 +2623,7 @@ class lunaModel {
 		// reuse standard schema.org predicates where one exists (luna: kept only for the
 		// genuinely app-specific: lid/slug, isActive, level, alias).
 		$rdf    = $this->conf['ns']['rdf'];
+		$ui     = $this->conf['ns']['ui'];
 		// type-value remap: pages/articles get the standard schema.org class; group/level/mod keep
 		// their luna: type (no standard equivalent); users are already foaf:Person.
 		$typemap = array($luna.'page' => $schema.'WebPage', $luna.'text' => $schema.'Article');
@@ -2645,6 +2646,15 @@ class lunaModel {
 					if ($pred === $rdf.'type' && isset($typemap[$v['value']])) { $v['value'] = $typemap[$v['value']]; }
 					if (isset($v['type'], $v['value']) && $v['type'] === 'uri' && isset($map[$v['value']])) { $v['value'] = $map[$v['value']]; }
 					$out[$nuri][$npred][] = $v;
+					// luna:content holds the Markdown source; render it to HTML for the view
+					// only (a transient ui: render-model literal the default template emits).
+					// This never reaches the published graph — dump()/to_jsonld()/rdf_sync_node()
+					// project from $this->index, not from here — so ?output=* stays Markdown.
+					if ($pred === $luna.'content' && isset($v['value'])) {
+						$rendered = array('value' => lunaTools::markdown($v['value']), 'type' => 'literal');
+						if (isset($v['lang'])) { $rendered['lang'] = $v['lang']; }
+						$out[$nuri][$ui.'content'][] = $rendered;
+					}
 				}
 			}
 		}

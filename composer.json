@@ -1,5 +1,11 @@
 {
     "require": {
-        "ezyang/htmlpurifier": "^4.19"
+        "ezyang/htmlpurifier": "^4.19",
+        "league/commonmark": "^2.4"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        }
     }
 }

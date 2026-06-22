@@ -1,5 +1,9 @@
 Options -Indexes
 
+# Always resolve "/" to the app entry point, even though a static index.html exists at the
+# repo root for the GitHub Pages site (GitHub Pages serves that; Apache must not).
+DirectoryIndex index.php
+
 RewriteEngine On
 RewriteBase /
 

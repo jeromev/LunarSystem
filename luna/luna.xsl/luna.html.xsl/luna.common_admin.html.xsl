@@ -15,7 +15,7 @@
 	<xsl:template name="online_users">
 		<xsl:param name="expand">1</xsl:param>
 		<div id="OnlineUsers" class="box">
-			<xsl:variable name="mod_nid"><xsl:value-of select="/rdf:RDF/luna:mod[luna:lid = 'mod_online_users']/luna:nid"/></xsl:variable>
+			<xsl:variable name="mod_nid"><xsl:value-of select="/rdf:RDF/luna:mod[luna:lid = 'mod_online_users']/schema:identifier"/></xsl:variable>
 			<h2>
 				<xsl:attribute name="class">
 					<xsl:text>box-handle</xsl:text>
@@ -28,7 +28,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
-				<xsl:value-of select="/rdf:RDF/luna:mod[luna:nid = $mod_nid]/rdfs:label"/>
+				<xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/rdfs:label"/>
 			</h2>
 			<div>
 				<xsl:attribute name="class">
@@ -43,7 +43,7 @@
 					</xsl:choose>
 				</xsl:attribute>
 				<table class="zebra">
-					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:mod[luna:nid = $mod_nid]/rdfs:label"/></caption>
+					<caption class="off"><xsl:value-of select="/rdf:RDF/luna:mod[schema:identifier = $mod_nid]/rdfs:label"/></caption>
 					<thead>
 						<tr>
 							<th><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/></th>
@@ -57,7 +57,7 @@
 					<tbody>
 						<xsl:variable name="admin_users_url" select="/rdf:RDF/luna:page[luna:lid = 'admin_users']/luna:alias"/>
 						<xsl:for-each select="/rdf:RDF/foaf:Person">
-							<xsl:variable name="user_nid" select="luna:nid"/>
+							<xsl:variable name="user_nid" select="schema:identifier"/>
 							<tr>
 								<td><xsl:value-of select="foaf:firstName"/></td>
 								<td><xsl:value-of select="foaf:surName"/></td>
@@ -68,7 +68,7 @@
 												<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'admin_users']/luna:alias"/>
 												<xsl:with-param name="options">
 													<xsl:text>user_nid=</xsl:text>
-													<xsl:value-of select="luna:nid"/>
+													<xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -159,9 +159,9 @@
 								<xsl:attribute name="data-href">
 
 									<xsl:call-template name="link">
-										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
-											<xsl:text>mod_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+											<xsl:text>mod_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
@@ -171,9 +171,9 @@
 									<a>
 										<xsl:attribute name="href">
 											<xsl:call-template name="link">
-												<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+												<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 												<xsl:with-param name="options">
-													<xsl:text>mod_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+													<xsl:text>mod_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -330,7 +330,7 @@
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
 											<xsl:text>text_nid=</xsl:text>
-											<xsl:value-of select="luna:nid"/>
+											<xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
@@ -343,7 +343,7 @@
 												<xsl:with-param name="alias" select="$modpagealias"/>
 												<xsl:with-param name="options">
 													<xsl:text>text_nid=</xsl:text>
-													<xsl:value-of select="luna:nid"/>
+													<xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -516,10 +516,10 @@
 								<xsl:attribute name="data-href">
 
 									<xsl:call-template name="link">
-										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
 											<xsl:text>user_nid=</xsl:text>
-											<xsl:value-of select="luna:nid"/>
+											<xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
@@ -531,10 +531,10 @@
 									<a>
 										<xsl:attribute name="href">
 											<xsl:call-template name="link">
-												<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+												<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 												<xsl:with-param name="options">
 													<xsl:text>user_nid=</xsl:text>
-													<xsl:value-of select="luna:nid"/>
+													<xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -605,7 +605,7 @@
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
-											<xsl:text>page_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+											<xsl:text>page_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
@@ -617,7 +617,7 @@
 											<xsl:call-template name="link">
 												<xsl:with-param name="alias" select="$modpagealias"/>
 												<xsl:with-param name="options">
-													<xsl:text>page_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+													<xsl:text>page_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -701,7 +701,7 @@
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
-											<xsl:text>group_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+											<xsl:text>group_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
@@ -713,7 +713,7 @@
 											<xsl:call-template name="link">
 												<xsl:with-param name="alias" select="$modpagealias"/>
 												<xsl:with-param name="options">
-													<xsl:text>group_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+													<xsl:text>group_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>
@@ -793,7 +793,7 @@
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
-											<xsl:text>level_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+											<xsl:text>level_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
@@ -805,7 +805,7 @@
 											<xsl:call-template name="link">
 												<xsl:with-param name="alias" select="$modpagealias"/>
 												<xsl:with-param name="options">
-													<xsl:text>level_nid=</xsl:text><xsl:value-of select="luna:nid"/>
+													<xsl:text>level_nid=</xsl:text><xsl:value-of select="schema:identifier"/>
 												</xsl:with-param>
 											</xsl:call-template>
 										</xsl:attribute>

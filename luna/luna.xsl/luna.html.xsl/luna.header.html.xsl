@@ -24,13 +24,13 @@
 	<xsl:variable name="site_uri"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'site_uri']/luna:value/@rdf:resource"/></xsl:variable>
 	<xsl:variable name="lang"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'lang']/luna:value"/></xsl:variable>
 	<xsl:variable name="masternodelid"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'lid']/luna:value"/></xsl:variable>
-	<xsl:variable name="masternodenid"><xsl:value-of select="/rdf:RDF/luna:page[luna:lid = $masternodelid]/luna:nid"/></xsl:variable>
+	<xsl:variable name="masternodenid"><xsl:value-of select="/rdf:RDF/luna:page[luna:lid = $masternodelid]/schema:identifier"/></xsl:variable>
 	<xsl:variable name="masternodeurl">
-		<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/></xsl:call-template>
+		<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/></xsl:call-template>
 	</xsl:variable>
 	<xsl:variable name="site_relative_url"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'site_relative_url']/luna:value"/></xsl:variable>
 	<xsl:variable name="pageurl"><xsl:value-of select="$masternodeurl"/></xsl:variable>
-	<xsl:variable name="mod_nid"><xsl:value-of select="/rdf:RDF/luna:mod[luna:lid = $mod_lid]/luna:nid"/></xsl:variable>
+	<xsl:variable name="mod_nid"><xsl:value-of select="/rdf:RDF/luna:mod[luna:lid = $mod_lid]/schema:identifier"/></xsl:variable>
 	<xsl:variable name="guest">
 		<xsl:choose>
 			<xsl:when test="/rdf:RDF/foaf:Person[luna:is_current = '1']/luna:is_guest = '1'">1</xsl:when>
@@ -48,7 +48,7 @@
 				<xsl:attribute name="profile"><xsl:text>http://ns.inria.fr/grddl/rdfa/</xsl:text></xsl:attribute>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 				<title>
-					<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
+					<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/rdfs:label"/>
 					<xsl:text> · </xsl:text>
 					<xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/>
 				</title>
@@ -58,7 +58,7 @@
 				<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"/>
 				<meta name="DC.Title">
 					<xsl:attribute name="content">
-						<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
+						<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/rdfs:label"/>
 						<xsl:text> · </xsl:text>
 						<xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/>
 					</xsl:attribute>
@@ -74,7 +74,7 @@
 					<xsl:attribute name="content"><xsl:value-of select="$lang"/></xsl:attribute>
 				</meta>
 				<meta name="DC.Date" scheme="W3CDTF">
-					<xsl:attribute name="content"><xsl:value-of select="/rdf:RDF/luna:data[luna:nid = $masternodenid]/dc:date"/></xsl:attribute>
+					<xsl:attribute name="content"><xsl:value-of select="/rdf:RDF/luna:data[schema:identifier = $masternodenid]/dc:date"/></xsl:attribute>
 				</meta>
 				<link rel="stylesheet" type="text/css" media="all">
 					<xsl:attribute name="href">
@@ -84,7 +84,7 @@
 				<link rel="alternate" type="application/rdf+xml">
 					<xsl:attribute name="href">
 						<xsl:call-template name="link">
-							<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+							<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 							<xsl:with-param name="options">
 								<xsl:text>output=xml</xsl:text>
 							</xsl:with-param>
@@ -114,7 +114,7 @@
 								<xsl:attribute name="href">
 									<xsl:value-of select="$pageurl"/>
 								</xsl:attribute>
-								<xsl:value-of select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/rdfs:label"/>
+								<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/rdfs:label"/>
 							</a>
 						</h1>
 					</header>

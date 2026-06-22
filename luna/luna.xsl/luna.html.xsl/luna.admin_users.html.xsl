@@ -85,7 +85,7 @@
 											<xsl:with-param name="multiple">yes</xsl:with-param>
 											<xsl:with-param name="size"><xsl:value-of select="count(/rdf:RDF/luna:group)"/></xsl:with-param>
 											<xsl:with-param name="foreach" select="/rdf:RDF/luna:group"/>
-											<xsl:with-param name="required" select="/rdf:RDF/node()[luna:lid = 'group_default']/luna:nid"/>
+											<xsl:with-param name="required" select="/rdf:RDF/node()[luna:lid = 'group_default']/schema:identifier"/>
 										</xsl:call-template>
 									</div>
 								</div>
@@ -110,7 +110,7 @@
 						<h2 class="box-handle expanded">
 							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify the user']/luna:value"/>
 							<xsl:text> </xsl:text>
-							<em><xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:firstName"/><xsl:text> </xsl:text><xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:surName"/></em>
+							<em><xsl:value-of select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/foaf:firstName"/><xsl:text> </xsl:text><xsl:value-of select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/foaf:surName"/></em>
 						</h2>
 						<div class="box-content">
 							<div class="fields">
@@ -121,7 +121,7 @@
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="default-value">
 											<xsl:choose>
-												<xsl:when test="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/luna:isActive = '1'">
+												<xsl:when test="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/luna:isActive = '1'">
 													<xsl:text>0</xsl:text>
 												</xsl:when>
 												<xsl:otherwise>
@@ -135,13 +135,13 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_user_firstname</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'firstname']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:firstName"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/foaf:firstName"/></xsl:with-param>
 									</xsl:call-template>
 									<br/>
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_user_lastname</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'lastname']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:surName"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/foaf:surName"/></xsl:with-param>
 									</xsl:call-template>
 									<br/>
 									<xsl:call-template name="forminput">
@@ -150,7 +150,7 @@
 										<xsl:with-param name="default-value">
 											<xsl:call-template name="cutstring">
 												<xsl:with-param name="string">
-													<xsl:value-of select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/foaf:mbox/@rdf:resource"/>
+													<xsl:value-of select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/foaf:mbox/@rdf:resource"/>
 												</xsl:with-param>
 												<xsl:with-param name="length">8</xsl:with-param>
 												<xsl:with-param name="before">1</xsl:with-param>
@@ -174,7 +174,7 @@
 											<xsl:value-of select="count(/rdf:RDF/luna:group)"/>
 										</xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/luna:group"/>
-										<xsl:with-param name="default-value" select="/rdf:RDF/foaf:Person[luna:nid = $modify_item_nid]/luna:group"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/foaf:Person[schema:identifier = $modify_item_nid]/luna:group"/>
 									</xsl:call-template>
 								</div>
 							</div>

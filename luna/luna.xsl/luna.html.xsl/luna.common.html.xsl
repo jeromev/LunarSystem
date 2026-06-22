@@ -509,19 +509,19 @@
 										<xsl:value-of select="$datavalue"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:variable name="option_nid"><xsl:value-of select="luna:nid"/></xsl:variable>
+										<xsl:variable name="option_nid"><xsl:value-of select="schema:identifier"/></xsl:variable>
 										<xsl:attribute name="label"><xsl:value-of select="rdfs:label"/></xsl:attribute>
 										<xsl:attribute name="value"><xsl:value-of select="$option_nid"/></xsl:attribute>
 										<xsl:choose>
 											<xsl:when test="$multiple = 'yes' or $multiple = '1'">
 												<xsl:choose>
-													<xsl:when test="luna:nid = $required">
+													<xsl:when test="schema:identifier = $required">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = luna:nid) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
+													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = schema:identifier) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = luna:nid) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
+													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = schema:identifier) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
 													<xsl:otherwise>

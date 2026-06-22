@@ -71,7 +71,7 @@
 											<xsl:with-param name="foreach" select="/rdf:RDF/luna:level"/>
 											<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Accessible levels']/luna:value"/></xsl:with-param>
 											<xsl:with-param name="multiple">yes</xsl:with-param>
-											<xsl:with-param name="required" select="/rdf:RDF/luna:level[luna:lid = 'level_public']/luna:nid"/>
+											<xsl:with-param name="required" select="/rdf:RDF/luna:level[luna:lid = 'level_public']/schema:identifier"/>
 											<xsl:with-param name="size">
 												<xsl:value-of select="count(/rdf:RDF/luna:level)"/>
 											</xsl:with-param>
@@ -102,7 +102,7 @@
 						<h2 class="box-handle expanded">
 							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify the group']/luna:value"/>
 							<xsl:text> </xsl:text>
-							<em><xsl:value-of select="/rdf:RDF/luna:group[luna:nid = $modify_item_nid]/rdfs:label"/></em>
+							<em><xsl:value-of select="/rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/rdfs:label"/></em>
 						</h2>
 						<div class="box-content">
 							<div class="fields">
@@ -113,7 +113,7 @@
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="default-value">
 											<xsl:choose>
-												<xsl:when test="/rdf:RDF/luna:group[luna:nid = $modify_item_nid]/luna:isActive = '1'">
+												<xsl:when test="/rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/luna:isActive = '1'">
 													<xsl:text>0</xsl:text>
 												</xsl:when>
 												<xsl:otherwise>
@@ -128,7 +128,7 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_group_lid</xsl:with-param>
 										<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:group[luna:nid = $modify_item_nid]/luna:lid"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/luna:lid"/>
 									</xsl:call-template>
 									<br />
 								</div>
@@ -140,8 +140,8 @@
 										<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Accessible levels']/luna:value"/>
 										<xsl:with-param name="multiple">yes</xsl:with-param>
 										<xsl:with-param name="size" select="count(/rdf:RDF/luna:level)"/>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:group[luna:nid = $modify_item_nid]/luna:level"/>
-										<xsl:with-param name="required" select="/rdf:RDF/luna:level[luna:lid = 'level_public']/luna:nid"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/luna:level"/>
+										<xsl:with-param name="required" select="/rdf:RDF/luna:level[luna:lid = 'level_public']/schema:identifier"/>
 									</xsl:call-template>
 									<br />
 								</div>
@@ -195,7 +195,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -224,7 +224,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -253,7 +253,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -282,7 +282,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -311,7 +311,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -339,7 +339,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<xsl:for-each select="/rdf:RDF/foaf:Person[luna:group/@rdf:resource = /rdf:RDF/luna:group[luna:nid = $modify_item_nid]/@rdf:about]">
+									<xsl:for-each select="/rdf:RDF/foaf:Person[luna:group/@rdf:resource = /rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/@rdf:about]">
 										<xsl:variable name="user_nid"><xsl:value-of select="@rdf:resource"/></xsl:variable>
 										<tr>
 											<xsl:attribute name="class">
@@ -351,10 +351,10 @@
 												<input type="checkbox" class="autowidth">
 													<xsl:attribute name="name">
 														<xsl:text>modify_users_list[</xsl:text>
-														<xsl:value-of select="luna:nid"/>
+														<xsl:value-of select="schema:identifier"/>
 														<xsl:text>]</xsl:text>
 													</xsl:attribute>
-													<xsl:attribute name="value"><xsl:value-of select="luna:nid"/></xsl:attribute>
+													<xsl:attribute name="value"><xsl:value-of select="schema:identifier"/></xsl:attribute>
 												</input>
 											</td>
 											<td><xsl:value-of select="foaf:firstName"/></td>
@@ -366,7 +366,7 @@
 															<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'admin_users']/luna:alias"/>
 															<xsl:with-param name="options">
 																<xsl:text>user_nid=</xsl:text>
-																<xsl:value-of select="luna:nid"/>
+																<xsl:value-of select="schema:identifier"/>
 															</xsl:with-param>
 														</xsl:call-template>
 													</xsl:attribute>
@@ -408,7 +408,7 @@
 							</table>
 							<input type="hidden" name="mode" value="modify"/>
 							<input type="hidden" name="modify_group_lid">
-								<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:group[luna:nid = $modify_item_nid]/luna:lid"/></xsl:attribute>
+								<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:group[schema:identifier = $modify_item_nid]/luna:lid"/></xsl:attribute>
 							</input>
 							<input type="hidden" name="modify_item_nid">
 								<xsl:attribute name="value"><xsl:value-of select="$modify_item_nid"/></xsl:attribute>

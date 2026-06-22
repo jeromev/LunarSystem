@@ -30,7 +30,7 @@
 								<xsl:attribute name="class">
 									<xsl:text>box-handle</xsl:text>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/ui:message[ui:code = warning]">
+										<xsl:when test="/rdf:RDF/ui:message[ui:code = 'warning']">
 											<xsl:text> expanded</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>

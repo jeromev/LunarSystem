@@ -52,6 +52,7 @@ admin_groups|admin|/admin/admin_groups
 admin_levels|admin|/admin/admin_levels
 admin_pages|admin|/admin/admin_pages
 admin_mods|admin|/admin/admin_mods
+journal_analyse|admin|/admin/journal?log_id=999
 edit_texts|admin|/edition/edit_texts
 home_admin|admin|/
 about_admin|admin|/about
@@ -61,6 +62,10 @@ mkdir -p "$DIR"
 # Reset volatile server state so the render is deterministic across runs (dev harness):
 # the audit log grows per request, and the online-users widget reflects live sessions.
 sql "DELETE FROM luna_login_throttle; DELETE FROM luna_logs; DELETE FROM luna_sessions;"
+# Seed one fixed log row so the journal "analyse" view (a name()/local-name()-driven
+# admin tool outside the public page set) has a deterministic target — this guards its
+# per-field i18n label lookup. All volatile bits (date, log_id) are normalised below.
+sql "INSERT INTO luna_logs (id,logtime,ident,priority,message) VALUES (999,'2020-01-01 00:00:00','test',6,'{\"message\":\"probe\"}')"
 # fresh admin session
 AJ=$(mktemp); AP=$(mktemp); curl -s -c "$AJ" "$BASE/login" -o "$AP"
 curl -s -b "$AJ" -c "$AJ" --data-urlencode submit=login --data-urlencode "email=$ADMIN_EMAIL" \

@@ -96,7 +96,7 @@
 				<h2><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Log entry analyse']/ui:value"/></h2>
 				<dl class="analyse">
 					<xsl:for-each select="/rdf:RDF/ui:log/*">
-						<xsl:variable name="name"><xsl:value-of select="name()"/></xsl:variable>
+						<xsl:variable name="name"><xsl:value-of select="local-name()"/></xsl:variable>
 						<dt>
 							<xsl:choose>
 								<xsl:when test="/rdf:RDF/ui:vocabulary[ui:lid = $name]/ui:value">

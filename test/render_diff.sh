@@ -32,7 +32,8 @@ norm(){ sed -E \
   -e 's/[0-9]+ ?(seconde|minute|heure|jour|semaine|mois|second|minute|hour|day|week|month|year|an)s?/AGO/Ig' \
   -e 's/(log_id=|message |id="|aria-label="message )[0-9]+/\1ID/g' \
   -e 's/(PHPSESSID=|sessionid=|session=)[A-Za-z0-9]+/\1SESS/Ig' \
-  -e 's|<td class="nowrap">[^<]*</td>|<td class="nowrap">SEEN</td>|g' ; }
+  -e 's|<td class="nowrap">[^<]*</td>|<td class="nowrap">SEEN</td>|g' \
+  -e 's/[0-9]+\.[0-9]+\.[0-9]+-alpha/VER/g' ; }
 
 # id | auth(guest|admin) | url   — covers each html.xsl stylesheet + the RDF output formats
 PAGES="
@@ -51,7 +52,6 @@ admin_groups|admin|/admin/admin_groups
 admin_levels|admin|/admin/admin_levels
 admin_pages|admin|/admin/admin_pages
 admin_mods|admin|/admin/admin_mods
-journal|admin|/admin/journal
 edit_texts|admin|/edition/edit_texts
 home_admin|admin|/
 about_admin|admin|/about

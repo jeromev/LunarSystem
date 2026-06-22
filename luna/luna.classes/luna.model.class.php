@@ -120,6 +120,7 @@ class lunaModel {
 				'dc' => 'http://purl.org/dc/elements/1.1/',
 				'dcterms' => 'http://purl.org/dc/terms/',
 				'owl' => 'http://www.w3.org/2002/07/owl#',
+				'schema' => 'https://schema.org/',
 				'luna' => $this->lunaNameSpace,
 			),
 			'serializer_prettyprint_containers' => 1,
@@ -392,9 +393,9 @@ class lunaModel {
 	 */
 	public function get_parent_node($node = false) {
 		if (empty($node) || !is_array($node)) { return false; }
-		if (!isset($node[$this->conf['ns']['owl'].'isChildOf'][0]['value'])) { return false; }
-		if (!isset($this->index[$node[$this->conf['ns']['owl'].'isChildOf'][0]['value']])) { return false; }
-		return $this->index[$node[$this->conf['ns']['owl'].'isChildOf'][0]['value']];
+		if (!isset($node[$this->conf['ns']['schema'].'isPartOf'][0]['value'])) { return false; }
+		if (!isset($this->index[$node[$this->conf['ns']['schema'].'isPartOf'][0]['value']])) { return false; }
+		return $this->index[$node[$this->conf['ns']['schema'].'isPartOf'][0]['value']];
 	}
 	// }}}
 	// {{{ get_children_nids()
@@ -518,7 +519,7 @@ class lunaModel {
 			$doc['url'] = $base.'/'.ltrim(luna::$path, '/');
 			if (defined('LANG')) { $doc['inLanguage'] = LANG; }
 			// parent -> schema:isPartOf (skip the root self-link)
-			$parent = $first($page, $owl.'isChildOf');
+			$parent = $first($page, $this->conf['ns']['schema'].'isPartOf');
 			if ($parent && $parent != $pageuri && isset($this->index[$parent])) {
 				$pslug = $first($this->index[$parent], $luna.'lid');
 				if ($pslug !== null) { $doc['isPartOf'] = array('@id' => $base.'/id/'.rawurlencode($pslug)); }
@@ -595,11 +596,11 @@ class lunaModel {
 		$index[$puri][$rdf.'type'][] = array('value'=>$schema.'WebPage', 'type'=>'uri');
 		if (($name = $first($page, $rdfs.'label')) !== null) { $index[$puri][$schema.'name'][] = array('value'=>(string)$name, 'type'=>'literal'); }
 		if (($nid  = $first($page, $luna.'nid'))    !== null) { $index[$puri][$schema.'identifier'][] = array('value'=>(string)$nid, 'type'=>'literal', 'datatype'=>$xint); }
-		if (($act  = $first($page, $luna.'is_active')) !== null) { $index[$puri][$luna.'isActive'][] = array('value'=>(string)$act, 'type'=>'literal', 'datatype'=>$xint); }
+		if (($act  = $first($page, $luna.'isActive')) !== null) { $index[$puri][$luna.'isActive'][] = array('value'=>(string)$act, 'type'=>'literal', 'datatype'=>$xint); }
 		if (($lvl = $first($page, $luna.'level')) !== null && isset($this->index[$lvl]) && ($lslug = $first($this->index[$lvl], $luna.'lid')) !== null) {
 			$index[$puri][$luna.'level'][] = array('value'=>$base.'/id/'.rawurlencode($lslug), 'type'=>'uri');
 		}
-		$parent = $first($page, $owl.'isChildOf');
+		$parent = $first($page, $this->conf['ns']['schema'].'isPartOf');
 		if ($parent && $parent != $pinternal && isset($this->index[$parent]) && ($pslug = $first($this->index[$parent], $luna.'lid')) !== null) {
 			$index[$puri][$schema.'isPartOf'][] = array('value'=>$base.'/id/'.rawurlencode($pslug), 'type'=>'uri');
 		}
@@ -1136,7 +1137,7 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'nid'][0]['value'] = $user['nid'];
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'ip'][0]['value'] = $user['session_ip'] ?? '';
-			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $user['is_active'];
+			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'isActive'][0]['value'] = $user['is_active'];
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_guest'][0]['value'] = $user['email'] == ANONYMOUS? '1' : '0';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'is_current'][0]['value'] = $is_current? '1' : '0';
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['luna'].'url'][0]['value'] = $user['last_url'];
@@ -1488,7 +1489,7 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdfs'].'label'][0]['value'] = $item['title'];
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = lunaTools::format_language($item['lang']);
-			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $item['is_active'];
+			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'isActive'][0]['value'] = $item['is_active'];
 			$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'save_time'][0]['value'] = ($item['save_time'] == 0? '' : lunaTools::format_date($item['save_time']));
 			if (isset($item['content_html']) && !empty($item['content_html'])) {
 				$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'content'][0]['value'] = $item['content_html'];
@@ -2076,13 +2077,13 @@ class lunaModel {
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node['lid']);
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
-		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_active'];
+		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'isActive'][0]['value'] = $node['is_active'];
 		if (isset($node['parent_nid']) && $node['parent_nid']) {
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['parent_nid'];
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['schema'].'isPartOf'][0]['value'] = $this->node_path.'/'.$node['parent_nid'];
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['schema'].'isPartOf'][0]['type'] = 'uri';
 		} else if (empty($node['parent_nid']) && $type1 == 'page') {
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['nid'];
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['schema'].'isPartOf'][0]['value'] = $this->node_path.'/'.$node['nid'];
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['schema'].'isPartOf'][0]['type'] = 'uri';
 		}
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$type1;
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
@@ -2092,7 +2093,7 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node['lid2']);
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
-			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_active2'];
+			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'isActive'][0]['value'] = $node['is_active2'];
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$type2;
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 			$needle = array(
@@ -2114,7 +2115,7 @@ class lunaModel {
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node[$lidx]);
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
-					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node[$is_activex];
+					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['luna'].'isActive'][0]['value'] = $node[$is_activex];
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$typex;
 					$nodes[$this->node_path.'/'.$node[$nidx]][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 					$needle = array(
@@ -2550,7 +2551,7 @@ class lunaModel {
 			// store the node’s uri, we’ll need it later
 			$node_uri = $this->node_path.'/'.$nid;
 			// do the same for its parent
-			$parent_uri = isset($nodes[$node_uri][$this->conf['ns']['owl'].'isChildOf'][0]['value'])? $nodes[$node_uri][$this->conf['ns']['owl'].'isChildOf'][0]['value'] : '';
+			$parent_uri = isset($nodes[$node_uri][$this->conf['ns']['schema'].'isPartOf'][0]['value'])? $nodes[$node_uri][$this->conf['ns']['schema'].'isPartOf'][0]['value'] : '';
 			// and also grab its nid, we might need it
 			$parent_nid = isset($nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'])? $nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'] : '';
 			// if the node’s uri is the same as its parent’s, then we just hit the root page.

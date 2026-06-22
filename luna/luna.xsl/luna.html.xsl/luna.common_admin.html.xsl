@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -152,7 +152,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -320,7 +320,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -509,7 +509,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -596,7 +596,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -692,7 +692,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -784,7 +784,7 @@
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:text>active</xsl:text>
-									<xsl:if test="not(luna:is_active = '1')">
+									<xsl:if test="not(luna:isActive = '1')">
 										<xsl:text> inactive</xsl:text>
 									</xsl:if>
 								</xsl:attribute>

@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -102,7 +102,7 @@ class mod_admin_pages {
 		$_POST['add_page_is_inactive'] = isset($_POST['add_page_is_inactive'])? ($_POST['add_page_is_inactive'] == 1? 1 : 0) : 0;
 		// load stuff
 		if (!luna::$model->merge_index(luna::$model->load_nodes('page', 'mod'))) { throw new lunaException(_('Error: cannot load data.'), PEAR_LOG_CRIT); }
-		if (!luna::$model->merge_index(luna::$model->load_nodes('level'))) { throw new lunaException(_('Error: cannot load levels.'), PEAR_LOG_CRIT); } 
+		if (!luna::$model->merge_index(luna::$model->load_nodes('level'))) { throw new lunaException(_('Error: cannot load levels.'), PEAR_LOG_CRIT); }
 		// check if the identifier is already used
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['add_page_lid'])) { return false; }
 		// make sure the parent node exists
@@ -111,7 +111,7 @@ class mod_admin_pages {
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['add_page_level'], 'level')) { return false; }
 		if (!lunaTools::user_can_access_level(luna::$session->user, intval($_POST['add_page_level']))) { luna::$messages['warning'][] = _('Access denied: that access level is above your own.'); lunaLog::log('admin_pages: attempt to use an inaccessible access level', PEAR_LOG_WARNING); return false; }
 		// make sure each mod node exists
-		if (isset($_POST['add_page_mods']) && is_array($_POST['add_page_mods']) && !empty($_POST['add_page_mods'])) { 
+		if (isset($_POST['add_page_mods']) && is_array($_POST['add_page_mods']) && !empty($_POST['add_page_mods'])) {
 			foreach ($_POST['add_page_mods'] as $mod_nid) {
 				if (!$item_mod_node = luna::$model->check_if_node_exists($mod_nid, 'mod')) { return false; }
 			}
@@ -119,7 +119,7 @@ class mod_admin_pages {
 			$_POST['add_page_mods'] = array();
 		}
 		if ($inerror) { return false; }
-		if ($node = luna::$model->insert('page', $_POST['add_page_lid'], ($_POST['add_page_is_inactive']? 0 : 1), $_POST['add_parent_nid'])) { 
+		if ($node = luna::$model->insert('page', $_POST['add_page_lid'], ($_POST['add_page_is_inactive']? 0 : 1), $_POST['add_parent_nid'])) {
 			luna::$model->link($node, $_POST['add_page_mods']);
 			luna::$model->link($node, array($_POST['add_page_level']));
 			lunaTools::purge_cache();
@@ -141,7 +141,7 @@ class mod_admin_pages {
 	 * @access public
 	 * @return boolean
 	 */
-	public function submit_modify() { 
+	public function submit_modify() {
 		// initialise the errors counter
 		$inerror = 0;
 		// clean things
@@ -157,7 +157,7 @@ class mod_admin_pages {
 		if (!lunaTools::check_emptyness('modify_page_level', 'Page access level')) { $inerror++; }
 		if ($inerror) { return false; }
 		// load stuff
-		if (!luna::$model->merge_index(luna::$model->load_nodes('page', 'mod'))) { throw new lunaException(_('Error: cannot load data.'), PEAR_LOG_CRIT); } 
+		if (!luna::$model->merge_index(luna::$model->load_nodes('page', 'mod'))) { throw new lunaException(_('Error: cannot load data.'), PEAR_LOG_CRIT); }
 		if (!luna::$model->merge_index(luna::$model->load_nodes('level'))) { throw new lunaException(_('Error: cannot load levels.'), PEAR_LOG_CRIT); }
 		// check if node exists
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'page')) { return false; }
@@ -171,22 +171,22 @@ class mod_admin_pages {
 		$root_nid = luna::$model->get_nid_from_lid('root');
 		if ($page_lid == 'root') {
 			// do not change the root name
-			if ($_POST['modify_page_lid'] != 'root') { 
-				$inerror++; 
+			if ($_POST['modify_page_lid'] != 'root') {
+				$inerror++;
 				$message = _('You cannot change the root page identifier.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			// do not deactivate the root
 			if ($_POST['modify_page_is_inactive']) {
-				$inerror++; 
+				$inerror++;
 				$message = _('The root page must be active.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			// do not move the root
 			if ($_POST['modify_parent_nid'] != $root_nid) {
-				$inerror++; 
+				$inerror++;
 				$message = _('The root page cannot move.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
@@ -194,7 +194,7 @@ class mod_admin_pages {
 			// keep the root public
 			if (!$level_public_nid = luna::$model->get_nid_from_lid('level_public')) { throw new lunaException(_('Error: cannot load “level_public”'), PEAR_LOG_CRIT); }
 			if ($_POST['modify_page_level'] != $level_public_nid) {
-				$inerror++; 
+				$inerror++;
 				$message = _('The root page must be public.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
@@ -203,19 +203,19 @@ class mod_admin_pages {
 		// preserve admin pages and login/out pages
 		if (luna::lid_is_protected($page_lid)) {
 			if ($_POST['modify_page_lid'] != $page_lid) {
-				$inerror++; 
+				$inerror++;
 				$message = _('You cannot change the identifier of this item.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			if ($_POST['modify_page_level'] != $page_level_nid) {
-				$inerror++; 
+				$inerror++;
 				$message = _('You cannot change the level of this item.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			if ($_POST['modify_parent_nid'] != $page_parent_nid) {
-				$inerror++; 
+				$inerror++;
 				$message = _('You cannot move this item.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
@@ -229,7 +229,7 @@ class mod_admin_pages {
 		// make sure the level node exists
 		if (!$item_level_node = luna::$model->check_if_node_exists($_POST['modify_page_level'], 'level')) { return false; }
 		// make sure each mod node exists
-		if (isset($_POST['modify_page_mods']) && is_array($_POST['modify_page_mods']) && !empty($_POST['modify_page_mods'])) { 
+		if (isset($_POST['modify_page_mods']) && is_array($_POST['modify_page_mods']) && !empty($_POST['modify_page_mods'])) {
 			foreach ($_POST['modify_page_mods'] as $mod_nid) {
 				if (!$item_mod_node = luna::$model->check_if_node_exists($mod_nid, 'mod')) { return false; }
 			}
@@ -238,17 +238,17 @@ class mod_admin_pages {
 		}
 		// look for hierarchical problems: the parent page cannot be the modified page, except this page is the root page.
 		if ($_POST['modify_parent_nid'] != $root_nid) {
-			if ($_POST['modify_parent_nid'] == $_POST['modify_item_nid']) { 
-				$inerror++; 
+			if ($_POST['modify_parent_nid'] == $_POST['modify_item_nid']) {
+				$inerror++;
 				$message = _('The hierarchy is incorrect.');
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			if ($inerror) { return false; }
 			// look for hierarchical problems: the modified page cannot be the child of any of her own children.
-			$children = luna::$model->get_children_nids($item_node); 
+			$children = luna::$model->get_children_nids($item_node);
 			if (isset($children[$_POST['modify_parent_nid']])) {
-				$inerror++; 
+				$inerror++;
 				$message = _("The hierarchy is incorrect.");
 				luna::$messages['warning'][] = $message;
 				lunaLog::log($message, PEAR_LOG_NOTICE);
@@ -256,7 +256,7 @@ class mod_admin_pages {
 			if ($inerror) { return false; }
 		}
 		if ($inerror) { return false; }
-		if ($node = luna::$model->update($_POST['modify_item_nid'], $_POST['modify_page_lid'], ($_POST['modify_page_is_inactive']? 0 : 1), $_POST['modify_parent_nid'])) { 
+		if ($node = luna::$model->update($_POST['modify_item_nid'], $_POST['modify_page_lid'], ($_POST['modify_page_is_inactive']? 0 : 1), $_POST['modify_parent_nid'])) {
 			luna::$model->unlink($node, 'mod');
 			luna::$model->unlink($node, 'level');
 			if (isset($_POST['modify_page_level']) && !empty($_POST['modify_page_level'])) { luna::$model->link($node, $_POST['modify_page_level']); }
@@ -283,7 +283,7 @@ class mod_admin_pages {
 	public function submit_delete() {
 		$inerror = 0;
 		// load stuff
-		if (!luna::$model->merge_index(luna::$model->load_nodes('page', 'mod'))) { throw new lunaException(_('Error: cannot load data.'), PEAR_LOG_CRIT); } 
+		if (!luna::$model->merge_index(luna::$model->load_nodes('page', 'mod'))) { throw new lunaException(_('Error: cannot load data.'), PEAR_LOG_CRIT); }
 		$_POST['modify_item_nid'] = intval($_POST['modify_item_nid']);
 		// check emptyness
 		if (!lunaTools::check_emptyness('modify_item_nid', 'Page')) { $inerror++; }
@@ -292,8 +292,8 @@ class mod_admin_pages {
 		if (!$item_node = luna::$model->check_if_node_exists($_POST['modify_item_nid'], 'page')) { return false; }
 		$page_lid = luna::$model->get_lid($item_node);
 		if (!lunaTools::user_can_access_level(luna::$session->user, intval(luna::$model->get_nid(luna::$model->get_level_node($item_node))))) { luna::$messages['warning'][] = _('Access denied: this page is above your access level.'); lunaLog::log('admin_pages: attempt to delete an inaccessible page', PEAR_LOG_WARNING); return false; }
-		if ($page_lid == 'root') { 
-			$inerror++; 
+		if ($page_lid == 'root') {
+			$inerror++;
 			$message = _('You cannot delete the root page.');
 			luna::$messages['warning'][] = $message;
 			lunaLog::log($message, PEAR_LOG_NOTICE);

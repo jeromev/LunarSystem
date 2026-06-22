@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="http://lunarsystem.org/ontology#"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -161,7 +161,7 @@
 									</xsl:choose>
 									<xsl:text>] </xsl:text>
 									<br/>
-									<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Site powered by']/luna:value"/><xsl:text> </xsl:text><a href="http://lunarsystem.org">lunarSystem</a><xsl:text> </xsl:text><xsl:value-of select="luna:data[luna:lid = 'lunaversion']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Site powered by']/luna:value"/><xsl:text> </xsl:text><a href="https://github.com/jeromev/LunarSystem">lunarSystem</a><xsl:text> </xsl:text><xsl:value-of select="luna:data[luna:lid = 'lunaversion']/luna:value"/>
 								</p>
 							</div>
 						</div>

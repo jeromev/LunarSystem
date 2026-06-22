@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -104,12 +104,12 @@ class mod_edit_texts {
 		if (!isset($_POST['add_text_title']) || empty($_POST['add_text_title'])) { $_POST['add_text_title'] = ''; }
 		// check if identifier is already used
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['add_text_lid'])) { return false; }
-		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) { 
+		if (isset($_POST['add_text_pages']) && !empty($_POST['add_text_pages'])) {
 			foreach ($_POST['add_text_pages'] as $postpage_nid) {
 				if (!$postpage_node = luna::$model->get_node($postpage_nid, 'page')) {
-					$inerror++; 
-					$message = _('Unknown page '.intval($postpage_nid)); 
-					luna::$messages['warning'][] = $message; 
+					$inerror++;
+					$message = _('Unknown page '.intval($postpage_nid));
+					luna::$messages['warning'][] = $message;
 					lunaLog::log($message, PEAR_LOG_WARNING);
 				} else if (!lunaTools::user_can_access_page($postpage_node)) {
 					$inerror++;
@@ -118,9 +118,9 @@ class mod_edit_texts {
 					lunaLog::log('edit_texts: attempt to link a text to an inaccessible page '.intval($postpage_nid), PEAR_LOG_WARNING);
 				}
 			}
-		} 
+		}
 		if ($inerror) { return false; }
-		if ($node = luna::$model->insert('text', $_POST['add_text_lid'], ($_POST['add_text_is_inactive']? 0 : 1))) { 
+		if ($node = luna::$model->insert('text', $_POST['add_text_lid'], ($_POST['add_text_is_inactive']? 0 : 1))) {
 			luna::$model->link($node, $_POST['add_text_pages']);
 			$res = lunaDB::query('
 				INSERT INTO
@@ -155,7 +155,7 @@ class mod_edit_texts {
 	 * @access public
 	 * @return void
 	 */
-	public function submit_modify() { 
+	public function submit_modify() {
 		$inerror = 0;
 		// clean things
 		$_POST['modify_text_lid'] = lunaTools::prepare_lid($_POST['modify_text_lid']);
@@ -179,12 +179,12 @@ class mod_edit_texts {
 		}
 		// check if identifier is already used by antoher item
 		if (!$is_not_taken = luna::$model->check_if_lid_is_taken($_POST['modify_text_lid'], $_POST['modify_item_nid'])) { return false; }
-		if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { 
+		if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) {
 			foreach ($_POST['modify_text_pages'] as $postpage_nid) {
 				if (!$postpage_node = luna::$model->get_node($postpage_nid, 'page')) {
-					$inerror++; 
-					$message = _('Unknown page '.intval($postpage_nid)); 
-					luna::$messages['warning'][] = $message; 
+					$inerror++;
+					$message = _('Unknown page '.intval($postpage_nid));
+					luna::$messages['warning'][] = $message;
 					lunaLog::log($message, PEAR_LOG_WARNING);
 				} else if (!lunaTools::user_can_access_page($postpage_node)) {
 					$inerror++;
@@ -193,7 +193,7 @@ class mod_edit_texts {
 					lunaLog::log('edit_texts: attempt to link a text to an inaccessible page '.intval($postpage_nid), PEAR_LOG_WARNING);
 				}
 			}
-		} 
+		}
 		if ($inerror) { return false; }
 		if ($node = luna::$model->update($_POST['modify_item_nid'], $_POST['modify_text_lid'], ($_POST['modify_text_is_inactive']? 0 : 1))) {
 			if (isset($_POST['modify_text_pages']) && !empty($_POST['modify_text_pages'])) { luna::$model->unlink($node, 'page'); luna::$model->link($node, $_POST['modify_text_pages']); }
@@ -202,7 +202,7 @@ class mod_edit_texts {
 					'.luna::get_ini('DBtables', 'TEXTS').'
 				SET
 					title = '.lunaDB::quote($_POST['modify_text_title']).',
-					lang = '.lunaDB::quote($_POST['modify_text_lang']).', 
+					lang = '.lunaDB::quote($_POST['modify_text_lang']).',
 					content_html = '.lunaDB::quote($_POST['modify_text_content']).'
 				WHERE
 					nid = '.lunaDB::quote($node).'
@@ -228,11 +228,11 @@ class mod_edit_texts {
 	 * @access private
 	 * @return void
 	 */
-	function submit_delete() { 
+	function submit_delete() {
 		$inerror = 0;
 		// check emptyness
 		if (!lunaTools::check_emptyness('modify_item_nid', 'Text to modify')) { $inerror++; }
-		if ($inerror) { return false; } 
+		if ($inerror) { return false; }
 		// load stuff
 		luna::$model->merge_index(luna::$model->load_texts($_POST['modify_item_nid']));
 		// check if node exists
@@ -263,7 +263,7 @@ class mod_edit_texts {
 	 * @access public
 	 * @return void
 	 */
-	public function load() { 
+	public function load() {
 		$inerror = 0;
 		// if (!luna::$model->merge_index(luna::$model->load_nodes('text'))) { throw new lunaException(_('Error: cannot load data'), PEAR_LOG_CRIT); }
 		$text_nid = lunaTools::request('text_nid');

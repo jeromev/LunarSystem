@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
 	version="1.0"
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:luna="http://lunarsystem.org/ontology#"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -18,7 +18,7 @@
 			<xsl:variable name="mod_nid"><xsl:value-of select="/rdf:RDF/luna:mod[luna:lid = 'mod_online_users']/luna:nid"/></xsl:variable>
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -32,7 +32,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -114,7 +114,7 @@
 		<div id="ModsList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -128,7 +128,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -157,7 +157,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
@@ -165,7 +165,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									
+
 								</xsl:attribute>
 								<td>
 									<a>
@@ -200,7 +200,7 @@
 		<div id="TextsList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -214,7 +214,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -325,7 +325,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -334,7 +334,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
-									
+
 								</xsl:attribute>
 								<td>
 									<a>
@@ -369,7 +369,7 @@
 		<div id="UsersList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -383,7 +383,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -514,7 +514,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:nid = $masternodenid]/luna:alias"/>
 										<xsl:with-param name="options">
@@ -523,7 +523,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange4"/>
-									
+
 								</xsl:attribute>
 								<td><xsl:value-of select="foaf:firstName"/></td>
 								<td><xsl:value-of select="foaf:surName"/></td>
@@ -565,7 +565,7 @@
 		<div id="PagesList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'"><xsl:text> expanded</xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text> collapsed</xsl:text></xsl:otherwise>
@@ -575,7 +575,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'"><xsl:text></xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text> off</xsl:text></xsl:otherwise>
@@ -601,7 +601,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -609,7 +609,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									
+
 								</xsl:attribute>
 								<td>
 									<a>
@@ -654,7 +654,7 @@
 		<div id="GroupsList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -668,7 +668,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -697,7 +697,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -705,7 +705,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									
+
 								</xsl:attribute>
 								<td class="nowrap">
 									<a>
@@ -746,7 +746,7 @@
 		<div id="LevelsList" class="box">
 			<h2>
 				<xsl:attribute name="class">
-					<xsl:text>box-handle</xsl:text> 
+					<xsl:text>box-handle</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text> expanded</xsl:text>
@@ -760,7 +760,7 @@
 			</h2>
 			<div>
 				<xsl:attribute name="class">
-					<xsl:text>box-content boxtable</xsl:text> 
+					<xsl:text>box-content boxtable</xsl:text>
 					<xsl:choose>
 						<xsl:when test="$expand = '1'">
 							<xsl:text></xsl:text>
@@ -789,7 +789,7 @@
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:attribute name="data-href">
-									
+
 									<xsl:call-template name="link">
 										<xsl:with-param name="alias" select="$modpagealias"/>
 										<xsl:with-param name="options">
@@ -797,7 +797,7 @@
 										</xsl:with-param>
 									</xsl:call-template>
 									<xsl:call-template name="onchange3"/>
-									
+
 								</xsl:attribute>
 								<td class="nowrap">
 									<a>

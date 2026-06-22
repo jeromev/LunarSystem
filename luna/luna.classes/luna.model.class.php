@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 
@@ -75,7 +75,11 @@ class lunaModel {
 	 * @access	public
 	 * @var		string
 	 */
-	public $lunaNameSpace = 'http://lunarsystem.org/ontology#';
+	/** The luna: vocabulary namespace — the single source of truth. The 16 XSLT
+	 *  `xmlns:luna="…"` declarations must match this exactly, and the triplestore
+	 *  must be re-projected (`make resync-triplestore`) whenever it changes. */
+	const LUNA_NS = 'https://jeromev.github.io/LunarSystem/ontology#';
+	public $lunaNameSpace = self::LUNA_NS;
 	// {{{ singleton()
 	/**
 	 * @access public
@@ -128,14 +132,14 @@ class lunaModel {
 			$this->index = $array['index'];
 			$this->aliases = $array['aliases'];
 			unset($array);
-		} else { 
+		} else {
 			// load the page tree into the model — from the graph by default, falling
 			// back to SQL if the SPARQL path is off or yields nothing (routing safety net).
 			$nodes = false;
 			if (self::sparql_reads()) { $nodes = $this->load_nodes_sparql('page'); }
 			if (empty($nodes)) { $nodes = $this->load_nodes('page', 'level'); }
 			$this->merge_index($nodes);
-			if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); } 
+			if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); }
 			if (luna::$cache) { $cache_obj->save(serialize(array('index' => $this->index, 'aliases' => $this->aliases))); }
 		}
 		return true;
@@ -148,7 +152,7 @@ class lunaModel {
 	 * @param string $type
 	 * @return mixed
 	 */
-	public function get_node($nid = false, $type = false, $ns = 'luna') { 
+	public function get_node($nid = false, $type = false, $ns = 'luna') {
 		$nid = intval($nid);
 		if (empty($nid)) { return false; }
 		if (empty($ns) || !isset($this->conf['ns']["$ns"])) { $ns = 'luna'; }
@@ -192,7 +196,7 @@ class lunaModel {
 		$this->index = array();
 		$this->aliases = array();
 		$this->merge_index($this->load_nodes('page', 'level'));
-		if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); } 
+		if (empty($this->index)) { throw new lunaException(_('Error: cannot build index.'), PEAR_LOG_CRIT); }
 		return true;
 	}
 	// }}}
@@ -203,7 +207,7 @@ class lunaModel {
 	 * @param array $nodes2
 	 * @return array
 	 */
-	public function merge_nodes($nodes1, $nodes2) { 
+	public function merge_nodes($nodes1, $nodes2) {
 		if (!is_array($nodes1) || !is_array($nodes2)) { return false; }
 		foreach($nodes2 as $node2_uri => $node2_data) {
 			if (!isset($nodes1[$node2_uri])) {
@@ -213,7 +217,7 @@ class lunaModel {
 					if (!isset($nodes1[$node2_uri][$data2_uri])) {
 						$nodes1[$node2_uri][$data2_uri] = $data2_array;
 					} else {
-						foreach($data2_array as $k2 => $data2) { 
+						foreach($data2_array as $k2 => $data2) {
 							$found = false;
 							foreach($nodes1[$node2_uri][$data2_uri] as $k1 => $data1) {
 								if ($data1['value'] == $data2['value']) {
@@ -248,22 +252,22 @@ class lunaModel {
 	 * @param string $path (optional)
 	 * @return mixed
 	 */
-	public function get_page_node_from_alias($path = '') { 
+	public function get_page_node_from_alias($path = '') {
 		$pagenode = false;
 		$subdir = false;
 		if (empty($path)) { return $this->get_node_from_alias("root", "page"); }
-		$node = $this->get_node_from_alias($path); 
-		if (!$node) { 
-			if (strpos($path, '/') === false) { 
-				return false; 
-			} else { 
-				$patharray = explode('/', $path); 
+		$node = $this->get_node_from_alias($path);
+		if (!$node) {
+			if (strpos($path, '/') === false) {
+				return false;
+			} else {
+				$patharray = explode('/', $path);
 				foreach ($patharray as $k => $v) { if (empty($v)) { unset($patharray[$k]); } }
 				$subdir = array_pop($patharray);
-				$path = implode('/', $patharray); 
+				$path = implode('/', $patharray);
 				// TO DO: if ($path == 'node') { $node_nid = intval($subdir); $path = ''; $node = $this->get_node_from_alias("root", "page"); }
 				$node = $this->get_node_from_alias($path, 'page');
-				if (!$node) { 
+				if (!$node) {
 					return false;
 				} else {
 					luna::$data['subdir'] = $subdir;
@@ -304,7 +308,7 @@ class lunaModel {
 	 * @param string $ns
 	 * @return mixed
 	 */
-	public function get_nid($node = false, $type = false, $ns = 'luna') { 
+	public function get_nid($node = false, $type = false, $ns = 'luna') {
 		if (empty($node) || !is_array($node)) { return false; }
 		if (empty($ns) || !isset($this->conf['ns']["$ns"])) { $ns = 'luna'; }
 		$ns = $this->conf['ns']["$ns"];
@@ -321,7 +325,7 @@ class lunaModel {
 	 * @param array $node
 	 * @return mixed
 	 */
-	public function get_type($node = false) { 
+	public function get_type($node = false) {
 		if (empty($node) || !is_array($node)) { return false; }
 		if (!isset($node[$this->conf['ns']['rdf'].'type'][0]['value'])) { return false; }
 		return $node[$this->conf['ns']['rdf'].'type'][0]['value'];
@@ -333,7 +337,7 @@ class lunaModel {
 	 * @param array $node
 	 * @return mixed
 	 */
-	public function get_lid($node = false) { 
+	public function get_lid($node = false) {
 		if (empty($node) || !is_array($node)) { return false; }
 		if (!isset($node[$this->conf['ns']['luna'].'lid'][0]['value'])) { return false; }
 		return $node[$this->conf['ns']['luna'].'lid'][0]['value'];
@@ -348,7 +352,7 @@ class lunaModel {
 	 * @param string $ns
 	 * @return mixed
 	 */
-	public function set_property($node = false, $prop_lid = false, $prop_value = false, $ns = 'luna') { 
+	public function set_property($node = false, $prop_lid = false, $prop_value = false, $ns = 'luna') {
 		if (empty($node) || !is_array($node) || empty($prop_lid) || empty($prop_value)) { return false; }
 		if (empty($ns) || !isset($this->conf['ns']["$ns"])) { $ns = 'luna'; }
 		$ns = $this->conf['ns']["$ns"];
@@ -399,7 +403,7 @@ class lunaModel {
 	 * @param array $parent_node
 	 * @return array
 	 */
-	public function get_children_nids($parent_node = false) { 
+	public function get_children_nids($parent_node = false) {
 		if (empty($parent_node) || !is_array($parent_node)) { return false; }
 		$children_nodes = $this->get_children_nodes($parent_node);
 		$children_nids = array();
@@ -418,9 +422,9 @@ class lunaModel {
 	 * @param array $parent_node
 	 * @return array
 	 */
-	public function get_children_nodes($parent_node = false) { 
+	public function get_children_nodes($parent_node = false) {
 		if (empty($parent_node) || !is_array($parent_node)) { return false; }
-		$children = array(); 
+		$children = array();
 		$parent_nid = $this->get_nid($parent_node);
 		foreach($this->index as $node) {
 			$node_parent_node = $this->get_parent_node($node);
@@ -605,7 +609,7 @@ class lunaModel {
 		$base = rtrim(luna::$site_uri, '/');
 		$pageuri = $base.'/id/'.rawurlencode(defined('PAGELID')? PAGELID : '');
 		$q = 'PREFIX schema: <https://schema.org/> '
-		   . 'PREFIX luna: <http://lunarsystem.org/ontology#> SELECT ?text ?title ?body ?content ?lang ?tident WHERE { '
+		   . 'PREFIX luna: <'.self::LUNA_NS.'> SELECT ?text ?title ?body ?content ?lang ?tident WHERE { '
 		   . '<'.$pageuri.'> schema:hasPart ?text . '
 		   . '?text a schema:Article ; schema:identifier ?tident ; '
 		   . 'schema:headline ?title ; schema:articleBody ?body . '
@@ -647,7 +651,7 @@ class lunaModel {
 		$vals = array();
 		foreach ($levels as $l) { $vals[] = '"'.intval($l).'"'; }
 		$q = 'PREFIX schema: <https://schema.org/> '
-		   . 'PREFIX luna: <http://lunarsystem.org/ontology#> '
+		   . 'PREFIX luna: <'.self::LUNA_NS.'> '
 		   . 'SELECT DISTINCT ?pnid ?lid ?active ?lnid ?llid ?lactive ?parentNid WHERE { '
 		   . '?page a schema:WebPage ; schema:identifier ?pnid ; schema:name ?lid ; '
 		   . 'luna:isActive ?active ; luna:level ?level . '
@@ -868,7 +872,7 @@ class lunaModel {
 	public static function rdf_prefixes() {
 		return 'PREFIX schema: <https://schema.org/> '
 			. 'PREFIX foaf: <http://xmlns.com/foaf/0.1/> '
-			. 'PREFIX luna: <http://lunarsystem.org/ontology#> '
+			. 'PREFIX luna: <'.self::LUNA_NS.'> '
 			. 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> ';
 	}
 	// }}}
@@ -992,7 +996,7 @@ class lunaModel {
 	 * @param array $messages
 	 * @return array
 	 */
-	public function load_messages($messages = false) { 
+	public function load_messages($messages = false) {
 		if (!is_array($messages)) { return false; }
 		$nodes = array();
 		foreach($messages as $code => $code_messages) {
@@ -1050,7 +1054,7 @@ class lunaModel {
 	public function load_user($user = false, $is_current = false) {
 		if (empty($user)) { return false; }
 		$nodes = array();
-		if (is_array($user) && !isset($user['nid'])) { 
+		if (is_array($user) && !isset($user['nid'])) {
 			foreach($user as $k => $u) { $nodes = $this->merge_nodes($nodes, $this->load_user($u)); }
 		} else {
 			if (is_object($user)) { $user = get_object_vars($user); }
@@ -1071,7 +1075,7 @@ class lunaModel {
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['foaf'].'mbox'][0]['value'] = 'mailto:'.$user['email'];
 			$nodes[$this->node_path.'/'.$user['nid']][$this->conf['ns']['foaf'].'mbox'][0]['type'] = 'uri';
 			if (isset($user['groups']) && is_array($user['groups'])) {
-				foreach ($user['groups'] as $group_nid) { 
+				foreach ($user['groups'] as $group_nid) {
 					$nodes[$this->node_path.'/'.$group_nid][$this->conf['ns']['luna'].'nid'][0]['value'] = $group_nid;
 					$nodes[$this->node_path.'/'.$group_nid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].'group';
 					$nodes[$this->node_path.'/'.$group_nid][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
@@ -1085,7 +1089,7 @@ class lunaModel {
 				}
 			}
 			if (isset($user['levels']) && is_array($user['levels'])) {
-				foreach ($user['levels'] as $level_nid) { 
+				foreach ($user['levels'] as $level_nid) {
 					$nodes[$this->node_path.'/'.$level_nid][$this->conf['ns']['luna'].'nid'][0]['value'] = $level_nid;
 					$nodes[$this->node_path.'/'.$level_nid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].'level';
 					$nodes[$this->node_path.'/'.$level_nid][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
@@ -1109,7 +1113,7 @@ class lunaModel {
 	 * @param integer $group
 	 * @return array
 	 */
-	public function load_users($user_nid = false, $group = false) { 
+	public function load_users($user_nid = false, $group = false) {
 		lunaTools::parse_sort_cookie(luna::$data['lid'] ?? '');
 		$nodes = array();
 		$user_nid = intval($user_nid);
@@ -1117,12 +1121,12 @@ class lunaModel {
 			$res = lunaDB::query('
 				SELECT
 					nu.nid,
-					nu.is_active, 
-					u.firstname, 
-					u.lastname, 
+					nu.is_active,
+					u.firstname,
+					u.lastname,
 					nu.lid as email,
-					u.regis_time, 
-					u.last_time, 
+					u.regis_time,
+					u.last_time,
 					u.last_url,
 					u.lang,
 					g.nid as group_nid,
@@ -1137,18 +1141,18 @@ class lunaModel {
 					'.luna::get_ini('DBtables', 'CLASSES').' tu,
 					'.luna::get_ini('DBtables', 'NODES_MAP').' ug,
 					'.luna::get_ini('DBtables', 'CLASSES').' tl
-				WHERE 1= 1 
+				WHERE 1= 1
 					AND nu.nid = '.lunaDB::quote($user_nid).'
-					AND ug.nid1 = u.nid 
+					AND ug.nid1 = u.nid
 					AND ug.nid2 = g.nid
 					AND u.nid = nu.nid
-					AND tu.lid = '.lunaDB::quote('user').' 
+					AND tu.lid = '.lunaDB::quote('user').'
 					AND nu.tid = tu.id
-					AND tg.lid = '.lunaDB::quote('group').' 
+					AND tg.lid = '.lunaDB::quote('group').'
 					AND g.tid = tg.id
 					AND l.tid = tl.id
 					AND tl.lid = '.lunaDB::quote('level').'
-					AND gl.nid1 = g.nid 
+					AND gl.nid1 = g.nid
 					AND gl.nid2 = l.nid
 			');
 		} else {
@@ -1176,7 +1180,7 @@ class lunaModel {
 			$order_dir = ($order_dir == 'DESC' || empty($order_dir))? 'DESC' : 'ASC';
 			luna::$data['order_dir'] = $order_dir;
 			$cookie['order_dir'] = luna::$data['order_dir'];
-			if (!defined('PERPAGE')) { define('PERPAGE', 20); } 
+			if (!defined('PERPAGE')) { define('PERPAGE', 20); }
 			luna::$data['limit'] = max(1, intval(lunaTools::request('limit', 0, PERPAGE)));
 			$start = max(0, intval(lunaTools::request('start', 0, 0)));
 			luna::$data['start'] = luna::$data['start'] = $start;
@@ -1206,13 +1210,13 @@ class lunaModel {
 						break;
 				}
 				$letters = array();
-				while ($row = $res->fetchRow()) { 
+				while ($row = $res->fetchRow()) {
 					$letter = strtoupper(substr($row->letter,0,1));
 					if (!empty($letter)) { $letters[] = $letter; }
 				}
-				$res->free(); 
-				$letters = array_unique($letters); 
-				sort($letters); 
+				$res->free();
+				$letters = array_unique($letters);
+				sort($letters);
 				if ($l = lunaTools::request('letter')) { $this->letter = substr($l, 0, 1); } else if (!empty($letters)) { $this->letter = $letters[0]; }
 				if (!in_array($this->letter, $letters)) { $this->letter = isset($letters[0])? $letters[0] : '' ; }
 				luna::$model->insert_alphabet_nav($letters, $this->letter);
@@ -1237,12 +1241,12 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'CLASSES').' tu,
 							'.luna::get_ini('DBtables', 'CLASSES').' tg
 						WHERE 1 = 1
-							AND tu.lid = '.lunaDB::quote('user').' 
+							AND tu.lid = '.lunaDB::quote('user').'
 							AND nu.tid = tu.id
 							AND u.nid = nu.nid
-							AND tg.lid = '.lunaDB::quote('group').' 
+							AND tg.lid = '.lunaDB::quote('group').'
 							AND g.tid = tg.id
-							AND ug.nid1 = nu.nid 
+							AND ug.nid1 = nu.nid
 							AND ug.nid2 = g.nid '.$groupsql.'
 							AND '.$order_by_ok.' LIKE '.lunaDB::quote($this->letter.'%').'
 						ORDER BY
@@ -1265,12 +1269,12 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'CLASSES').' tu,
 							'.luna::get_ini('DBtables', 'CLASSES').' tg
 						WHERE 1 = 1
-							AND tu.lid = '.lunaDB::quote('user').' 
+							AND tu.lid = '.lunaDB::quote('user').'
 							AND nu.tid = tu.id
 							AND u.nid = nu.nid
-							AND tg.lid = '.lunaDB::quote('group').' 
+							AND tg.lid = '.lunaDB::quote('group').'
 							AND g.tid = tg.id
-							AND ug.nid1 = nu.nid 
+							AND ug.nid1 = nu.nid
 							AND ug.nid2 = g.nid '.$groupsql.'
 						ORDER BY
 							'.$order_by_ok.' '.$order_dir.'
@@ -1279,7 +1283,7 @@ class lunaModel {
 			}
 			$row = $res->fetchRow();
 			$res->free();
-			$total = empty($row)? 0 : $row->total; 
+			$total = empty($row)? 0 : $row->total;
 			switch($cookie['order_by']) {
 				case 'firstname':
 				case 'lastname':
@@ -1288,12 +1292,12 @@ class lunaModel {
 					$res = lunaDB::query('
 						SELECT
 							nu.nid,
-							nu.is_active, 
-							u.firstname, 
-							u.lastname, 
+							nu.is_active,
+							u.firstname,
+							u.lastname,
 							nu.lid as email,
-							u.regis_time, 
-							u.last_time, 
+							u.regis_time,
+							u.last_time,
 							u.last_url,
 							u.lang
 						FROM
@@ -1304,12 +1308,12 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'CLASSES').' tu,
 							'.luna::get_ini('DBtables', 'CLASSES').' tg
 						WHERE 1 = 1
-							AND tu.lid = '.lunaDB::quote('user').' 
+							AND tu.lid = '.lunaDB::quote('user').'
 							AND nu.tid = tu.id
 							AND u.nid = nu.nid
-							AND tg.lid = '.lunaDB::quote('group').' 
+							AND tg.lid = '.lunaDB::quote('group').'
 							AND g.tid = tg.id
-							AND ug.nid1 = nu.nid 
+							AND ug.nid1 = nu.nid
 							AND ug.nid2 = g.nid '.$groupsql.'
 							AND '.$order_by_ok.' LIKE '.lunaDB::quote($this->letter.'%').'
 						GROUP BY
@@ -1328,12 +1332,12 @@ class lunaModel {
 					$res = lunaDB::query('
 						SELECT
 							nu.nid,
-							nu.is_active, 
-							u.firstname, 
-							u.lastname, 
+							nu.is_active,
+							u.firstname,
+							u.lastname,
 							nu.lid as email,
-							u.regis_time, 
-							u.last_time, 
+							u.regis_time,
+							u.last_time,
 							u.last_url,
 							u.lang,
 							g.nid as group_nid,
@@ -1349,15 +1353,15 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'CLASSES').' tg,
 							'.luna::get_ini('DBtables', 'CLASSES').' tl
 						WHERE 1 = 1
-							AND tu.lid = '.lunaDB::quote('user').' 
+							AND tu.lid = '.lunaDB::quote('user').'
 							AND nu.tid = tu.id
-							AND tg.lid = '.lunaDB::quote('group').' 
-							AND l.tid = tl.id 
+							AND tg.lid = '.lunaDB::quote('group').'
+							AND l.tid = tl.id
 							AND tl.lid = '.lunaDB::quote('level').'
-							AND gl.nid1 = g.nid 
+							AND gl.nid1 = g.nid
 							AND gl.nid2 = l.nid
 							AND g.tid = tg.id
-							AND ug.nid1 = nu.nid 
+							AND ug.nid1 = nu.nid
 							AND ug.nid2 = g.nid '.$groupsql.'
 							AND u.nid = nu.nid
 						GROUP BY
@@ -1371,7 +1375,7 @@ class lunaModel {
 			}
 		}
 		$users = array();
-		while ($row = $res->fetchRow()) { 
+		while ($row = $res->fetchRow()) {
 			$users[$row->nid]['nid'] = $row->nid;
 			$users[$row->nid]['is_active'] = $row->is_active;
 			$users[$row->nid]['firstname'] = $row->firstname;
@@ -1386,7 +1390,7 @@ class lunaModel {
 			$users[$row->nid]['is_current'] = ($row->nid == luna::$session->user->nid)? 1 : 0;
 		}
 		$res->free();
-		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_user($users)); 
+		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_user($users));
 		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), (luna::$data['lid'] ?? '')));
 		return $nodes;
 	}
@@ -1397,10 +1401,10 @@ class lunaModel {
 	 * @param mixed $item
 	 * @return mixed
 	 */
-	public function load_text($item = false) { 
+	public function load_text($item = false) {
 		if (empty($item)) { return false; }
 		$nodes = array();
-		if (is_array($item) && !isset($item['nid'])) { 
+		if (is_array($item) && !isset($item['nid'])) {
 			foreach($item as $k => $v) { $nodes = $this->merge_nodes($nodes, $this->load_text($v)); }
 		} else {
 			if (is_object($item)) { $item = get_object_vars($item); }
@@ -1430,7 +1434,7 @@ class lunaModel {
 					$nodes[$this->node_path.'/'.$item['nid']][$this->conf['ns']['luna'].'user'][] = $needle;
 				}
 			}
-			if (isset($item['pages'])) { 
+			if (isset($item['pages'])) {
 				foreach($item['pages'] as $page_nid) {
 					$nodes[$this->node_path.'/'.$page_nid][$this->conf['ns']['luna'].'nid'][0]['value'] = $page_nid;
 					$nodes[$this->node_path.'/'.$page_nid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].'page';
@@ -1485,11 +1489,11 @@ class lunaModel {
 					'.luna::get_ini('DBtables', 'USERS').' u
 				WHERE
 					n.tid = (
-						SELECT 
-							id 
-						FROM 
-							'.luna::get_ini('DBtables', 'CLASSES').' 
-						WHERE 
+						SELECT
+							id
+						FROM
+							'.luna::get_ini('DBtables', 'CLASSES').'
+						WHERE
 							lid = '.lunaDB::quote('text').'
 					)
 					AND t.nid = n.nid
@@ -1523,11 +1527,11 @@ class lunaModel {
 					'.luna::get_ini('DBtables', 'USERS').' u
 				WHERE
 					n.tid = (
-						SELECT 
-							id 
-						FROM 
-							'.luna::get_ini('DBtables', 'CLASSES').' 
-						WHERE 
+						SELECT
+							id
+						FROM
+							'.luna::get_ini('DBtables', 'CLASSES').'
+						WHERE
 							lid = '.lunaDB::quote('text').'
 					)
 					AND t.nid = n.nid
@@ -1561,7 +1565,7 @@ class lunaModel {
 					break;
 			}
 			$cookie['order_dir'] = luna::$data['order_dir'] = ($order_dir == 'DESC' || empty($order_dir))? 'DESC' : 'ASC';
-			if (!defined('PERPAGE')) { define('PERPAGE', 20); } 
+			if (!defined('PERPAGE')) { define('PERPAGE', 20); }
 			luna::$data['limit'] = max(1, intval(lunaTools::request('limit', 0, PERPAGE)));
 			$cookie['limit'] = luna::$data['limit'];
 			$start = max(0, intval(lunaTools::request('start', 0, 0)));
@@ -1578,23 +1582,23 @@ class lunaModel {
 						'.luna::get_ini('DBtables', 'TEXTS').' t
 					WHERE
 						n.tid = (
-							SELECT 
-								id 
-							FROM 
-								'.luna::get_ini('DBtables', 'CLASSES').' 
-							WHERE 
+							SELECT
+								id
+							FROM
+								'.luna::get_ini('DBtables', 'CLASSES').'
+							WHERE
 								lid = '.lunaDB::quote('text').'
 						)
 						AND n.nid = t.nid
 				');
 				$letters = array();
-				while ($row = $res->fetchRow()) { 
+				while ($row = $res->fetchRow()) {
 					$letter = strtoupper(substr($row->letter,0,1));
 					if (!empty($letter)) { $letters[] = $letter; }
 				}
-				$res->free(); 
-				$letters = array_unique($letters); 
-				sort($letters); 
+				$res->free();
+				$letters = array_unique($letters);
+				sort($letters);
 				if ($l = lunaTools::request('letter')) { $this->letter = substr($l, 0, 1); } else if (!empty($letters)) { $this->letter = $letters[0]; }
 				if (!in_array($this->letter, $letters)) { $this->letter = isset($letters[0])? $letters[0] : ''; }
 				lunaTools::insert_alphabet_nav(lunaTools::RDF, $letters, $this->letter);
@@ -1615,11 +1619,11 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'TEXTS').' t
 						WHERE
 							n.tid = (
-								SELECT 
-									id 
-								FROM 
-									'.luna::get_ini('DBtables', 'CLASSES').' 
-								WHERE 
+								SELECT
+									id
+								FROM
+									'.luna::get_ini('DBtables', 'CLASSES').'
+								WHERE
 									lid = '.lunaDB::quote('text').'
 							)
 							AND n.nid = t.nid
@@ -1640,11 +1644,11 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'ACTIONS').' a
 						WHERE
 							n.tid = (
-								SELECT 
-									id 
-								FROM 
-									'.luna::get_ini('DBtables', 'CLASSES').' 
-								WHERE 
+								SELECT
+									id
+								FROM
+									'.luna::get_ini('DBtables', 'CLASSES').'
+								WHERE
 									lid = '.lunaDB::quote('text').'
 							)
 							AND t.nid = n.nid
@@ -1678,11 +1682,11 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'USERS').' u
 						WHERE
 							n.tid = (
-								SELECT 
-									id 
-								FROM 
-									'.luna::get_ini('DBtables', 'CLASSES').' 
-								WHERE 
+								SELECT
+									id
+								FROM
+									'.luna::get_ini('DBtables', 'CLASSES').'
+								WHERE
 									lid = '.lunaDB::quote('text').'
 							)
 							AND t.nid = n.nid
@@ -1716,11 +1720,11 @@ class lunaModel {
 							'.luna::get_ini('DBtables', 'USERS').' u
 						WHERE
 							n.tid = (
-								SELECT 
-									id 
-								FROM 
-									'.luna::get_ini('DBtables', 'CLASSES').' 
-								WHERE 
+								SELECT
+									id
+								FROM
+									'.luna::get_ini('DBtables', 'CLASSES').'
+								WHERE
 									lid = '.lunaDB::quote('text').'
 							)
 							AND t.nid = n.nid
@@ -1735,7 +1739,7 @@ class lunaModel {
 			}
 		}
 		$texts = array();
-		while ($row = $res->fetchRow()) { 
+		while ($row = $res->fetchRow()) {
 			$texts[$row->nid]['nid'] = $row->nid;
 			$texts[$row->nid]['lid'] = $row->lid;
 			$texts[$row->nid]['title'] = $row->title;
@@ -1749,7 +1753,7 @@ class lunaModel {
 			if (isset($row->lang)) { $texts[$row->nid]['lang'] = $row->lang; }
 		}
 		$res->free();
-		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_text($texts)); 
+		$nodes = luna::$model->merge_nodes($nodes, luna::$model->load_text($texts));
 		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), (luna::$data['lid'] ?? '')));
 		return $nodes;
 	}
@@ -1799,15 +1803,15 @@ class lunaModel {
 	public function load_request($data = false, $label = false) {
 		if (empty($label)) { return false; }
 		$nodes = array();
-		if (is_array($data)) { 
-			foreach($data as $k => $v) { 
+		if (is_array($data)) {
+			foreach($data as $k => $v) {
 				if (is_array($v)) {
-					$klabel = ($label == 'request')? "$k" : $label.'.'."$k"; 
+					$klabel = ($label == 'request')? "$k" : $label.'.'."$k";
 					$nodes = $this->merge_nodes($nodes, $this->load_request($v, $klabel));
-				} else { 
+				} else {
 					if (empty($k)) { $k = "0"; }
-					if ($k != 'PHPSESSID') { 
-						$klabel = ($label == 'request')? "$k" : $label.'.'."$k"; 
+					if ($k != 'PHPSESSID') {
+						$klabel = ($label == 'request')? "$k" : $label.'.'."$k";
 						$serv = $v;
 						// Guard against PHP object injection: only expand serialized
 						// arrays/scalars from request input, never objects (O:/C:).
@@ -1839,9 +1843,9 @@ class lunaModel {
 	 * @param array $vocabulary
 	 * @return array
 	 */
-	public function load_vocabulary($vocabulary = false) { 
+	public function load_vocabulary($vocabulary = false) {
 		if (!is_array($vocabulary)) { return false; }
-		$nodes = array(); 
+		$nodes = array();
 		foreach($vocabulary as $k => $v) {
 			$var_node = $this->load_var(array(
 				'type' => 'vocabulary',
@@ -1863,17 +1867,17 @@ class lunaModel {
 	 * @return integer
 	 */
 	public function check_requested_node($var = false, $type = false, $ns = 'luna') {
-		if (empty($var)) { return false; } 
+		if (empty($var)) { return false; }
 		if (empty($ns)) { $ns = 'luna'; }
-		$nid = lunaTools::request("$var"); 
+		$nid = lunaTools::request("$var");
 		$node = false;
-		if ($nid) { $node = luna::$model->get_node($nid, "$type", "$ns"); } 
-		if (!empty($node)) { 
-			$_POST["$var"] = $_REQUEST["$var"] = $nid; 
+		if ($nid) { $node = luna::$model->get_node($nid, "$type", "$ns"); }
+		if (!empty($node)) {
+			$_POST["$var"] = $_REQUEST["$var"] = $nid;
 			luna::$data['modify_item_nid'] = $nid;
 		} else {
 			if (isset(luna::$data['subdir']) && !empty(luna::$data['subdir'])) {
-				$nid = luna::$model->get_nid_from_lid(luna::$data['subdir']); 
+				$nid = luna::$model->get_nid_from_lid(luna::$data['subdir']);
 				$node = luna::$model->get_node($nid, "$type");
 				if ($node) { $_POST[$var] = $_REQUEST[$var] = $nid; }
 				luna::$data['modify_item_nid'] = $nid;
@@ -1897,7 +1901,7 @@ class lunaModel {
 		if (!$item_node) {
 			$message = sprintf(_("Unknown $type #%1\$s."), $_POST['modify_item_nid']);
 			luna::$messages['warning'][] = $message;
-			lunaLog::log($message, PEAR_LOG_WARNING); 
+			lunaLog::log($message, PEAR_LOG_WARNING);
 			return false;
 		}
 		return $item_node;
@@ -1933,10 +1937,10 @@ class lunaModel {
 		if (empty($lid)) { return false; }
 		$nid = intval($nid);
 		if ($this->lid_is_taken("$lid", $nid)) {
-			$inerror++; 
+			$inerror++;
 			$message = sprintf(_("The identifier “%1\$s” is already taken."), "$lid");
 			luna::$messages['warning'][] = $message;
-			lunaLog::log($message, PEAR_LOG_NOTICE); 
+			lunaLog::log($message, PEAR_LOG_NOTICE);
 			return false;
 		}
 		return true;
@@ -1952,7 +1956,7 @@ class lunaModel {
 		if (!is_array($var)) { return false; }
 		if (!isset($var['type'])) {
 			$nodes = array();
-			foreach($var as $v) { 
+			foreach($var as $v) {
 				$subnodes = $this->load_var($v);
 				if (!$subnodes) { return false; }
 				$nodes = $this->merge_nodes($nodes, $subnodes);
@@ -1989,7 +1993,7 @@ class lunaModel {
 	 */
 	public function load_node($node = false, $type1 = false, $type2 = false) {
 		if (empty($node)) { return false; }
-		if (is_object($node)) { $node = get_object_vars($node); } 
+		if (is_object($node)) { $node = get_object_vars($node); }
 		if (!isset($node['nid']) || empty($node['nid'])) { return false; }
 		if (empty($type1) && isset($node['type1'])) { $type1 = $node['type1']; }
 		if (empty($type1)) { return false; }
@@ -2000,16 +2004,16 @@ class lunaModel {
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['lang'] = luna::$lang;
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdfs'].'label'][0]['type'] = 'literal';
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].'is_active'][0]['value'] = $node['is_active'];
-		if (isset($node['parent_nid']) && $node['parent_nid']) { 
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['parent_nid']; 
+		if (isset($node['parent_nid']) && $node['parent_nid']) {
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['parent_nid'];
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
 		} else if (empty($node['parent_nid']) && $type1 == 'page') {
-			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['nid']; 
+			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['value'] = $this->node_path.'/'.$node['nid'];
 			$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['owl'].'isChildOf'][0]['type'] = 'uri';
 		}
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$type1;
 		$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
-		if (is_string($type2) && isset($node['nid2'])) { 
+		if (is_string($type2) && isset($node['nid2'])) {
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'nid'][0]['value'] = $node['nid2'];
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['luna'].'lid'][0]['value'] = $node['lid2'];
 			$nodes[$this->node_path.'/'.$node['nid2']][$this->conf['ns']['rdfs'].'label'][0]['value'] = lunaTools::label($node['lid2']);
@@ -2025,9 +2029,9 @@ class lunaModel {
 			if (!isset($nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].$type2]) || !in_array($needle, $nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].$type2])) {
 				$nodes[$this->node_path.'/'.$node['nid']][$this->conf['ns']['luna'].$type2][] = $needle;
 			}
-		} else if (is_array($type2)) { 
+		} else if (is_array($type2)) {
 			$i = 1;
-			foreach ($type2 as $typex) { 
+			foreach ($type2 as $typex) {
 				$nidx = 'nid'.($i + 1);
 				$lidx = 'lid'.($i + 1);
 				$is_activex = 'is_active'.($i + 1);
@@ -2062,7 +2066,7 @@ class lunaModel {
 	 * @param integer $nid
 	 * @return mixed
 	 */
-	public function load_nodes($type1 = false, $type2 = false, $nid = false) { 
+	public function load_nodes($type1 = false, $type2 = false, $nid = false) {
 		if (empty($type1) || !is_string($type1)) { $type1 = false; }
 		if (empty($type2) || (!is_string($type2) && !is_array($type2))) { $type2 = false; }
 		$nid = intval($nid);
@@ -2074,21 +2078,21 @@ class lunaModel {
 		);
 		$type1_sql = '';
 		if (!empty($type1)) { $type1_sql = ' AND n.tid = (SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote("$type1").') '; }
-		if (is_string($type2)) { 
+		if (is_string($type2)) {
 			$i = 1;
 			$sql['select'] .=  'n'.($i + 1).'.nid as nid'.($i + 1).', ';
 			$sql['select'] .=  'n'.($i + 1).'.lid as lid'.($i + 1).', ';
 			$sql['select'] .=  'n'.($i + 1).'.is_active as is_active'.($i + 1).', ';
-			$sql['from'] .=  ', 
-				'.luna::get_ini('DBtables', 'NODES_MAP').' map'.($i + 1).' 
-			LEFT JOIN 
-				'.luna::get_ini('DBtables', 'NODES').' n'.($i + 1).' 
-			ON 
-				map'.($i + 1).'.nid2 = n'.($i + 1).'.nid 
+			$sql['from'] .=  ',
+				'.luna::get_ini('DBtables', 'NODES_MAP').' map'.($i + 1).'
+			LEFT JOIN
+				'.luna::get_ini('DBtables', 'NODES').' n'.($i + 1).'
+			ON
+				map'.($i + 1).'.nid2 = n'.($i + 1).'.nid
 				';
 			$sql['where'] .=  'AND map'.($i + 1).'.nid1 = n.nid AND n'.($i + 1).'.tid = (SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote("$type2").') ';
 			if ($type2 == 'level') { $sql['where'] .= 'AND n2.nid IN ('.(implode(',', array_map('intval', (array) luna::$session->user->levels)) ?: '0').')'; }
-		} else if (is_array($type2)) { 
+		} else if (is_array($type2)) {
 			$i = 1;
 			foreach ($type2 as $type2x) {
 				$sql['select'] .=  'n'.($i + 1).'.nid as nid'.($i + 1).', ';
@@ -2102,10 +2106,10 @@ class lunaModel {
 		}
 		if ($nid > 0) { $sql['where'] 	.=  ' AND n.nid = '.lunaDB::quote($nid).' '; }
 		$query = '
-			SELECT 
+			SELECT
 				DISTINCT n.nid,
 				t.lid as type1,
-				n.lid, 
+				n.lid,
 				'.$sql['select'].'
 				n.is_active,
 				n.parent_nid,
@@ -2113,14 +2117,14 @@ class lunaModel {
 				u.firstname,
 				u.lastname,
 				a.ntime
-			FROM 
+			FROM
 				'.luna::get_ini('DBtables', 'NODES').' n,
 				'.luna::get_ini('DBtables', 'USERS').' u,
 				'.luna::get_ini('DBtables', 'CLASSES').' t,
 				'.luna::get_ini('DBtables', 'ACTIONS').' a'.$sql['from'].'
 			WHERE 1 = 1
 				'.$type1_sql.'
-				AND a.nid = n.nid 
+				AND a.nid = n.nid
 				AND t.id = n.tid
 				AND u.nid = a.unid
 				'.$sql['where'].'
@@ -2165,17 +2169,17 @@ class lunaModel {
 				(nid, lid, tid, is_active, parent_nid)
 			VALUES
 				(
-					'.lunaDB::quote($nextID).', 
+					'.lunaDB::quote($nextID).',
 					'.lunaDB::quote($lid).',
 					(
-						SELECT 
-							id 
-						FROM 
-							'.luna::get_ini('DBtables', 'CLASSES').' 
-						WHERE 
+						SELECT
+							id
+						FROM
+							'.luna::get_ini('DBtables', 'CLASSES').'
+						WHERE
 							lid = '.lunaDB::quote($type1).'
 					),
-					'.lunaDB::quote($is_active).', 
+					'.lunaDB::quote($is_active).',
 					'.lunaDB::quote($parent_nid).'
 				)
 		');
@@ -2248,20 +2252,20 @@ class lunaModel {
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'NODES').'
-			WHERE 
+			WHERE
 				nid = '.lunaDB::quote($nid).'
 		');
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'NODES_MAP').'
-			WHERE 
+			WHERE
 				nid1 = '.lunaDB::quote($nid).'
 				OR nid2 = '.lunaDB::quote($nid).'
 		');
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'ACTIONS').'
-			WHERE 
+			WHERE
 				nid = '.lunaDB::quote($nid).'
 		');
 		return true;
@@ -2280,14 +2284,14 @@ class lunaModel {
 		if (isset($nodeid2) && !empty($nodeid2)) {
 			$sql = '';
 			if (is_array($nodeid2)) {
-				foreach ($nodeid2 as $nid) { 
-					if (empty($nid) || !is_integer(intval($nid))) { return false; } 
-					$sql .= '('.$nid.', '.$nodeid1.'), ('.$nodeid1.', '.$nid.'),'; 
+				foreach ($nodeid2 as $nid) {
+					if (empty($nid) || !is_integer(intval($nid))) { return false; }
+					$sql .= '('.$nid.', '.$nodeid1.'), ('.$nodeid1.', '.$nid.'),';
 				}
 				$sql = substr($sql, 0, -1);
 			} else {
 				$nodeid2 = intval($nodeid2);
-				if (empty($nodeid2)) { return false; } 
+				if (empty($nodeid2)) { return false; }
 				$sql .= '('.$nodeid2.', '.$nodeid1.'), ('.$nodeid1.', '.$nodeid2.')';
 			}
 			$res = lunaDB::query('
@@ -2322,17 +2326,17 @@ class lunaModel {
 		$res = lunaDB::query('
 			DELETE FROM
 				'.luna::get_ini('DBtables', 'NODES_MAP').'
-			WHERE 
+			WHERE
 				(
 					nid1 = '.lunaDB::quote($nodeid).'
-					AND nid2 IN 
+					AND nid2 IN
 						(
-							SELECT 
-								nid 
-							FROM 
+							SELECT
+								nid
+							FROM
 								'.luna::get_ini('DBtables', 'NODES').'
 							WHERE
-								tid = 
+								tid =
 									(
 										SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote($type1).' LIMIT 1
 									)
@@ -2341,14 +2345,14 @@ class lunaModel {
 				OR
 				(
 					nid2 = '.lunaDB::quote($nodeid).'
-					AND nid1 IN 
+					AND nid1 IN
 						(
-							SELECT 
-								nid 
-							FROM 
+							SELECT
+								nid
+							FROM
 								'.luna::get_ini('DBtables', 'NODES').'
 							WHERE
-								tid = 
+								tid =
 									(
 										SELECT id FROM '.luna::get_ini('DBtables', 'CLASSES').' WHERE lid = '.lunaDB::quote($type1).' LIMIT 1
 									)
@@ -2373,16 +2377,16 @@ class lunaModel {
 		$time = intval($time);
 		if (empty($time)) { $time = NOW; }
 		$res = lunaDB::query('
-			INSERT INTO 
-				'.luna::get_ini('DBtables', 'ACTIONS').' 
+			INSERT INTO
+				'.luna::get_ini('DBtables', 'ACTIONS').'
 				(
-					nid, 
+					nid,
 					unid,
 					ntime
 				)
 			VALUES
 				(
-					'.lunaDB::quote($nid).', 
+					'.lunaDB::quote($nid).',
 					'.lunaDB::quote(luna::$session->user->nid).',
 					'.lunaDB::quote($time).'
 				)
@@ -2405,15 +2409,15 @@ class lunaModel {
 		$res = lunaDB::query('
 			SELECT
 				nid
-			FROM 
-				'.luna::get_ini('DBtables', 'NODES').' 
+			FROM
+				'.luna::get_ini('DBtables', 'NODES').'
 			WHERE
 				lid = '.lunaDB::quote($lid).$sql.'
 			LIMIT
 				1
 		');
 		$row = $res->fetchRow();
-		$res->free(); 
+		$res->free();
 		if (empty($row)) { return false; } else { return $row->nid; }
 	}
 	// }}}
@@ -2430,23 +2434,23 @@ class lunaModel {
 		$res = lunaDB::query('
 			SELECT
 				lid
-			FROM 
-				'.luna::get_ini('DBtables', 'NODES').' 
+			FROM
+				'.luna::get_ini('DBtables', 'NODES').'
 			WHERE 1 = 1
 				AND nid = '.lunaDB::quote($nid).'
 				AND tid = (
-					SELECT 
-						id 
-					FROM 
-						'.luna::get_ini('DBtables', 'CLASSES').' 
-					WHERE 
+					SELECT
+						id
+					FROM
+						'.luna::get_ini('DBtables', 'CLASSES').'
+					WHERE
 						lid = '.lunaDB::quote("$class").'
 				)
 			LIMIT
 				1
 		');
 		$row = $res->fetchRow();
-		$res->free(); 
+		$res->free();
 		if (empty($row)) { return false; } else { return $row->lid; }
 		return true;
 	}
@@ -2461,13 +2465,13 @@ class lunaModel {
 	public function calculate_aliases($nodes = false, $nid = false) {
 		if (empty($nodes) || !is_array($nodes)) { return false; }
 		// if no nid is given
-		if ($nid < 1) { 
+		if ($nid < 1) {
 			// then walk throught the array and calculate the alias of each node
-			foreach ($nodes as $node) { 
-				if (empty($node) || !is_array($node)) { return false; } 
+			foreach ($nodes as $node) {
+				if (empty($node) || !is_array($node)) { return false; }
 				if (!$nodes = $this->calculate_aliases($nodes, $node[$this->conf['ns']['luna'].'nid'][0]['value'])) { return false; }
 			}
-		} else { 
+		} else {
 			// We have a nid, check if the node exists
 			if (!isset($nodes[$this->node_path.'/'.$nid])) { return false; }
 			// store the node’s uri, we’ll need it later
@@ -2477,18 +2481,18 @@ class lunaModel {
 			// and also grab its nid, we might need it
 			$parent_nid = isset($nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'])? $nodes[$parent_uri][$this->conf['ns']['luna'].'nid'][0]['value'] : '';
 			// if the node’s uri is the same as its parent’s, then we just hit the root page.
-			if ($parent_uri == $node_uri) { 
+			if ($parent_uri == $node_uri) {
 				// that means: empty alias
 				$nodes[$node_uri][$this->conf['ns']['luna'].'alias'][0]['value'] = '';
 				// store "root"
 				$this->aliases["root"][$this->conf['ns']['luna'].'nid'][0]['value'] = $nid;
 			// else, if the parent exists
-			} else if (isset($nodes[$parent_uri])) { 
+			} else if (isset($nodes[$parent_uri])) {
 				// grab the literal identifier of the parent
 				$parent_lid = $nodes[$parent_uri][$this->conf['ns']['luna'].'lid'][0]['value'];
 				// check if the parent is the root page
 				if ($parent_lid == 'root') {
-					// if yes, then the alias we’re looking for is just the literal identifier of the current node. 
+					// if yes, then the alias we’re looking for is just the literal identifier of the current node.
 					$nodes[$node_uri][$this->conf['ns']['luna'].'alias'][0]['value'] = $nodes[$node_uri][$this->conf['ns']['luna'].'lid'][0]['value'];
 					// store it
 					$this->aliases[$nodes[$node_uri][$this->conf['ns']['luna'].'lid'][0]['value']][$this->conf['ns']['luna'].'nid'][0]['value'] = $nid;
@@ -2531,12 +2535,12 @@ class lunaModel {
 		if (luna::$cache) { $cache_obj = new lunaCache(array('cacheDir' => CACHE_PATH, 'lifetime' => luna::$cache_timeout)); }
 		if (luna::$cache && ($cache_str = $cache_obj->get($code_str))) {
 			$res = unserialize($cache_str, array('allowed_classes' => false));
-		} else { 
+		} else {
 			if (!$this->load_xsl($xslfile)) { return false; }
 			include_once('arc/ARC2.php');
 			$ser = ARC2::getRDFXMLSerializer($this->conf);
-			$this->dom = new DomDocument; 
-			$this->dom->loadXML($ser->getSerializedIndex($this->index)); 
+			$this->dom = new DomDocument;
+			$this->dom->loadXML($ser->getSerializedIndex($this->index));
 			$this->xslprocessor = new XsltProcessor();
 			$this->xslprocessor->importStyleSheet($this->xsl);
 			$res = $this->xslprocessor->transformToXML($this->dom);

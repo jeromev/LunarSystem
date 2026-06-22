@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html	GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -116,9 +116,9 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 * @access public
 	 * @return boolean
 	 */
-	public function start() { 
-		if (defined('SESSION_READY_TO_START') && SESSION_READY_TO_START == true) { 
-			session_start(); 
+	public function start() {
+		if (defined('SESSION_READY_TO_START') && SESSION_READY_TO_START == true) {
+			session_start();
 			return true;
 		}
 		return false;
@@ -155,11 +155,11 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 * @access public
 	 * @return boolean
 	 */
-	public function sessionOpen($save_path, $session_name) { 
+	public function sessionOpen($save_path, $session_name) {
 		$this->user = new stdclass();
 		self::$save_path = $save_path;
 		self::$sess_name = $session_name;
-		self::$new = true; 
+		self::$new = true;
 		return true;
 	}
 	// }}}
@@ -182,26 +182,26 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 */
 	public function sessionRead($sid) {
 		$this->user = $this->get_user_data($sid);
-		if (!isset($this->user->nid)) { 
+		if (!isset($this->user->nid)) {
 			$this->sessionDestroy($sid);
 			self::$new = 1;
 			$res = lunaDB::query('
-				INSERT INTO 
-					'.luna::get_ini('DBtables', 'SESSIONS').' 
+				INSERT INTO
+					'.luna::get_ini('DBtables', 'SESSIONS').'
 					(
 						session_id,
-						session_user_nid, 
+						session_user_nid,
 						session_start,
-						session_time, 
-						session_ip, 
+						session_time,
+						session_ip,
 						session_url,
-						session_logged_in, 
+						session_logged_in,
 						session_lang,
 						session_useragent
 					)
 				VALUES
 					(
-						'.lunaDB::quote($sid).', 
+						'.lunaDB::quote($sid).',
 						(SELECT nid FROM '.luna::get_ini('DBtables', 'NODES').' WHERE lid = '.lunaDB::quote(ANONYMOUS).'),
 						'.lunaDB::quote(NOW).',
 						'.lunaDB::quote(NOW).',
@@ -212,7 +212,7 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 						'.lunaDB::quote($_SERVER['HTTP_USER_AGENT']).'
 					)
 			');
-			$this->user = $this->get_user_data($sid); 
+			$this->user = $this->get_user_data($sid);
 		}
 		if (!isset($this->user->nid)) {
 			$this->sessionDestroy($sid);
@@ -240,25 +240,25 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 */
 	public function sessionWrite($sid, $data) {
 		$res = lunaDB::query('
-			UPDATE 
-				'.luna::get_ini('DBtables', 'SESSIONS').' 
+			UPDATE
+				'.luna::get_ini('DBtables', 'SESSIONS').'
 			SET
-				session_user_nid = '.lunaDB::quote($this->user->nid).', 
-				session_time  = '.lunaDB::quote(NOW).', 
-				session_ip  = '.lunaDB::quote(lunaTools::encode_ip()).',  
-				session_url  = '.lunaDB::quote(luna::$path).', 
-				session_logged_in  = '.lunaDB::quote(($this->user->email == ANONYMOUS ? false : true)).', 
-				session_lang  = '.lunaDB::quote(luna::$lang).', 
-				session_useragent  = '.lunaDB::quote($_SERVER['HTTP_USER_AGENT']).' 
+				session_user_nid = '.lunaDB::quote($this->user->nid).',
+				session_time  = '.lunaDB::quote(NOW).',
+				session_ip  = '.lunaDB::quote(lunaTools::encode_ip()).',
+				session_url  = '.lunaDB::quote(luna::$path).',
+				session_logged_in  = '.lunaDB::quote(($this->user->email == ANONYMOUS ? false : true)).',
+				session_lang  = '.lunaDB::quote(luna::$lang).',
+				session_useragent  = '.lunaDB::quote($_SERVER['HTTP_USER_AGENT']).'
 			WHERE
 				session_id = '.lunaDB::quote($sid).'
 		');
 		if ($this->user->email != ANONYMOUS) {
 			$res = lunaDB::query('
-				UPDATE 
-					'.luna::get_ini('DBtables', 'USERS').' 
+				UPDATE
+					'.luna::get_ini('DBtables', 'USERS').'
 				SET
-					last_time  = '.lunaDB::quote(NOW).', 
+					last_time  = '.lunaDB::quote(NOW).',
 					last_url  = '.lunaDB::quote(luna::$path).'
 				WHERE
 					nid = '.lunaDB::quote($this->user->nid).'
@@ -276,8 +276,8 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 */
 	public function sessionDestroy($sid) {
 		$res = lunaDB::query('
-			DELETE FROM 
-				'.luna::get_ini('DBtables', 'SESSIONS').' 
+			DELETE FROM
+				'.luna::get_ini('DBtables', 'SESSIONS').'
 			WHERE
 				session_id = '.lunaDB::quote($sid).'
 		');
@@ -298,8 +298,8 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 */
 	public function sessionGc($sLifeTime) {
 		$res = lunaDB::query('
-			DELETE FROM 
-				'.luna::get_ini('DBtables', 'SESSIONS').' 
+			DELETE FROM
+				'.luna::get_ini('DBtables', 'SESSIONS').'
 			WHERE
 				session_time < '.lunaDB::quote(NOW - $sLifeTime).'
 		');
@@ -315,8 +315,8 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 	 * @param string $sid
 	 * @return object
 	 */
-	public function get_user_data($sid = '') { 
-		if (!is_string($sid) || empty($sid)) { return false; } 
+	public function get_user_data($sid = '') {
+		if (!is_string($sid) || empty($sid)) { return false; }
 		$sid = substr($sid, 0, 32);
 		$sLifeTime = SID_IN? self::$time_out : self::$min_time_out;
 		$user = new stdclass();
@@ -368,7 +368,7 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 				AND g.is_active = 1
 				AND l.is_active = 1
 		');
-		while ($row = $res->fetchRow()) { 
+		while ($row = $res->fetchRow()) {
 			$user->nid = $row->user_nid;
 			$user->is_active = $row->is_active;
 			$user->firstname = $row->firstname;
@@ -391,8 +391,8 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 			$user->levels[$row->level_nid] = $row->level_nid;
 			self::$new = 0;
 		}
-		$res->free(); 
-		if (isset($user->last_time) && NOW - $user->last_time <= 1) { sleep(1); } 
+		$res->free();
+		if (isset($user->last_time) && NOW - $user->last_time <= 1) { sleep(1); }
 		return $user;
 	}
 	// }}}

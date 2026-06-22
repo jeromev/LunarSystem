@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -86,8 +86,8 @@ class mod_journal {
 			');
 		}
 		$log_id = false;
-		if ($log_id = lunaTools::request('log_id')) { 
-			luna::$data['log_id'] = $log_id; 
+		if ($log_id = lunaTools::request('log_id')) {
+			luna::$data['log_id'] = $log_id;
 			$res = lunaDB::query('
 				SELECT
 					*
@@ -96,7 +96,7 @@ class mod_journal {
 				WHERE
 					id = '.lunaDB::quote(intval($log_id)).'
 			');
-			while ($row = $res->fetchRow()) { 
+			while ($row = $res->fetchRow()) {
 				$msg = self::decode_message($row->message);
 				$message = lunaTools::display_string(isset($msg->message)? $msg->message : '');
 				$var = array(
@@ -150,7 +150,7 @@ class mod_journal {
 				SELECT
 					COUNT('."$order_by_ok".') as total
 				FROM
-					'.luna::get_ini('DBtables', 'LOGS').' l 
+					'.luna::get_ini('DBtables', 'LOGS').' l
 			');
 			$row = $res->fetchRow();
 			$res->free();

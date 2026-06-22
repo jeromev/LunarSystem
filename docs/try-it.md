@@ -69,7 +69,7 @@ a self-join for — "which pages share `admin`'s access level?":
 docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
 http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 'query=PREFIX schema: <https://schema.org/>
-PREFIX luna: <http://lunarsystem.org/ontology#>
+PREFIX luna: <https://jeromev.github.io/LunarSystem/ontology#>
 SELECT ?sibling WHERE {
   ?a schema:name \"admin\" ; luna:level ?l .
   ?s luna:level ?l ; schema:name ?sibling . FILTER (?s != ?a) }'"

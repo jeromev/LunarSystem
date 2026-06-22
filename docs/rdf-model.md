@@ -52,7 +52,7 @@ custom namespace:
 | `owl` | `http://www.w3.org/2002/07/owl#` | `owl:isChildOf` (page hierarchy) |
 | `dc` | `http://purl.org/dc/elements/1.1/` | Dublin Core (metadata) |
 | `dcterms` | `http://purl.org/dc/terms/` | Dublin Core terms |
-| **`luna`** | **`http://lunarsystem.org/ontology#`** | **all system predicates**: `nid`, `lid`, `is_active`, `content`, `user`, `group`, `level`, `alias`, `value`, `code`, … |
+| **`luna`** | **`https://jeromev.github.io/LunarSystem/ontology#`** | **all system predicates**: `nid`, `lid`, `is_active`, `content`, `user`, `group`, `level`, `alias`, `value`, `code`, … |
 
 The `luna:` namespace string is exposed as `lunaModel::$lunaNameSpace` and used
 throughout the loaders.

@@ -8,9 +8,9 @@
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  * For more details, see <http://www.gnu.org/copyleft/gpl.html>
  *
- * @author		Odradek <odradek@lunarsystem.org>
+ * @author		Odradek
  * @license		http://www.gnu.org/copyleft/gpl.html  GPL
- * @link		http://lunarsystem.org
+ * @link		https://github.com/jeromev/LunarSystem
  * @package		lunarSystem
  */
 // {{{
@@ -47,7 +47,7 @@ class mod_online_users {
 	 * @access	private
 	 * @return boolean
 	 */
-	private function __construct() { 
+	private function __construct() {
 		lunaTools::add_vocabulary(array(
 			'firstname',
 			'lastname',
@@ -110,13 +110,13 @@ class mod_online_users {
 				AND gl.nid1 = g.nid AND gl.nid2 = l.nid
 				AND g.is_active = 1
 				AND l.is_active = 1
-			GROUP BY 
+			GROUP BY
 				s.session_id
-			ORDER BY 
+			ORDER BY
 				s.session_time DESC
 		');
 		$users = array();
-		while ($row = $res->fetchRow()) { 
+		while ($row = $res->fetchRow()) {
 			$users[$row->nid]['nid'] = $row->nid;
 			$users[$row->nid]['is_active'] = $row->is_active;
 			$users[$row->nid]['firstname'] = $row->firstname;
@@ -138,7 +138,7 @@ class mod_online_users {
 			$users[$row->nid]['session_ip'] = lunaTools::decode_ip($row->session_ip);
 		}
 		$res->free();
-		luna::$model->merge_index(luna::$model->load_user($users)); 
+		luna::$model->merge_index(luna::$model->load_user($users));
 		luna::$model->merge_index(luna::$model->load_pager(($total ?? 0), ($start ?? 0), (luna::$data['limit'] ?? PERPAGE), __CLASS__));
 		return true;
 	}

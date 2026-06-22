@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -18,7 +18,7 @@
 
 	<xsl:template name="page">
 		<p>
-			<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'You are now disconnected.']/luna:value"/>
+			<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'You are now disconnected.']/ui:value"/>
 		</p>
 	</xsl:template>
 

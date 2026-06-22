@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -43,100 +43,100 @@
 	<xsl:template name="configadmin">
 		<div class="box">
 			<fieldset id="Config">
-				<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Configuration']/luna:value"/></h2>
+				<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Configuration']/ui:value"/></h2>
 				<div class="box-content off">
 					<div class="fields">
 						<div class="onecol">
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="type">checkbox</xsl:with-param>
 								<xsl:with-param name="name">disable</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'disable']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'disable']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'disable']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'disable']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 						</div>
 						<div class="col">
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">sitename</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'sitename']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'sitename']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'sitename']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'sitename']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">author</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'author']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'author']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'author']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'author']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">general_email</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'general_email']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'general_email']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'general_email']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'general_email']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="type">textarea</xsl:with-param>
 								<xsl:with-param name="name">site_desc</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'site_desc']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'site_desc']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'site_desc']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'site_desc']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 						</div>
 						<div class="col">
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">version</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'version']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'version']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'version']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'version']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">startdate</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'startdate']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'startdate']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'startdate']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'startdate']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">session_length</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'session_length']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'session_length']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'session_length']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'session_length']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="type">textarea</xsl:with-param>
 								<xsl:with-param name="name">keywords</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'keywords']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'keywords']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'keywords']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'keywords']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 						</div>
 						<div class="col">
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">timezone</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'timezone']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'timezone']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'timezone']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'timezone']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">root_module</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'root_module']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'root_module']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'root_module']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'root_module']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="name">langs</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'langs']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'langs']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'langs']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'langs']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 							<br />
 							<xsl:call-template name="forminput">
 								<xsl:with-param name="type">textarea</xsl:with-param>
 								<xsl:with-param name="name">disable_txt</xsl:with-param>
-								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'disable_txt']/luna:value"/></xsl:with-param>
-								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/luna:config[luna:lid = 'disable_txt']/luna:value"/></xsl:with-param>
+								<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'disable_txt']/ui:value"/></xsl:with-param>
+								<xsl:with-param name="value"><xsl:value-of select="/rdf:RDF/ui:config[ui:lid = 'disable_txt']/ui:value"/></xsl:with-param>
 							</xsl:call-template>
 						</div>
 					</div>
 					<div class="submit">
 						<input type="submit" class="submit" name="submit">
 							<xsl:attribute name="value">
-								<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Save']/luna:value"/>
+								<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Save']/ui:value"/>
 							</xsl:attribute>
 						</input>
 					</div>

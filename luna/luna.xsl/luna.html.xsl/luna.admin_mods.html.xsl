@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -17,7 +17,7 @@
 	<xsl:include href="./luna.header.html.xsl"/>
 	<xsl:include href="./luna.common_admin.html.xsl"/>
 
-	<xsl:variable name="modify_item_nid"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'modify_item_nid']/luna:value"/></xsl:variable>
+	<xsl:variable name="modify_item_nid"><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'modify_item_nid']/ui:value"/></xsl:variable>
 
 	<xsl:template name="page">
 		<xsl:if test="/rdf:RDF/luna:mod[luna:lid = $mod_lid]/luna:is_loaded = '1'">
@@ -30,7 +30,7 @@
 								<xsl:attribute name="class">
 									<xsl:text>box-handle</xsl:text>
 									<xsl:choose>
-										<xsl:when test="/rdf:RDF/luna:message[luna:code = 'warning']">
+										<xsl:when test="/rdf:RDF/ui:message[ui:code = 'warning']">
 											<xsl:text> expanded</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>
@@ -38,12 +38,12 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:attribute>
-								<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Add a module']/luna:value"/>
+								<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Add a module']/ui:value"/>
 							</h2>
 							<div>
 								<xsl:attribute name="class">
 									<xsl:text>box-content</xsl:text>
-									<xsl:if test="not(/rdf:RDF/luna:message[luna:code = 'warning'])">
+									<xsl:if test="not(/rdf:RDF/ui:message[ui:code = 'warning'])">
 										<xsl:text> off</xsl:text>
 									</xsl:if>
 								</xsl:attribute>
@@ -52,21 +52,21 @@
 										<xsl:call-template name="forminput">
 											<xsl:with-param name="type">checkbox</xsl:with-param>
 											<xsl:with-param name="name">add_mod_is_inactive</xsl:with-param>
-											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/>
+											<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'Deactivate']/ui:value"/>
 										</xsl:call-template>
 										<br/>
 									</div>
 									<div class="col">
 										<xsl:call-template name="forminput">
 											<xsl:with-param name="name">add_mod_lid</xsl:with-param>
-											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/>
+											<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'Literal identifier']/ui:value"/>
 										</xsl:call-template>
 										<br/>
 										<xsl:call-template name="forminput">
 											<xsl:with-param name="name">add_mod_level</xsl:with-param>
 											<xsl:with-param name="type">select</xsl:with-param>
 											<xsl:with-param name="foreach" select="/rdf:RDF/luna:level"/>
-											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Access level']/luna:value"/>
+											<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'Access level']/ui:value"/>
 											<xsl:with-param name="default-value" select="/rdf:RDF/luna:level[luna:lid = 'level_public']/schema:identifier"/>
 										</xsl:call-template>
 										<br/>
@@ -77,7 +77,7 @@
 											<xsl:with-param name="type">select</xsl:with-param>
 											<xsl:with-param name="class">large</xsl:with-param>
 											<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
-											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages using the module']/luna:value"/>
+											<xsl:with-param name="label" select="/rdf:RDF/ui:vocabulary[ui:lid = 'Pages using the module']/ui:value"/>
 											<xsl:with-param name="multiple">yes</xsl:with-param>
 											<xsl:with-param name="size" select="count(/rdf:RDF/schema:WebPage)"/>
 										</xsl:call-template>
@@ -87,7 +87,7 @@
 								<div class="submit">
 									<input type="hidden" name="mode" value="add"/>
 									<input type="submit" class="submit" name="submit">
-										<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Add']/luna:value"/></xsl:attribute>
+										<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Add']/ui:value"/></xsl:attribute>
 									</input>
 								</div>
 							</div>
@@ -106,7 +106,7 @@
 					</xsl:attribute>
 					<fieldset>
 						<h2 class="box-handle expanded">
-							<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify the module']/luna:value"/>
+							<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Modify the module']/ui:value"/>
 							<xsl:text> </xsl:text>
 							<em><xsl:value-of select="/rdf:RDF/node()[schema:identifier = $modify_item_nid]/schema:name"/></em>
 						</h2>
@@ -116,7 +116,7 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="type">checkbox</xsl:with-param>
 										<xsl:with-param name="name">modifymodisinactive</xsl:with-param>
-										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/></xsl:with-param>
+										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Deactivate']/ui:value"/></xsl:with-param>
 										<xsl:with-param name="default-value">
 											<xsl:choose>
 												<xsl:when test="/rdf:RDF/node()[schema:identifier = $modify_item_nid]/luna:isActive = '1'">
@@ -133,7 +133,7 @@
 								<div class="col">
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_mod_lid</xsl:with-param>
-										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/></xsl:with-param>
+										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Literal identifier']/ui:value"/></xsl:with-param>
 										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/node()[schema:identifier = $modify_item_nid]/luna:lid"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
@@ -141,7 +141,7 @@
 										<xsl:with-param name="name">modify_mod_level</xsl:with-param>
 										<xsl:with-param name="type">select</xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/luna:level"/>
-										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Access level']/luna:value"/></xsl:with-param>
+										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Access level']/ui:value"/></xsl:with-param>
 										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:level[@rdf:about = $level-resource]/schema:identifier"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
@@ -152,7 +152,7 @@
 										<xsl:with-param name="type">select</xsl:with-param>
 										<xsl:with-param name="class">large</xsl:with-param>
 										<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
-										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages using the module']/luna:value"/></xsl:with-param>
+										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Pages using the module']/ui:value"/></xsl:with-param>
 										<xsl:with-param name="multiple">yes</xsl:with-param>
 										<xsl:with-param name="size"><xsl:value-of select="count(/rdf:RDF/schema:WebPage)"/></xsl:with-param>
 										<xsl:with-param name="default-value" select="/rdf:RDF/luna:mod[schema:identifier = $modify_item_nid]/schema:isPartOf"/>
@@ -161,15 +161,15 @@
 								</div>
 							</div>
 							<div class="submit">
-								<input type="submit" class="submit" name="submit"><xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modify']/luna:value"/></xsl:attribute></input>
+								<input type="submit" class="submit" name="submit"><xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Modify']/ui:value"/></xsl:attribute></input>
 								<input type="hidden" name="mode" value="modify"/>
 								<input type="hidden" name="mod_nid"><xsl:attribute name="value"><xsl:value-of select="$modify_item_nid"/></xsl:attribute></input>
 								<input type="hidden" name="modify_item_nid"><xsl:attribute name="value"><xsl:value-of select="$modify_item_nid"/></xsl:attribute></input>
 								<input type="submit" class="submit warning" name="submit">
-									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Delete']/luna:value"/></xsl:attribute>
+									<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Delete']/ui:value"/></xsl:attribute>
 									<xsl:attribute name="data-confirm">
 
-										<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Are you sure you want to delete this module?']/luna:value"/>
+										<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Are you sure you want to delete this module?']/ui:value"/>
 
 									</xsl:attribute>
 								</input>

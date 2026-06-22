@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:ui="https://jeromev.github.io/LunarSystem/render#" exclude-result-prefixes="ui" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -43,12 +43,12 @@
 
 	</xsl:template>
 
-	<xsl:template match="/rdf:RDF/luna:message">
+	<xsl:template match="/rdf:RDF/ui:message">
 		<p>
 			<xsl:attribute name="class">
-				<xsl:text>message </xsl:text><xsl:value-of select="luna:code"/>
+				<xsl:text>message </xsl:text><xsl:value-of select="ui:code"/>
 			</xsl:attribute>
-			<xsl:apply-templates select="luna:value"/>
+			<xsl:apply-templates select="ui:value"/>
 		</p>
 	</xsl:template>
 
@@ -76,16 +76,16 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:text>start=</xsl:text><xsl:value-of select="$start"/>
-		<xsl:text>&amp;order_by=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value"/>
-		<xsl:text>&amp;order_dir=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'order_dir']/luna:value"/>
-		<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value">
-			<xsl:text>&amp;letter=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value"/>
+		<xsl:text>&amp;order_by=</xsl:text><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value"/>
+		<xsl:text>&amp;order_dir=</xsl:text><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'order_dir']/ui:value"/>
+		<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value">
+			<xsl:text>&amp;letter=</xsl:text><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value"/>
 		</xsl:if>
-		<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value">
-			<xsl:text>&amp;limit=</xsl:text><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value"/>
+		<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value">
+			<xsl:text>&amp;limit=</xsl:text><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value"/>
 		</xsl:if>
-		<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value">
-			<xsl:text>&amp;group_nid=</xsl:text><xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value"/>
+		<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value">
+			<xsl:text>&amp;group_nid=</xsl:text><xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value"/>
 		</xsl:if>
 	</xsl:template>
 
@@ -95,7 +95,7 @@
 		<xsl:if test="not($num &gt; $total)">
 			<option>
 				<xsl:attribute name="label"><xsl:value-of select="$num"/></xsl:attribute>
-				<xsl:variable name="pagenumber"><xsl:value-of select="($num - 1) * /rdf:RDF/luna:pager/luna:perpage"/></xsl:variable>
+				<xsl:variable name="pagenumber"><xsl:value-of select="($num - 1) * /rdf:RDF/ui:pager/ui:perpage"/></xsl:variable>
 				<xsl:attribute name="value">
 					<xsl:call-template name="buildSortURL">
 						<xsl:with-param name="start">
@@ -111,7 +111,7 @@
 					</xsl:call-template>
 					<xsl:call-template name="onchange4"/>
 				</xsl:attribute>
-				<xsl:if test="/rdf:RDF/luna:pager/luna:value = $num">
+				<xsl:if test="/rdf:RDF/ui:pager/ui:value = $num">
 					<xsl:attribute name="selected">selected</xsl:attribute>
 				</xsl:if>
 				<xsl:value-of select="$num"/>
@@ -127,12 +127,12 @@
 		<xsl:param name="mod">
 			<xsl:value-of select="$mod_lid"/>
 		</xsl:param>
-		<xsl:if test="/rdf:RDF/luna:pager">
+		<xsl:if test="/rdf:RDF/ui:pager">
 			<div class="pagination">
 				<a class="first">
 					<xsl:attribute name="href"><xsl:call-template name="buildSortURL"/></xsl:attribute>
 					<xsl:attribute name="title">
-						<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'First page']/luna:value"/>
+						<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'First page']/ui:value"/>
 					</xsl:attribute>
 					<xsl:text>⇐</xsl:text>
 				</a>
@@ -141,56 +141,56 @@
 					<xsl:attribute name="href">
 						<xsl:call-template name="buildSortURL">
 							<xsl:with-param name="start">
-								<xsl:variable name="prevpagenumber"><xsl:value-of select="/rdf:RDF/luna:pager/luna:value - 2"/></xsl:variable>
+								<xsl:variable name="prevpagenumber"><xsl:value-of select="/rdf:RDF/ui:pager/ui:value - 2"/></xsl:variable>
 								<xsl:choose>
 									<xsl:when test="$prevpagenumber &lt; 1">
 										<xsl:text>0</xsl:text>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$prevpagenumber * /rdf:RDF/luna:pager/luna:perpage"/>
+										<xsl:value-of select="$prevpagenumber * /rdf:RDF/ui:pager/ui:perpage"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:attribute>
 					<xsl:attribute name="title">
-						<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Previous page']/luna:value"/>
+						<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Previous page']/ui:value"/>
 					</xsl:attribute>
 					<xsl:text>←</xsl:text>
 				</a>
 				<xsl:text> </xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Page: ']/ui:value"/>
 				<select name="pagination" size="1" class="autowidth">
-					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Page: ']/luna:value"/></xsl:attribute>
+					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Page: ']/ui:value"/></xsl:attribute>
 					<xsl:attribute name="data-navigate">1</xsl:attribute>
 					<xsl:call-template name="loop1">
-						<xsl:with-param name="total"><xsl:value-of select="/rdf:RDF/luna:pager/luna:total"/></xsl:with-param>
+						<xsl:with-param name="total"><xsl:value-of select="/rdf:RDF/ui:pager/ui:total"/></xsl:with-param>
 					</xsl:call-template>
 				</select>
 				<xsl:text>/</xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:pager/luna:total"/>
+				<xsl:value-of select="/rdf:RDF/ui:pager/ui:total"/>
 				<xsl:text> </xsl:text>
 				<a class="next">
 					<xsl:attribute name="href">
 						<xsl:call-template name="buildSortURL">
 							<xsl:with-param name="start">
-								<xsl:variable name="nextpagenumber"><xsl:value-of select="/rdf:RDF/luna:pager/luna:value"/></xsl:variable>
+								<xsl:variable name="nextpagenumber"><xsl:value-of select="/rdf:RDF/ui:pager/ui:value"/></xsl:variable>
 								<xsl:choose>
 									<xsl:when test="$nextpagenumber &lt; 1">
 										<xsl:text>0</xsl:text>
 									</xsl:when>
-									<xsl:when test="$nextpagenumber &gt; (/rdf:RDF/luna:pager/luna:total - 1)">
-										<xsl:value-of select="(/rdf:RDF/luna:pager/luna:total - 1) * /rdf:RDF/luna:pager/luna:perpage"/>
+									<xsl:when test="$nextpagenumber &gt; (/rdf:RDF/ui:pager/ui:total - 1)">
+										<xsl:value-of select="(/rdf:RDF/ui:pager/ui:total - 1) * /rdf:RDF/ui:pager/ui:perpage"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$nextpagenumber * /rdf:RDF/luna:pager/luna:perpage"/>
+										<xsl:value-of select="$nextpagenumber * /rdf:RDF/ui:pager/ui:perpage"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:attribute>
 					<xsl:attribute name="title">
-						<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Next page']/luna:value"/>
+						<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Next page']/ui:value"/>
 					</xsl:attribute>
 					<xsl:text>→</xsl:text>
 				</a>
@@ -199,19 +199,19 @@
 					<xsl:attribute name="href">
 						<xsl:call-template name="buildSortURL">
 							<xsl:with-param name="start">
-								<xsl:value-of select="(/rdf:RDF/luna:pager/luna:total - 1) * /rdf:RDF/luna:pager/luna:perpage"/>
+								<xsl:value-of select="(/rdf:RDF/ui:pager/ui:total - 1) * /rdf:RDF/ui:pager/ui:perpage"/>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:attribute>
 					<xsl:attribute name="title">
-						<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Last page']/luna:value"/>
+						<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Last page']/ui:value"/>
 					</xsl:attribute>
 					<xsl:text>⇒</xsl:text>
 				</a>
 				<xsl:text> </xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Elements per page: ']/ui:value"/>
 				<select name="perpage" size="1" class="autowidth">
-					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Elements per page: ']/luna:value"/></xsl:attribute>
+					<xsl:attribute name="aria-label"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Elements per page: ']/ui:value"/></xsl:attribute>
 					<xsl:attribute name="data-navigate">1</xsl:attribute>
 					<xsl:call-template name="optionlimit">
 						<xsl:with-param name="limit">10</xsl:with-param>
@@ -257,7 +257,7 @@
 	<xsl:template name="optionlimit">
 		<xsl:param name="limit">50</xsl:param>
 		<option>
-			<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value = $limit">
+			<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value = $limit">
 				<xsl:attribute name="selected"><xsl:text>selected</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="value">
@@ -272,22 +272,22 @@
 				</xsl:choose>
 				<xsl:text>start=0</xsl:text>
 				<xsl:text>&amp;order_by=</xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'order_by']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'order_by']/ui:value"/>
 				<xsl:text>&amp;order_dir=</xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'order_dir']/luna:value"/>
+				<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'order_dir']/ui:value"/>
 				<xsl:text>&amp;limit=</xsl:text>
 				<xsl:value-of select="$limit"/>
-				<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value">
+				<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value">
 					<xsl:text>&amp;letter=</xsl:text>
-					<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value"/>
+					<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value"/>
 				</xsl:if>
-				<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value">
+				<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value">
 					<xsl:text>&amp;group_nid=</xsl:text>
-					<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value"/>
+					<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value"/>
 				</xsl:if>
-				<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value">
+				<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value">
 					<xsl:text>&amp;filter=</xsl:text>
-					<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value"/>
+					<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value"/>
 				</xsl:if>
 				<xsl:call-template name="onchange4"/>
 			</xsl:attribute>
@@ -297,38 +297,38 @@
 
 	<xsl:template name="onchange">
 		<xsl:text>document.location=this[this.selectedIndex].value</xsl:text>
-		<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] and not(/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] = '')">
+		<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] and not(/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] = '')">
 			<xsl:text> + '?PHPSESSID=</xsl:text>
-			<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID']"/>
+			<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID']"/>
 			<xsl:text>'</xsl:text>
 		</xsl:if>
 		<xsl:text>;</xsl:text>
 	</xsl:template>
 
 	<xsl:template name="onchange2">
-		<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] and not(/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] = '')">
+		<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] and not(/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] = '')">
 			<xsl:text> + '&amp;PHPSESSID=</xsl:text>
-			<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID']"/>
+			<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID']"/>
 			<xsl:text>'</xsl:text>
 		</xsl:if>
 	</xsl:template>
 
 	<xsl:template name="onchange3">
-		<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] and not(/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] = '')">
+		<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] and not(/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] = '')">
 			<xsl:text>?PHPSESSID=</xsl:text>
-			<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID']"/>
+			<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID']"/>
 		</xsl:if>
 	</xsl:template>
 
 		<xsl:template name="onchange4">
-			<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] and not(/rdf:RDF/luna:request[luna:lid = 'PHPSESSID'] = '')">
+			<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] and not(/rdf:RDF/ui:request[ui:lid = 'PHPSESSID'] = '')">
 				<xsl:text>&amp;PHPSESSID=</xsl:text>
-				<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'PHPSESSID']"/>
+				<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'PHPSESSID']"/>
 			</xsl:if>
 		</xsl:template>
 
 	<xsl:template name="alphabeticlist">
-		<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'alphabeticlist']">
+		<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'alphabeticlist']">
 			<div class="pagination alphabetic">
 				<xsl:for-each select="letter">
 					<xsl:text> </xsl:text>
@@ -336,27 +336,27 @@
 						<strong class="on">
 							<a>
 								<xsl:attribute name="href">
-									<xsl:value-of select="luna:data[luna:lid = 'site_relative_url']"/>
+									<xsl:value-of select="ui:data[ui:lid = 'site_relative_url']"/>
 									<xsl:value-of select="$masternodeurl"/>
 									<xsl:text>?start=</xsl:text>
-									<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'start']/ui:value"/>
 									<xsl:text>&amp;order_by=</xsl:text>
-									<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'order_by']/luna:value"/>
-									<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value">
+									<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'order_by']/ui:value"/>
+									<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value">
 										<xsl:text>&amp;letter=</xsl:text>
 										<xsl:value-of select="@value"/>
 									</xsl:if>
-									<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value">
+									<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value">
 										<xsl:text>&amp;limit=</xsl:text>
-										<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value"/>
+										<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value"/>
 									</xsl:if>
-									<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value">
+									<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value">
 										<xsl:text>&amp;group_nid=</xsl:text>
-										<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value"/>
+										<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value"/>
 									</xsl:if>
-									<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value">
+									<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value">
 										<xsl:text>&amp;filter=</xsl:text>
-										<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value"/>
+										<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value"/>
 									</xsl:if>
 								</xsl:attribute>
 								<xsl:value-of select="@value"/>
@@ -366,26 +366,26 @@
 					<xsl:if test="not(@current = '1')">
 						<a>
 							<xsl:attribute name="href">
-								<xsl:value-of select="luna:data[luna:lid = 'site_relative_url']"/>
+								<xsl:value-of select="ui:data[ui:lid = 'site_relative_url']"/>
 								<xsl:value-of select="$masternodeurl"/>
 								<xsl:text>?start=0</xsl:text>
 								<xsl:text>&amp;order_by=</xsl:text>
-								<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'order_by']/luna:value"/>
-								<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'letter']/luna:value">
+								<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'order_by']/ui:value"/>
+								<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'letter']/ui:value">
 									<xsl:text>&amp;letter=</xsl:text>
 									<xsl:value-of select="@value"/>
 								</xsl:if>
-								<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value">
+								<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value">
 									<xsl:text>&amp;limit=</xsl:text>
-									<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'limit']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'limit']/ui:value"/>
 								</xsl:if>
-								<xsl:if test="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value">
+								<xsl:if test="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value">
 									<xsl:text>&amp;group_nid=</xsl:text>
-									<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = 'group_nid']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = 'group_nid']/ui:value"/>
 								</xsl:if>
-								<xsl:if test="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value">
+								<xsl:if test="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value">
 									<xsl:text>&amp;filter=</xsl:text>
-									<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'filter']/luna:value"/>
+									<xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'filter']/ui:value"/>
 								</xsl:if>
 							</xsl:attribute>
 							<xsl:value-of select="@value"/>
@@ -400,7 +400,7 @@
 	<!-- {{{ csrf-input: anti-CSRF token, first child of every state-changing form -->
 	<xsl:template name="csrf-input">
 		<input type="hidden" name="csrf_token">
-			<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/></xsl:attribute>
+			<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/ui:data[ui:lid = 'csrf_token']/ui:value"/></xsl:attribute>
 		</input>
 	</xsl:template>
 	<!-- }}} -->
@@ -419,13 +419,13 @@
 		<xsl:param name="class"/>
 		<xsl:param name="value">
 			<xsl:choose>
-				<xsl:when test="/rdf:RDF/luna:request/luna:lid = $name and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
-					<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = $name]/luna:value"/>
+				<xsl:when test="/rdf:RDF/ui:request/ui:lid = $name and not(/rdf:RDF/ui:message[ui:code = 'okay'])">
+					<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = $name]/ui:value"/>
 				</xsl:when>
-				<xsl:when test="/rdf:RDF/luna:request/luna:lid = $name and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
-					<xsl:value-of select="/rdf:RDF/luna:request[luna:lid = $name]/luna:value"/>
+				<xsl:when test="/rdf:RDF/ui:request/ui:lid = $name and /rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify'">
+					<xsl:value-of select="/rdf:RDF/ui:request[ui:lid = $name]/ui:value"/>
 				</xsl:when>
-				<xsl:when test="/rdf:RDF/luna:request[luna:lid = 'submit'] and $class = 'checkbox'">
+				<xsl:when test="/rdf:RDF/ui:request[ui:lid = 'submit'] and $class = 'checkbox'">
 					<xsl:text>0</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
@@ -477,29 +477,29 @@
 						</xsl:if>
 						<xsl:for-each select="$foreach">
 							<!--xsl:choose>
-								<xsl:when test="$mode = 'data'"><xsl:sort select="luna:lid"/></xsl:when>
+								<xsl:when test="$mode = 'data'"><xsl:sort select="ui:lid"/></xsl:when>
 								<xsl:otherwise><xsl:sort select="schema:name"/></xsl:otherwise>
 							</xsl:choose-->
 							<xsl:sort select="schema:name"/>
 							<option>
 								<xsl:choose>
 									<xsl:when test="$mode = 'data'">
-										<xsl:variable name="dataname"><xsl:value-of select="luna:lid"/></xsl:variable>
-										<xsl:variable name="datavalue"><xsl:value-of select="luna:value"/></xsl:variable>
-										<xsl:attribute name="label"><xsl:value-of select="luna:lid"/></xsl:attribute>
+										<xsl:variable name="dataname"><xsl:value-of select="ui:lid"/></xsl:variable>
+										<xsl:variable name="datavalue"><xsl:value-of select="ui:value"/></xsl:variable>
+										<xsl:attribute name="label"><xsl:value-of select="ui:lid"/></xsl:attribute>
 										<xsl:attribute name="value"><xsl:value-of select="$dataname"/></xsl:attribute>
 										<xsl:choose>
 											<xsl:when test="$dataname = $required">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
-											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $dataname) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
+											<xsl:when test="(/rdf:RDF/ui:request[starts-with(ui:lid, $dataname)]/ui:value = $dataname) and not(/rdf:RDF/ui:message[ui:code = 'okay'])">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
-											<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $dataname)]/luna:value = $dataname) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
+											<xsl:when test="(/rdf:RDF/ui:request[starts-with(ui:lid, $dataname)]/ui:value = $dataname) and /rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify'">
 												<xsl:attribute name="selected">selected</xsl:attribute>
 											</xsl:when>
 											<xsl:otherwise>
-												<xsl:if test="not(/rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify') or (/rdf:RDF/luna:request[luna:lid = 'batch_submit'] = '1')">
+												<xsl:if test="not(/rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify') or (/rdf:RDF/ui:request[ui:lid = 'batch_submit'] = '1')">
 													<xsl:if test="$dataname = $default-value">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:if>
@@ -518,14 +518,14 @@
 													<xsl:when test="schema:identifier = $required">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = schema:identifier) and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
+													<xsl:when test="(/rdf:RDF/ui:request[starts-with(ui:lid, $name)]/ui:value = schema:identifier) and not(/rdf:RDF/ui:message[ui:code = 'okay'])">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="(/rdf:RDF/luna:request[starts-with(luna:lid, $name)]/luna:value = schema:identifier) and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
+													<xsl:when test="(/rdf:RDF/ui:request[starts-with(ui:lid, $name)]/ui:value = schema:identifier) and /rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify'">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
 													<xsl:otherwise>
-														<xsl:if test="not(/rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify') or (/rdf:RDF/luna:request[luna:lid = 'batch_submit'] = '1')">
+														<xsl:if test="not(/rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify') or (/rdf:RDF/ui:request[ui:lid = 'batch_submit'] = '1')">
 															<xsl:variable name="node_uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
 															<xsl:if test="not($default-value = '0')">
 																<xsl:for-each select="$default-value">
@@ -540,13 +540,13 @@
 											</xsl:when>
 											<xsl:otherwise>
 												<xsl:choose>
-													<xsl:when test="/rdf:RDF/luna:request[luna:lid = $name]/luna:value = $option_nid and not(/rdf:RDF/luna:message[luna:code = 'okay'])">
+													<xsl:when test="/rdf:RDF/ui:request[ui:lid = $name]/ui:value = $option_nid and not(/rdf:RDF/ui:message[ui:code = 'okay'])">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="/rdf:RDF/luna:request[luna:lid = $name]/luna:value = $option_nid and /rdf:RDF/luna:request[luna:lid = 'mode']/luna:value = 'modify'">
+													<xsl:when test="/rdf:RDF/ui:request[ui:lid = $name]/ui:value = $option_nid and /rdf:RDF/ui:request[ui:lid = 'mode']/ui:value = 'modify'">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
-													<xsl:when test="$default-value = $option_nid and not(/rdf:RDF/luna:message)">
+													<xsl:when test="$default-value = $option_nid and not(/rdf:RDF/ui:message)">
 														<xsl:attribute name="selected">selected</xsl:attribute>
 													</xsl:when>
 												</xsl:choose>
@@ -592,13 +592,13 @@
 			<xsl:attribute name="size">1</xsl:attribute>
 			<xsl:attribute name="id">quickjump</xsl:attribute>
 			<xsl:attribute name="data-navigate">1</xsl:attribute>
-			<option label="" value=""><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Jump to page']"/></option>
+			<option label="" value=""><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Jump to page']"/></option>
 			<xsl:for-each select="/rdf:RDF/schema:WebPage">
 				<xsl:if test="/node/user/accessible-levels//level = @level_id">
 					<option>
 						<xsl:attribute name="label"><xsl:value-of select="@name"/></xsl:attribute>
 						<xsl:attribute name="value">
-							<xsl:value-of select="luna:data[luna:lid = 'site_relative_url']"/><xsl:value-of select="@luna:url"/>
+							<xsl:value-of select="ui:data[ui:lid = 'site_relative_url']"/><xsl:value-of select="@luna:url"/>
 						</xsl:attribute>
 						<xsl:value-of select="@name"/>
 					</option>
@@ -657,7 +657,7 @@
 
 	<xsl:template name="sitemap">
 		<div id="SiteMap">
-			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Sitemap']/luna:value"/></h2>
+			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Sitemap']/ui:value"/></h2>
 			<div class="box-content">
 				<ul class="tv">
 					<xsl:for-each select="/rdf:RDF/schema:WebPage[luna:lid = 'root']">
@@ -722,7 +722,7 @@
 
 	<xsl:template name="search">
 		<div id="Search" class="box">
-			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Search']/luna:value"/></h2>
+			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Search']/ui:value"/></h2>
 			<div class="box-content off">
 				<form method="post" id="SearchForm">
 					<xsl:attribute name="action">
@@ -732,7 +732,7 @@
 						<p>
 							<input type="text" name="lunasearchquery" id="lunasearchquery" value=""/>
 							<input type="submit" name="lunasearchsubmit" id="lunasearchsubmit" class="submit off">
-								<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Search']/luna:value"/></xsl:attribute>
+								<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/ui:vocabulary[ui:lid = 'Search']/ui:value"/></xsl:attribute>
 							</input>
 						</p>
 						<div id="SearchTarget"></div>

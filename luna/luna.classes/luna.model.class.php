@@ -79,6 +79,7 @@ class lunaModel {
 	 *  `xmlns:luna="…"` declarations must match this exactly, and the triplestore
 	 *  must be re-projected (`make resync-triplestore`) whenever it changes. */
 	const LUNA_NS = 'https://jeromev.github.io/LunarSystem/ontology#';
+	const LUNA_RENDER_NS = 'https://jeromev.github.io/LunarSystem/render#'; // UI render-model (NOT content)
 	public $lunaNameSpace = self::LUNA_NS;
 	// {{{ singleton()
 	/**
@@ -122,6 +123,7 @@ class lunaModel {
 				'owl' => 'http://www.w3.org/2002/07/owl#',
 				'schema' => 'https://schema.org/',
 				'luna' => $this->lunaNameSpace,
+				'ui' => self::LUNA_RENDER_NS, // UI render-model: vocabulary/data/pager/request/message/log/lang/...
 			),
 			'serializer_prettyprint_containers' => 1,
 			'serializer_type_nodes' => 1,
@@ -2039,19 +2041,19 @@ class lunaModel {
 			if (!isset($var['lid']) || !isset($var['value'])) { return false; }
 			$nodes = array();
 			$lid = lunaTools::prepare_lid($var['lid']);
-			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna'].'lid'][0]['value'] = $var['lid'];
-			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna'].'lid'][0]['type'] = 'bnode';
-			if (isset($var['lang'])) { $nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna'].'lid'][0]['lang'] = $var['lang']; }
+			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui'].'lid'][0]['value'] = $var['lid'];
+			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui'].'lid'][0]['type'] = 'bnode';
+			if (isset($var['lang'])) { $nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui'].'lid'][0]['lang'] = $var['lang']; }
 			if (is_array($var['value'])) {
 				foreach($var['value'] as $k => $v) {
-					$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna']."$k"][0]['value'] = "$v";
-					$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna']."$k"][0]['type'] = 'bnode';
+					$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui']."$k"][0]['value'] = "$v";
+					$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui']."$k"][0]['type'] = 'bnode';
 				}
 			} else {
-				$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna']."value"][0]['value'] = $var['value'];
-				$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['luna']."value"][0]['type'] = 'bnode';
+				$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui']."value"][0]['value'] = $var['value'];
+				$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['ui']."value"][0]['type'] = 'bnode';
 			}
-			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['luna'].$var['type'];
+			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['rdf'].'type'][0]['value'] = $this->conf['ns']['ui'].$var['type'];
 			$nodes['_:'.$var['type'].'-'.$lid][$this->conf['ns']['rdf'].'type'][0]['type'] = 'uri';
 			return $nodes;
 		}

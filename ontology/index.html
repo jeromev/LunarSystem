@@ -23,30 +23,27 @@
 &nbsp;·&nbsp; <a href="ontology.ttl">Turtle</a>
 &nbsp;·&nbsp; <a href="https://github.com/jeromev/LunarSystem">code</a></p>
 
-<p>Most <a href="https://github.com/jeromev/LunarSystem">LunarSystem</a> content is published
-with standard vocabularies — <a href="https://schema.org/">schema.org</a>, Dublin Core, FOAF,
-SIOC, PROV-O. This namespace covers <em>only</em> the CMS-internal system predicates that have
-no standard equivalent. <span class="muted">Draft — terms may change.</span></p>
+<p><a href="https://github.com/jeromev/LunarSystem">LunarSystem</a> publishes content with
+standard vocabularies — <a href="https://schema.org/">schema.org</a>, Dublin Core, FOAF, SIOC,
+PROV-O. This namespace defines <em>only</em> the system predicates that have no standard
+equivalent. As projected into the triplestore, the whole custom vocabulary is the three terms
+below; everything else is standard (<code>schema:WebPage</code>/<code>Article</code>,
+<code>foaf:Person</code>, <code>schema:name</code>/<code>identifier</code>/<code>headline</code>/<code>articleBody</code>/<code>isPartOf</code>/<code>hasPart</code>/<code>inLanguage</code>,
+<code>foaf:name</code>). <span class="muted">Draft — terms may change.</span></p>
 
-<h2>Core terms (in the triplestore)</h2>
+<h2>Terms</h2>
 <table>
   <tr><th>Term</th><th>Label</th><th>Meaning</th></tr>
-  <tr><td><code>luna:isActive</code></td><td>is active</td><td>Whether a node (page, level, group, user, text, mod) is active/published (1 or 0).</td></tr>
-  <tr><td><code>luna:level</code></td><td>access level</td><td>Links a node to the access level that gates it.</td></tr>
-  <tr><td><code>luna:content</code></td><td>content</td><td>The raw (HTML) body of a text block, as authored.</td></tr>
+  <tr><td><code>luna:isActive</code></td><td>is active</td><td>Whether a node (page, text, level, group, user, module) is active/published. A boolean flag, currently encoded as 1 / 0.</td></tr>
+  <tr><td><code>luna:level</code></td><td>access level</td><td>Relates a node to the access level that gates it; the object is an access-level resource (e.g. <code>…/id/level_public</code>).</td></tr>
+  <tr><td><code>luna:content</code></td><td>content</td><td>The raw HTML body of a text block, as authored. Standard consumers can read the same value from <code>schema:articleBody</code> / <code>schema:text</code>.</td></tr>
 </table>
 
-<h2>Additional system predicates (serialized model)</h2>
-<p class="muted">Emitted in <code>?output=xml/n3/json</code>; the public-facing equivalents are usually schema.org.</p>
-<table>
-  <tr><th>Term</th><th>Label</th><th>Meaning</th></tr>
-  <tr><td><code>luna:nid</code></td><td>node id</td><td>Numeric primary identifier. Also <code>schema:identifier</code>.</td></tr>
-  <tr><td><code>luna:lid</code></td><td>literal id</td><td>Slug-like identifier (user email, page path segment). Also <code>schema:name</code>.</td></tr>
-  <tr><td><code>luna:alias</code></td><td>alias</td><td>Resolved URL path of a page.</td></tr>
-</table>
-<p class="muted">The serializer also emits <code>luna:page</code>, <code>luna:text</code>,
-<code>luna:save_time</code>, and the legacy snake-case <code>luna:is_active</code> (the
-triplestore form is <code>luna:isActive</code>); these are internal and may be normalised later.</p>
+<p class="muted"><strong>Note.</strong> The legacy <code>?output=xml/n3/json</code> serialization
+mirrors the app's internal XSLT model and emits extra <code>luna:</code> terms
+(<code>nid</code>, <code>lid</code>, <code>alias</code>, <code>is_active</code>) plus a
+non-standard <code>owl:isChildOf</code>. Those are implementation detail of the rendering
+pipeline, not part of this vocabulary — the canonical RDF is the triplestore projection above.</p>
 
 <p class="muted">Resource (instance) IRIs are a separate concern — they follow the deployment
 host (<code>luna::$site_uri</code>, e.g. <code>http://localhost:8080/id/…</code>), not this

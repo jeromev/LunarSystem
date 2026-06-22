@@ -4,56 +4,39 @@
 # Single source of truth in code: lunaModel::LUNA_NS (luna/luna.classes/luna.model.class.php);
 # the 16 XSLT `xmlns:luna="…"` declarations and semantic/ontop/mapping.ttl must match it.
 #
-# Most LunarSystem content is published with standard vocabularies — schema.org,
-# Dublin Core, FOAF, SIOC, PROV-O. This namespace covers ONLY the CMS-internal system
-# predicates that have no standard equivalent. Draft: terms may change.
+# LunarSystem publishes content with standard vocabularies — schema.org, Dublin Core, FOAF,
+# SIOC, PROV-O. As projected into the triplestore (R2RML + the model's write-through), the
+# ENTIRE custom vocabulary is the three terms below; everything else is standard:
+# schema:WebPage / schema:Article / foaf:Person, and schema:name / schema:identifier /
+# schema:headline / schema:articleBody / schema:isPartOf / schema:hasPart / schema:inLanguage /
+# foaf:name. That minimalism is deliberate — reuse standards, invent as little as possible.
+#
+# (The legacy `?output=xml/n3/json` serialization mirrors the app's internal XSLT model and
+#  emits extra luna: terms — nid, lid, alias, is_active — plus a non-standard owl:isChildOf.
+#  Those are implementation detail of the rendering pipeline, NOT part of this vocabulary; the
+#  canonical RDF is the triplestore projection described here.)
 
-@prefix luna:    <https://jeromev.github.io/LunarSystem/ontology#> .
-@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl:     <http://www.w3.org/2002/07/owl#> .
-@prefix schema:  <https://schema.org/> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix luna: <https://jeromev.github.io/LunarSystem/ontology#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
 
 <https://jeromev.github.io/LunarSystem/ontology#>
     a owl:Ontology ;
     rdfs:label "LunarSystem vocabulary" ;
-    rdfs:comment "System predicates for the LunarSystem CMS that have no schema.org / Dublin Core / FOAF / SIOC / PROV-O equivalent. Draft." ;
+    rdfs:comment "The small set of system predicates LunarSystem uses where no schema.org / Dublin Core / FOAF / SIOC / PROV-O term fits. Draft." ;
     rdfs:seeAlso <https://github.com/jeromev/LunarSystem> ;
     owl:versionInfo "draft" .
 
-# --- Core, queryable terms (projected by the R2RML mapping into the triplestore) ---
-
 luna:isActive a rdf:Property, owl:DatatypeProperty ;
     rdfs:label "is active" ;
-    rdfs:comment "Whether a node (page, level, group, user, text, mod) is active/published (1 or 0)." ;
-    rdfs:range xsd:boolean .
+    rdfs:comment "Whether a node (page, text, level, group, user, module) is active/published — a boolean flag, currently encoded as 1 (active) or 0 (inactive)." .
 
 luna:level a rdf:Property, owl:ObjectProperty ;
     rdfs:label "access level" ;
-    rdfs:comment "Links a node to the access level that gates it." .
+    rdfs:comment "Relates a node to the access level that gates it; the object is an access-level resource (e.g. …/id/level_public)." .
 
 luna:content a rdf:Property, owl:DatatypeProperty ;
     rdfs:label "content" ;
-    rdfs:comment "The raw (HTML) body of a text block, as authored." ;
-    rdfs:range schema:Text .
-
-# --- Additional system predicates emitted in the serialized model (?output=xml/n3/json) ---
-# These identify a node within the relational store; the public-facing equivalents are
-# usually schema.org (schema:identifier, schema:name, schema:url …).
-
-luna:nid a rdf:Property, owl:DatatypeProperty ;
-    rdfs:label "node id" ;
-    rdfs:comment "Numeric primary identifier of a node. Also published as schema:identifier." .
-
-luna:lid a rdf:Property, owl:DatatypeProperty ;
-    rdfs:label "literal id" ;
-    rdfs:comment "Stable, slug-like literal identifier of a node (an email for a user, a path segment for a page). Also published as schema:name." .
-
-luna:alias a rdf:Property, owl:DatatypeProperty ;
-    rdfs:label "alias" ;
-    rdfs:comment "Resolved URL path of a page." .
-
-# Note: the in-memory serializer also emits luna:page, luna:text and luna:save_time, and the
-# legacy snake_case luna:is_active (the triplestore form is luna:isActive). These are internal
-# and may be normalised in a later release.
+    rdfs:comment "The raw HTML body of a text block, as authored. Standard consumers can read the same value from schema:articleBody / schema:text." ;
+    rdfs:range rdfs:Literal .

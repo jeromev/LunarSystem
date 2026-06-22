@@ -58,6 +58,19 @@
     grid-area: content;
     position: relative;
     padding: bg.v() 0;
+    @include bg.scale(
+      "max-width",
+      (
+        "xs": bg.h(scales.$xs-max-content-width),
+        "s": bg.h(scales.$s-max-content-width),
+        "m": bg.h(scales.$m-max-content-width),
+        "l": bg.h(scales.$l-max-content-width),
+        "xl": bg.h(scales.$xl-max-content-width),
+        "xxl": bg.h(scales.$xxl-max-content-width),
+        "ul": bg.h(scales.$ul-max-content-width),
+      )
+    );
+    margin: 0 auto;
 
     #Content-header h1 {
       &::before,

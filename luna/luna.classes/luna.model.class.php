@@ -2622,7 +2622,7 @@ class lunaModel {
 		// type-value remap: pages/articles get the standard schema.org class; group/level/mod keep
 		// their luna: type (no standard equivalent); users are already foaf:Person.
 		$typemap = array($luna.'page' => $schema.'WebPage', $luna.'text' => $schema.'Article');
-		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody', $rdfs.'label' => $schema.'name', $luna.'page' => $schema.'isPartOf');
+		$predmap = array($luna.'nid' => $schema.'identifier', $rdfs.'label' => $schema.'name', $luna.'page' => $schema.'isPartOf');
 		$base   = rtrim(luna::$site_uri, '/').'/id/';
 		$prefix = $this->node_path.'/';
 		$map = array();

@@ -171,7 +171,7 @@
 										<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'content']/luna:value"/>
 										<xsl:with-param name="class">big</xsl:with-param>
 										<xsl:with-param name="wysiwyg">1</xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/schema:Article/schema:articleBody"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/schema:Article/luna:content"/></xsl:with-param>
 									</xsl:call-template>
 								</div>
 								<div class="col">

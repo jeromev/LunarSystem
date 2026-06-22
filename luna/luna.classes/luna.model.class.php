@@ -2618,7 +2618,11 @@ class lunaModel {
 		$rdfs   = $this->conf['ns']['rdfs'];
 		// reuse standard schema.org predicates where one exists (luna: kept only for the
 		// genuinely app-specific: lid/slug, isActive, level, alias).
-		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody', $rdfs.'label' => $schema.'name');
+		$rdf    = $this->conf['ns']['rdf'];
+		// type-value remap: pages/articles get the standard schema.org class; group/level/mod keep
+		// their luna: type (no standard equivalent); users are already foaf:Person.
+		$typemap = array($luna.'page' => $schema.'WebPage', $luna.'text' => $schema.'Article');
+		$predmap = array($luna.'nid' => $schema.'identifier', $luna.'content' => $schema.'articleBody', $rdfs.'label' => $schema.'name', $luna.'page' => $schema.'isPartOf');
 		$base   = rtrim(luna::$site_uri, '/').'/id/';
 		$prefix = $this->node_path.'/';
 		$map = array();
@@ -2634,6 +2638,7 @@ class lunaModel {
 			foreach ($node as $pred => $vals) {
 				$npred = isset($predmap[$pred])? $predmap[$pred] : $pred;
 				foreach ($vals as $v) {
+					if ($pred === $rdf.'type' && isset($typemap[$v['value']])) { $v['value'] = $typemap[$v['value']]; }
 					if (isset($v['type'], $v['value']) && $v['type'] === 'uri' && isset($map[$v['value']])) { $v['value'] = $map[$v['value']]; }
 					$out[$nuri][$npred][] = $v;
 				}

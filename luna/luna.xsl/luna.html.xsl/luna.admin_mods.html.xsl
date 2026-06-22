@@ -76,10 +76,10 @@
 											<xsl:with-param name="name">add_mod_pages</xsl:with-param>
 											<xsl:with-param name="type">select</xsl:with-param>
 											<xsl:with-param name="class">large</xsl:with-param>
-											<xsl:with-param name="foreach" select="/rdf:RDF/luna:page"/>
+											<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
 											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages using the module']/luna:value"/>
 											<xsl:with-param name="multiple">yes</xsl:with-param>
-											<xsl:with-param name="size" select="count(/rdf:RDF/luna:page)"/>
+											<xsl:with-param name="size" select="count(/rdf:RDF/schema:WebPage)"/>
 										</xsl:call-template>
 										<br/>
 									</div>
@@ -151,11 +151,11 @@
 										<xsl:with-param name="name">modify_mod_pages</xsl:with-param>
 										<xsl:with-param name="type">select</xsl:with-param>
 										<xsl:with-param name="class">large</xsl:with-param>
-										<xsl:with-param name="foreach" select="/rdf:RDF/luna:page"/>
+										<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Pages using the module']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="multiple">yes</xsl:with-param>
-										<xsl:with-param name="size"><xsl:value-of select="count(/rdf:RDF/luna:page)"/></xsl:with-param>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:mod[schema:identifier = $modify_item_nid]/luna:page"/>
+										<xsl:with-param name="size"><xsl:value-of select="count(/rdf:RDF/schema:WebPage)"/></xsl:with-param>
+										<xsl:with-param name="default-value" select="/rdf:RDF/luna:mod[schema:identifier = $modify_item_nid]/schema:isPartOf"/>
 									</xsl:call-template>
 									<br />
 								</div>

@@ -64,7 +64,7 @@
 										<xsl:call-template name="forminput">
 											<xsl:with-param name="name">add_parent_nid</xsl:with-param>
 											<xsl:with-param name="type">select</xsl:with-param>
-											<xsl:with-param name="foreach" select="/rdf:RDF/luna:page"/>
+											<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
 											<xsl:with-param name="label" select="/rdf:RDF/luna:vocabulary[luna:lid = 'Parent page']/luna:value"/>
 										</xsl:call-template>
 										<br />
@@ -102,8 +102,8 @@
 				<xsl:call-template name="pageslist"/>
 			</xsl:if>
 			<xsl:if test="not($modify_item_nid = '')">
-			<xsl:variable name="parent-resource" select="/rdf:RDF/luna:page[schema:identifier = $modify_item_nid]/schema:isPartOf/@rdf:resource"/>
-			<xsl:variable name="level-resource" select="/rdf:RDF/luna:page[schema:identifier = $modify_item_nid]/luna:level/@rdf:resource"/>
+			<xsl:variable name="parent-resource" select="/rdf:RDF/schema:WebPage[schema:identifier = $modify_item_nid]/schema:isPartOf/@rdf:resource"/>
+			<xsl:variable name="level-resource" select="/rdf:RDF/schema:WebPage[schema:identifier = $modify_item_nid]/luna:level/@rdf:resource"/>
 			<div class="box">
 				<form method="post" id="Modifypage">
 					<xsl:attribute name="action"><xsl:value-of select="$pageurl"/></xsl:attribute>
@@ -136,15 +136,15 @@
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_page_lid</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Literal identifier']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $modify_item_nid]/luna:lid"/></xsl:with-param>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/schema:WebPage[schema:identifier = $modify_item_nid]/luna:lid"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
 									<xsl:call-template name="forminput">
 										<xsl:with-param name="name">modify_parent_nid</xsl:with-param>
 										<xsl:with-param name="type">select</xsl:with-param>
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Parent page']/luna:value"/></xsl:with-param>
-										<xsl:with-param name="foreach" select="/rdf:RDF/luna:page"/>
-										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/luna:page[@rdf:about = $parent-resource]/schema:identifier"/></xsl:with-param>
+										<xsl:with-param name="foreach" select="/rdf:RDF/schema:WebPage"/>
+										<xsl:with-param name="default-value"><xsl:value-of select="/rdf:RDF/schema:WebPage[@rdf:about = $parent-resource]/schema:identifier"/></xsl:with-param>
 									</xsl:call-template>
 									<br />
 									<xsl:call-template name="forminput">
@@ -165,7 +165,7 @@
 										<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Modules to use with this page']/luna:value"/></xsl:with-param>
 										<xsl:with-param name="multiple">yes</xsl:with-param>
 										<xsl:with-param name="size"><xsl:value-of select="count(/rdf:RDF/luna:mod)"/></xsl:with-param>
-										<xsl:with-param name="default-value" select="/rdf:RDF/luna:page[schema:identifier = $modify_item_nid]/luna:mod"/>
+										<xsl:with-param name="default-value" select="/rdf:RDF/schema:WebPage[schema:identifier = $modify_item_nid]/luna:mod"/>
 									</xsl:call-template>
 									<br />
 								</div>

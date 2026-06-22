@@ -593,7 +593,7 @@
 			<xsl:attribute name="id">quickjump</xsl:attribute>
 			<xsl:attribute name="data-navigate">1</xsl:attribute>
 			<option label="" value=""><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Jump to page']"/></option>
-			<xsl:for-each select="/rdf:RDF/luna:page">
+			<xsl:for-each select="/rdf:RDF/schema:WebPage">
 				<xsl:if test="/node/user/accessible-levels//level = @level_id">
 					<option>
 						<xsl:attribute name="label"><xsl:value-of select="@name"/></xsl:attribute>
@@ -660,7 +660,7 @@
 			<h2 class="box-handle collapsed"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Sitemap']/luna:value"/></h2>
 			<div class="box-content">
 				<ul class="tv">
-					<xsl:for-each select="/rdf:RDF/luna:page[luna:lid = 'root']">
+					<xsl:for-each select="/rdf:RDF/schema:WebPage[luna:lid = 'root']">
 						<xsl:variable name="root"><xsl:value-of select="@rdf:about"/></xsl:variable>
 						<li>
 							<a>
@@ -669,9 +669,9 @@
 								</xsl:attribute>
 								<xsl:value-of select="schema:name"/>
 							</a>
-							<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $root]) &gt; 0">
+							<xsl:if test="count(/rdf:RDF/schema:WebPage/schema:isPartOf[@rdf:resource = $root]) &gt; 0">
 								<ul class="tv">
-									<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $root and @rdf:about != $root]">
+									<xsl:for-each select="/rdf:RDF/schema:WebPage[schema:isPartOf/@rdf:resource = $root and @rdf:about != $root]">
 										<xsl:sort select="schema:name"/>
 										<xsl:variable name="child"><xsl:value-of select="@rdf:about"/></xsl:variable>
 										<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
@@ -698,9 +698,9 @@
 	<xsl:template name="recursesitemap">
 		<xsl:param name="index">0</xsl:param>
 		<xsl:if test="not($index = 0) and not($index = '')">
-			<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $index]) &gt; 0">
+			<xsl:if test="count(/rdf:RDF/schema:WebPage/schema:isPartOf[@rdf:resource = $index]) &gt; 0">
 				<ul class="tv">
-					<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $index]">
+					<xsl:for-each select="/rdf:RDF/schema:WebPage[schema:isPartOf/@rdf:resource = $index]">
 						<xsl:sort select="schema:name"/>
 						<xsl:variable name="childindex"><xsl:value-of select="@rdf:about"/></xsl:variable>
 						<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">

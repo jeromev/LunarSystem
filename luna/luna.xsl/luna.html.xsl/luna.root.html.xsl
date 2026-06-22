@@ -17,7 +17,7 @@
 	<xsl:include href="./luna.header.html.xsl"/>
 
 	<xsl:template name="page">
-		<xsl:for-each select="/rdf:RDF/luna:text[luna:page/@rdf:resource = /rdf:RDF/luna:page[schema:identifier = $masternodenid]/@rdf:about and substring-before(concat(schema:articleBody/@xml:lang,'-'),'-') = substring-before(concat($lang,'-'),'-')]">
+		<xsl:for-each select="/rdf:RDF/schema:Article[schema:isPartOf/@rdf:resource = /rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/@rdf:about and substring-before(concat(schema:articleBody/@xml:lang,'-'),'-') = substring-before(concat($lang,'-'),'-')]">
 			<div class="box text">
 				<xsl:if test="normalize-space(schema:name) != '' and normalize-space(schema:name) != '0'">
 					<h2>

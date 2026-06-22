@@ -195,7 +195,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -224,7 +224,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -253,7 +253,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -282,7 +282,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -311,7 +311,7 @@
 											<a>
 												<xsl:attribute name="href">
 													<xsl:call-template name="link">
-														<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+														<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 														<xsl:with-param name="options">
 															<xsl:text>start=</xsl:text>
 															<xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'start']/luna:value"/>
@@ -363,7 +363,7 @@
 												<a>
 													<xsl:attribute name="href">
 														<xsl:call-template name="link">
-															<xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'admin_users']/luna:alias"/>
+															<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[luna:lid = 'admin_users']/luna:alias"/>
 															<xsl:with-param name="options">
 																<xsl:text>user_nid=</xsl:text>
 																<xsl:value-of select="schema:identifier"/>

@@ -24,9 +24,9 @@
 	<xsl:variable name="site_uri"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'site_uri']/luna:value/@rdf:resource"/></xsl:variable>
 	<xsl:variable name="lang"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'lang']/luna:value"/></xsl:variable>
 	<xsl:variable name="masternodelid"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'lid']/luna:value"/></xsl:variable>
-	<xsl:variable name="masternodenid"><xsl:value-of select="/rdf:RDF/luna:page[luna:lid = $masternodelid]/schema:identifier"/></xsl:variable>
+	<xsl:variable name="masternodenid"><xsl:value-of select="/rdf:RDF/schema:WebPage[luna:lid = $masternodelid]/schema:identifier"/></xsl:variable>
 	<xsl:variable name="masternodeurl">
-		<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/></xsl:call-template>
+		<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/></xsl:call-template>
 	</xsl:variable>
 	<xsl:variable name="site_relative_url"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'site_relative_url']/luna:value"/></xsl:variable>
 	<xsl:variable name="pageurl"><xsl:value-of select="$masternodeurl"/></xsl:variable>
@@ -48,7 +48,7 @@
 				<xsl:attribute name="profile"><xsl:text>http://ns.inria.fr/grddl/rdfa/</xsl:text></xsl:attribute>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 				<title>
-					<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/schema:name"/>
+					<xsl:value-of select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/schema:name"/>
 					<xsl:text> · </xsl:text>
 					<xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/>
 				</title>
@@ -58,7 +58,7 @@
 				<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"/>
 				<meta name="DC.Title">
 					<xsl:attribute name="content">
-						<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/schema:name"/>
+						<xsl:value-of select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/schema:name"/>
 						<xsl:text> · </xsl:text>
 						<xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/>
 					</xsl:attribute>
@@ -84,7 +84,7 @@
 				<link rel="alternate" type="application/rdf+xml">
 					<xsl:attribute name="href">
 						<xsl:call-template name="link">
-							<xsl:with-param name="alias" select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/luna:alias"/>
+							<xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/luna:alias"/>
 							<xsl:with-param name="options">
 								<xsl:text>output=xml</xsl:text>
 							</xsl:with-param>
@@ -104,7 +104,7 @@
 						<h1>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'root']/luna:alias"/></xsl:call-template>
+									<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[luna:lid = 'root']/luna:alias"/></xsl:call-template>
 								</xsl:attribute>
 								<span id="SiteTitle"><xsl:value-of select="luna:data[luna:lid = 'sitename']/luna:value"/></span>
 							</a>
@@ -114,7 +114,7 @@
 								<xsl:attribute name="href">
 									<xsl:value-of select="$pageurl"/>
 								</xsl:attribute>
-								<xsl:value-of select="/rdf:RDF/luna:page[schema:identifier = $masternodenid]/schema:name"/>
+								<xsl:value-of select="/rdf:RDF/schema:WebPage[schema:identifier = $masternodenid]/schema:name"/>
 							</a>
 						</h1>
 					</header>
@@ -140,9 +140,9 @@
 										<xsl:when test="$guest = '1'">
 											<a>
 												<xsl:attribute name="href">
-													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'login']/luna:alias"/></xsl:call-template>
+													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[luna:lid = 'login']/luna:alias"/></xsl:call-template>
 												</xsl:attribute>
-												<xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'login']/schema:name"/>
+												<xsl:value-of select="/rdf:RDF/schema:WebPage[luna:lid = 'login']/schema:name"/>
 											</a>
 										</xsl:when>
 										<xsl:otherwise>
@@ -150,12 +150,12 @@
 											     never lands in a URL, browser history, or the server access log. -->
 											<form method="post" class="logout-form">
 												<xsl:attribute name="action">
-													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/luna:page[luna:lid = 'logout']/luna:alias"/></xsl:call-template>
+													<xsl:call-template name="link"><xsl:with-param name="alias" select="/rdf:RDF/schema:WebPage[luna:lid = 'logout']/luna:alias"/></xsl:call-template>
 												</xsl:attribute>
 												<input type="hidden" name="csrf_token">
 													<xsl:attribute name="value"><xsl:value-of select="/rdf:RDF/luna:data[luna:lid = 'csrf_token']/luna:value"/></xsl:attribute>
 												</input>
-												<button type="submit" class="linkbutton"><xsl:value-of select="/rdf:RDF/luna:page[luna:lid = 'logout']/schema:name"/></button>
+												<button type="submit" class="linkbutton"><xsl:value-of select="/rdf:RDF/schema:WebPage[luna:lid = 'logout']/schema:name"/></button>
 											</form>
 										</xsl:otherwise>
 									</xsl:choose>

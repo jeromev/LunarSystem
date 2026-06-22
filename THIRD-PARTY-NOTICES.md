@@ -1,22 +1,22 @@
 # Third-party notices
 
 LunarSystem itself is licensed under the **GNU GPL v2** (see [LICENSE](LICENSE)).
-It bundles the following third-party libraries under `luna/luna.lib/`.
-Each retains its own license and copyright; the per-file headers are the
-authoritative statement. They are vendored (committed in-tree, no Composer/PEAR
-install) because the app originated in the 2006–2010 PHP 5.x era; it now runs on
-PHP 8.3 / MySQL 8.0 (the database layer was migrated from PEAR MDB2 to PDO in
-0.5.0-alpha, so MDB2 is no longer bundled; PEAR **Log** was likewise removed in
-0.8.27-alpha — its `PEAR_LOG_*` priority constants are now defined inline in
-`luna.classes/luna.log.class.php`).
+It bundles third-party code two ways: legacy components vendored in-tree under
+`luna/luna.lib/` (committed, no installer — from the 2006–2010 PHP 5.x era), and, as
+of 0.8.28-alpha, one **Composer** dependency under `vendor/` (committed too, so the app
+stays clone-and-run). Each retains its own license and copyright; the per-file headers
+are authoritative. The app now runs on PHP 8.3 / MySQL 8.0: the DB layer moved from PEAR
+MDB2 to PDO in 0.5.0-alpha (MDB2 dropped); PEAR **Log** was removed in 0.8.27-alpha (its
+`PEAR_LOG_*` constants inlined in `luna.classes/luna.log.class.php`); and PEAR
+**HTML_Safe** + **XML_HTMLSax3** were replaced by **HTMLPurifier** (Composer) in
+0.8.28-alpha.
 
 | Component | Location | Upstream | License (per file headers / upstream) |
 |---|---|---|---|
-| PEAR Base (`PEAR.php`, `PEAR5.php`) | `luna/luna.lib/` | pear.php.net | New BSD License (© 1997–2009 The Authors / PHP Group) — retained **only** as the lazy error-path fallback that Cache_Lite (`raiseError`) and XML_HTMLSax3 (`set_object`/`set_option`) `include` on failure; goes away when those do. |
+| PEAR Base (`PEAR.php`, `PEAR5.php`) | `luna/luna.lib/` | pear.php.net | New BSD License (© 1997–2009 The Authors / PHP Group) — retained **only** as Cache_Lite's lazy error-path fallback (the `raiseError()` it `include`s on a cache failure); goes away when Cache_Lite does. |
 | PEAR **Cache_Lite** | `luna/luna.lib/Cache/` | pear.php.net/package/Cache_Lite | LGPL (© Fabien Marty) |
-| **XML_HTMLSax3** (HTML SAX parser; HTML_Safe's dependency) | `luna/luna.lib/XML/` | pear.php.net/package/XML_HTMLSax3 | PHP License v3.0 (© 1997–2002 The PHP Group; A. Zhukov, H. Fuecks) |
-| **HTML_Safe** (input sanitiser) | `luna/luna.lib/HTML/Safe.php` | pear.php.net/package/HTML_Safe | BSD License (3-Clause, © Roman Ivanov) |
 | **ARC2** (RDF/SPARQL library) | `luna/luna.lib/arc/` | github.com/semsol/arc2 | semsol/arc2 3.1.0 — GPL-2.0-or-later / W3C Software License |
+| **HTMLPurifier** (input sanitiser) | `vendor/ezyang/htmlpurifier/` (Composer) | github.com/ezyang/htmlpurifier | ezyang/htmlpurifier 4.19.0 — LGPL-2.1-or-later (© Edward Z. Yang) |
 
 **jQuery has been removed** (0.6.8-alpha). The front-end is now dependency-free
 vanilla JavaScript ([js/luna.js](js/luna.js)) — no CDN dependency, no animation. For

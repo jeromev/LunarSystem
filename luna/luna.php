@@ -60,6 +60,10 @@ if (!defined('SPARQL_AUTH_PASS')) { define('SPARQL_AUTH_PASS', getenv('SPARQL_AU
 // Read routing / ACL / texts through SPARQL by default (the triplestore is authoritative for the
 // read path; MySQL stays the system of record and a fallback). Set SPARQL_READS=0 to read from SQL.
 if (!defined('SPARQL_READS')) { define('SPARQL_READS', getenv('SPARQL_READS') === '0' ? false : true); }
+// Composer autoloader — brings in HTMLPurifier (the input sanitiser; see
+// lunaTools::sanitize()). Hard require: the app is a security boundary and must not run
+// without its sanitiser, so fail loudly if the vendored tree is missing.
+require_once DIRNAME(__FILE__).'/../vendor/autoload.php';
 /**
  * luna Class
  */
@@ -70,7 +74,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.27-alpha';
+	public static $lunaVersion = '0.8.28-alpha';
 	/**
 	 * instance
 	 * @var object

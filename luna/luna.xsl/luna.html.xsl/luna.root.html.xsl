@@ -19,10 +19,10 @@
 	<xsl:template name="page">
 		<xsl:for-each select="/rdf:RDF/luna:text[luna:page/@rdf:resource = /rdf:RDF/luna:page[schema:identifier = $masternodenid]/@rdf:about and substring-before(concat(schema:articleBody/@xml:lang,'-'),'-') = substring-before(concat($lang,'-'),'-')]">
 			<div class="box text">
-				<xsl:if test="normalize-space(rdfs:label) != '' and normalize-space(rdfs:label) != '0'">
+				<xsl:if test="normalize-space(schema:name) != '' and normalize-space(schema:name) != '0'">
 					<h2>
-						<xsl:attribute name="xml:lang"><xsl:value-of select="rdfs:label/@xml:lang"/></xsl:attribute>
-						<xsl:value-of select="rdfs:label"/>
+						<xsl:attribute name="xml:lang"><xsl:value-of select="schema:name/@xml:lang"/></xsl:attribute>
+						<xsl:value-of select="schema:name"/>
 					</h2>
 				</xsl:if>
 				<div class="box-content">

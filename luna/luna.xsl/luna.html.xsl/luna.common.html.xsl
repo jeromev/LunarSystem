@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -669,12 +669,12 @@
 								</xsl:attribute>
 								<xsl:value-of select="rdfs:label"/>
 							</a>
-							<xsl:if test="count(/rdf:RDF/luna:page/owl:isChildOf[@rdf:resource = $root]) &gt; 0">
+							<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $root]) &gt; 0">
 								<ul class="tv">
-									<xsl:for-each select="/rdf:RDF/luna:page[owl:isChildOf/@rdf:resource = $root and @rdf:about != $root]">
+									<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $root and @rdf:about != $root]">
 										<xsl:sort select="rdfs:label"/>
 										<xsl:variable name="child"><xsl:value-of select="@rdf:about"/></xsl:variable>
-										<xsl:if test="luna:is_active = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
+										<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
 											<li>
 												<a>
 													<xsl:attribute name="href">
@@ -698,12 +698,12 @@
 	<xsl:template name="recursesitemap">
 		<xsl:param name="index">0</xsl:param>
 		<xsl:if test="not($index = 0) and not($index = '')">
-			<xsl:if test="count(/rdf:RDF/luna:page/owl:isChildOf[@rdf:resource = $index]) &gt; 0">
+			<xsl:if test="count(/rdf:RDF/luna:page/schema:isPartOf[@rdf:resource = $index]) &gt; 0">
 				<ul class="tv">
-					<xsl:for-each select="/rdf:RDF/luna:page[owl:isChildOf/@rdf:resource = $index]">
+					<xsl:for-each select="/rdf:RDF/luna:page[schema:isPartOf/@rdf:resource = $index]">
 						<xsl:sort select="rdfs:label"/>
 						<xsl:variable name="childindex"><xsl:value-of select="@rdf:about"/></xsl:variable>
-						<xsl:if test="luna:is_active = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
+						<xsl:if test="luna:isActive = '1' and not($guest = '1' and luna:lid = 'logout') and not($guest = '0' and luna:lid = 'login') and not(luna:lid = 'node')">
 							<li>
 								<a>
 									<xsl:attribute name="href">

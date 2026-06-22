@@ -3,7 +3,7 @@
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#"
+	xmlns:luna="https://jeromev.github.io/LunarSystem/ontology#" xmlns:schema="https://schema.org/"
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -102,7 +102,7 @@
 				<xsl:call-template name="pageslist"/>
 			</xsl:if>
 			<xsl:if test="not($modify_item_nid = '')">
-			<xsl:variable name="parent-resource" select="/rdf:RDF/luna:page[luna:nid = $modify_item_nid]/owl:isChildOf/@rdf:resource"/>
+			<xsl:variable name="parent-resource" select="/rdf:RDF/luna:page[luna:nid = $modify_item_nid]/schema:isPartOf/@rdf:resource"/>
 			<xsl:variable name="level-resource" select="/rdf:RDF/luna:page[luna:nid = $modify_item_nid]/luna:level/@rdf:resource"/>
 			<div class="box">
 				<form method="post" id="Modifypage">
@@ -121,7 +121,7 @@
 									<xsl:with-param name="label"><xsl:value-of select="/rdf:RDF/luna:vocabulary[luna:lid = 'Deactivate']/luna:value"/></xsl:with-param>
 									<xsl:with-param name="default-value">
 										<xsl:choose>
-											<xsl:when test="/rdf:RDF/node()[luna:nid = $modify_item_nid]/luna:is_active = '1'">
+											<xsl:when test="/rdf:RDF/node()[luna:nid = $modify_item_nid]/luna:isActive = '1'">
 												<xsl:text>0</xsl:text>
 											</xsl:when>
 											<xsl:otherwise>

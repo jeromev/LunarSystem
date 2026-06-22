@@ -474,8 +474,6 @@ p:after {
 }
 p {
   /* align body text to the baseline grid */
-  clear: both;
-  max-width: calc(55 * var(--base-unit) * var(--width-optical-adjustment));
 }
 
 blockquote {
@@ -949,6 +947,40 @@ h6:after {
   grid-area: content;
   position: relative;
   padding: calc(1 * var(--base-unit)) 0;
+  max-width: calc(39 * var(--base-unit) * var(--width-optical-adjustment));
+}
+@media (min-width: 375px) {
+  #Page #Content {
+    max-width: calc(41 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+@media (min-width: 560px) {
+  #Page #Content {
+    max-width: calc(44 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+@media (min-width: 768px) {
+  #Page #Content {
+    max-width: calc(48 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+@media (min-width: 1024px) {
+  #Page #Content {
+    max-width: calc(50 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+@media (min-width: 1440px) {
+  #Page #Content {
+    max-width: calc(56 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+@media (min-width: 2004px) {
+  #Page #Content {
+    max-width: calc(62 * var(--base-unit) * var(--width-optical-adjustment));
+  }
+}
+#Page #Content {
+  margin: 0 auto;
 }
 #Page #Content #Content-header h1::before, #Page #Content #Content-header h1::after {
   content: none;

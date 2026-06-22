@@ -27,7 +27,6 @@ table {
 
 table.zebra {
   border: none;
-
   width: 100%;
   border-collapse: collapse;
 
@@ -64,7 +63,12 @@ table.zebra {
       }
     }
     th {
-      background: rgba(0, 0, 0, 0.62); /* AA contrast for the white th text on the #e2e2e2 page */
+      background: rgba(
+        0,
+        0,
+        0,
+        0.62
+      ); /* AA contrast for the white th text on the #e2e2e2 page */
       color: #fff;
       padding: bg.v(0.5) bg.h();
 
@@ -291,8 +295,8 @@ img {
 }
 p {
   @include bg.set(); /* align body text to the baseline grid */
-  clear: both;
-  max-width: bg.h(55);
+  // clear: both;
+  // max-width: bg.h(55);
 }
 blockquote {
   margin: bg.v() 0 0 bg.h();

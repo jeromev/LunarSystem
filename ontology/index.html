@@ -39,10 +39,19 @@ below; everything else is standard (<code>schema:WebPage</code>/<code>Article</c
   <tr><td><code>luna:content</code></td><td>content</td><td>The raw HTML body of a text block, as authored. Standard consumers can read the same value from <code>schema:articleBody</code> / <code>schema:text</code>.</td></tr>
 </table>
 
-<p class="muted"><strong>Note.</strong> <code>owl:isChildOf</code>, <code>luna:is_active</code>
-and <code>/node/{nid}</code> URIs live only in the app's internal in-memory model (which drives
-the XSLT rendering); they are not published. <code>?output=xml/n3/json</code> serves this same
-clean schema.org projection, matching the triplestore.</p>
+<p class="muted"><strong>Note.</strong> There is effectively one content model: the
+in-memory graph the XSLT renders from is the <em>same</em> schema.org + <code>/id/{slug}</code>
+projection that is published. The legacy terms <code>owl:isChildOf</code>,
+<code>luna:is_active</code> and <code>/node/{nid}</code> URIs are gone everywhere — replaced by
+<code>schema:isPartOf</code>, <code>luna:isActive</code> and <code>…/id/{slug}</code> IRIs.
+<code>?output=xml/n3/json/jsonld</code> serves this clean projection, matching the triplestore.</p>
+
+<p class="muted"><strong>Render model.</strong> The XSLT chrome (i18n strings, pager, request
+and message data) is driven by a separate render-model namespace
+<span class="iri">https://jeromev.github.io/LunarSystem/render#</span> · prefix <code>ui:</code>
+(<code>ui:vocabulary</code>, <code>ui:data</code>, <code>ui:pager</code>, <code>ui:request</code>,
+<code>ui:message</code>, …). These terms are <em>not</em> content and never reach the published
+graph.</p>
 
 <p class="muted">Resource (instance) IRIs are a separate concern — they follow the deployment
 host (<code>luna::$site_uri</code>, e.g. <code>http://localhost:8080/id/…</code>), not this

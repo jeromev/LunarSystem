@@ -26,7 +26,6 @@ regenerated `css/luna.css`.
 | `_base.scss`     | element/tag styles (TAGS) |
 | `_classes.scss`  | utility / class styles (CLASSES) |
 | `_page.scss`     | layout: `#Page`, `#Content`, widths (PAGE) |
-| `_treeview.scss` | TreeView nav icons (TVlists; CSS only) |
 | `_mixins.scss`   | shared Sass helpers / mixins |
 | `_scales.scss`   | responsive typography / layout / spacing scales (used by the partials above) |
 | `vendor/baselinegrid.scss` | [baselinegrid.scss](https://github.com/jeromev/baselinegrid.scss) (vendored, MIT) — the baseline-grid engine |

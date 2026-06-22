@@ -5,7 +5,7 @@ Where LunarSystem is headed, and in what order. Two big arcs:
 1. **Finish the RDF-native transition** — make the triplestore the system of record for content and retire MySQL for it (phases **P0–P3**; P0/P1 done).
 2. **Become a data-first server** — emit data (RDF/XML + JSON-LD) under content negotiation (phase **P4**). *(P5, moving the XSLT transform into the browser, was dropped — see below.)*
 
-Current state: **v0.8.45-alpha** on `main`. The security hardening pass (see [security.md](security.md)) is complete. **P0 and P1 are done**, and **decision #1 is resolved** (slugs are immutable — "forbid slug edits") and **enforced** in `lunaModel::update()`. Every content write mirrors into Oxigraph through a generic write-through in the model's CRUD, the whole store can be rebuilt from MySQL with `rdf_resync_all()`, and the read path (routing, ACL, texts) is served from the triplestore **by default** — with MySQL as the system of record and an automatic SQL fallback (`?sparql=0`). What remains in Part 1 is the **rest of P2** — retiring the MySQL *content write* itself (a larger migration: it touches every admin mod's direct SQL, and needs must-succeed writes + an outbox) — and the optional **P3**. **Part 2's client-side-XSLT goal (P5) is dropped** (see below); P4 — the data-first server — is where Part 2 ends.
+Current state: **v0.8.46-alpha** on `main`. The security hardening pass (see [security.md](security.md)) is complete. **P0 and P1 are done**, and **decision #1 is resolved** (slugs are immutable — "forbid slug edits") and **enforced** in `lunaModel::update()`. Every content write mirrors into Oxigraph through a generic write-through in the model's CRUD, the whole store can be rebuilt from MySQL with `rdf_resync_all()`, and the read path (routing, ACL, texts) is served from the triplestore **by default** — with MySQL as the system of record and an automatic SQL fallback (`?sparql=0`). What remains in Part 1 is the **rest of P2** — retiring the MySQL *content write* itself (a larger migration: it touches every admin mod's direct SQL, and needs must-succeed writes + an outbox) — and the optional **P3**. **Part 2's client-side-XSLT goal (P5) is dropped** (see below); P4 — the data-first server — is where Part 2 ends.
 
 > The cardinal rule across every phase: **freeze the URIs.** `/id/{slug}` is identity; it must not change, or external links and `owl:sameAs` break.
 
@@ -59,7 +59,7 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 - **First, harden the write:** promote the Oxigraph `UPDATE` from best-effort to **must-succeed** (fail the save on mirror failure) and add a relational **outbox** table for at-least-once replay/reconciliation — there is *no 2-phase commit* across MySQL and an HTTP SPARQL endpoint.
 - Add **optimistic concurrency** (version/etag in the `WHERE`) to replace the row locking MySQL gave for free.
 - **Atomic cutover:** freeze writes → final MySQL→graph materialisation → switch off SQL writes (replay any in-window edits from the outbox).
-- Mint identity from the slug: `<base/id/{lid}>` replaces `luna_nodes_seq`; `lid_is_taken` becomes an `ASK` over the graph; keep `nid` only as a graph-side `schema:identifier` while the XSLT `/node/{nid}` index still needs it.
+- Mint identity from the slug: `<base/id/{lid}>` replaces `luna_nodes_seq`; `lid_is_taken` becomes an `ASK` over the graph; keep `nid` only as a graph-side `schema:identifier` and the loaders' internal DB key (the rendered graph already serves `/id/{slug}`, not a `/node/{nid}` index).
 - Re-express lost relational invariants (unique lid, required level/type, single parent) as `ASK` pre-checks (full SHACL comes in P3).
 
 **Risks:** **slug-as-identity makes renames a URI change** — violates "freeze the URIs" (see Open Decisions); no 2PC means a crash mid-dual-write diverges the stores (outbox is mandatory); without ASK/SHACL the graph will accept duplicate slugs / dangling parents / untyped nodes.
@@ -87,7 +87,7 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 - Split the lunaCache key into a per-request XML/CONSTRUCT key (invalidated on edits) + the static XSL.
 - **Keep the server-side XSLTProcessor render fully working and canonical throughout.**
 
-**Risks:** cache-keying the XML wrong serves stale graphs; `xsl:include` resolution differs server (filesystem) vs. browser (URL) — the static `/xsl/` tree needs correct relative URLs and CORS care *now*; errors/404/redirect/auth must be expressible as a `luna:message` RDF graph a stylesheet can render.
+**Risks:** cache-keying the XML wrong serves stale graphs; `xsl:include` resolution differs server (filesystem) vs. browser (URL) — the static `/xsl/` tree needs correct relative URLs and CORS care *now*; errors/404/redirect/auth must be expressible as a `ui:message` RDF graph a stylesheet can render.
 
 ### P5 — Client-side XSL rendering (WASM libxslt) — ❌ dropped
 **Decision #7, June 2026: not doing this.** With native browser XSLT being removed, the only path was a ~2.8 MB WASM polyfill bolted on top of a server render that must stay anyway — not worth the payload and complexity for this project. The plan is preserved below as a record of the analysis, should the trade-off ever change.

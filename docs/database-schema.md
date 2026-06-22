@@ -20,7 +20,7 @@ The central table. One row per user, group, level, page, mod, or text.
 | `nid` | `int unsigned` PK, auto-inc | Node ID (the graph vertex identity) |
 | `lid` | `varchar(255)` | *Literal identifier* — unique human-readable slug (`admin`, `root`, `login`) |
 | `tid` | `int unsigned` | Type — FK into `luna_types.id` |
-| `parent_nid` | `int unsigned` | Hierarchical parent (page tree); maps to `owl:isChildOf` |
+| `parent_nid` | `int unsigned` | Hierarchical parent (page tree); maps to `schema:isPartOf` |
 | `is_active` | `tinyint(1)` | Soft on/off flag |
 
 ### `luna_nodes_map` — every relationship is an edge

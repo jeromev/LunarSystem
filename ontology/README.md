@@ -12,8 +12,12 @@ The namespace string lives in **one** place in code: the `LUNA_NS` constant in
 (the `$lunaNameSpace` property and every SPARQL `PREFIX luna:` read from it). Two things
 must match it by hand and are **not** auto-derived:
 
-1. the 16 `xmlns:luna="…"` declarations in `luna/luna.xsl/luna.html.xsl/*.xsl`
-   (they must equal the model's RDF output exactly, or the XSLT templates stop matching);
+1. the 15 `xmlns:luna="…"` declarations in `luna/luna.xsl/luna.html.xsl/*.xsl`
+   (one per stylesheet; they must equal the model's RDF output exactly, or the XSLT
+   templates stop matching). Each of those files now also declares the sibling
+   `xmlns:ui="https://jeromev.github.io/LunarSystem/render#"` render namespace
+   (`lunaModel::LUNA_RENDER_NS`), which drives the XSLT chrome and is *not* part of
+   this content vocabulary;
 2. `semantic/ontop/mapping.ttl` (the R2RML mapping).
 
 After changing the namespace, run **`make resync-triplestore`** so the stored Oxigraph

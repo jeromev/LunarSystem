@@ -40,26 +40,26 @@ triggers a fatal error).
 
 ## Phase 1 — Bootstrap
 
-The `luna::__construct()` method ([luna.php:199](../luna/luna.php#L199)) runs a
+The `luna::__construct()` method ([luna.php:217](../luna/luna.php#L217)) runs a
 fixed sequence wrapped in a `try`/`catch (lunaException)`. Most steps throw a
 `lunaException` on failure (caught, logged, then `die()`); the earliest steps
 (site path, ini load, core-class includes) `die()` or `trigger_error()` directly
-with a message instead ([luna.php:212-222](../luna/luna.php#L212)):
+with a message instead ([luna.php:230-236](../luna/luna.php#L230)):
 
 1. **Environment setup** ([luna.php:20-40](../luna/luna.php#L20)) — `define('NOW', time())`,
    set a default timezone (honour an existing `php.ini` `date.timezone`, else UTC),
    disable `register_globals`/`display_errors`, force cookie-only sessions (`use_trans_sid=0`, `use_only_cookies=1`, `use_strict_mode=1`), set
    `error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT)`, and a
    `magic_quotes` compatibility guard. (`display_errors` is turned back **on** for
-   admins later when `DEBUG` is set — [luna.php:226](../luna/luna.php#L226).)
-2. **Resolve the site path** (`set_site_path()`, [luna.php:327](../luna/luna.php#L327)) —
+   admins later when `DEBUG` is set — [luna.php:247](../luna/luna.php#L247).)
+2. **Resolve the site path** (`set_site_path()`, [luna.php:349](../luna/luna.php#L349)) —
    walks `HTTP_HOST` segment by segment looking for a matching directory under
    `luna/luna.domains/`, falling back to `luna.default/`. This logic is adapted
    verbatim from **Drupal 5.1's `conf_path()`**. Defines the `SITEPATH` constant
    and sets the `site_uri` / `site_relative_url` static properties.
-   (`set_requested_path()` at [luna.php:316](../luna/luna.php#L316) is a *different*
+   (`set_requested_path()` at [luna.php:338](../luna/luna.php#L338) is a *different*
    method — it normalises the requested URL path; see step 9.)
-3. **Load the ini** (`load_ini()`, [luna.php:641](../luna/luna.php#L641)) —
+3. **Load the ini** (`load_ini()`, [luna.php:672](../luna/luna.php#L672)) —
    parses `<domain>/ini/luna.ini` and turns `[Paths]` and `[Constantes]` entries
    into PHP constants. See [configuration.md](configuration.md).
 4. **Require the core classes** — log, tools, db, session, model.
@@ -91,7 +91,7 @@ user, and site metadata.
 
 ## Phase 2 — Load mods
 
-`load_mods()` ([luna.php:394](../luna/luna.php#L394)) is where a page gets its
+`load_mods()` ([luna.php:416](../luna/luna.php#L416)) is where a page gets its
 content. A single SQL query joins the triple tables to find every mod that is
 **(a)** linked to the current page **and (b)** linked to an access level the
 current user holds:
@@ -104,7 +104,7 @@ AND tl.lid = 'level' AND l.tid = tl.id
 AND m.is_active = 1 AND l.is_active = 1
 ```
 
-For each matching mod ([luna.php:433-500](../luna/luna.php#L433)):
+For each matching mod ([luna.php:455-535](../luna/luna.php#L455)):
 
 1. Skip it unless the user actually holds the mod's level
    (`$session->user->levels[$level_nid]`).
@@ -121,29 +121,44 @@ Finally it merges any flash messages into the model. The mod system is detailed
 in [modules.md](modules.md).
 
 > **AJAX short-circuit:** at the start of `transform()`
-> ([luna.php:580](../luna/luna.php#L580)), if `AJAX` is true the request `die()`s
+> ([luna.php:612](../luna/luna.php#L612)), if `AJAX` is true the request `die()`s
 > — XSLT is skipped and only the model-population side effects of `load_mods()`
 > persist. `load_mods()` itself only special-cases AJAX to skip the post-submit
-> `OPTIMIZE TABLE` ([luna.php:490](../luna/luna.php#L490)).
+> table optimisation (`lunaDB::optimise()`, gated by `!AJAX` at
+> [luna.php:516](../luna/luna.php#L516)).
 
 ## Phase 3 — Transform
 
-`transform()` ([luna.php:518](../luna/luna.php#L518)) assembles the remaining
+`transform()` ([luna.php:546](../luna/luna.php#L546)) assembles the remaining
 view data and renders:
 
 1. Merge in the current user, available languages, available output formats, the
-   `luna::$data` metadata, the i18n vocabulary, and the raw `$_REQUEST`.
-2. If `output_format != html`, call `lunaModel::dump($format)` which serialises
-   the model with **ARC2** and exits (RDF/XML, JSON, or N-Triples).
+   `luna::$data` metadata, the i18n vocabulary, and the raw `$_REQUEST`. These
+   render-scaffolding nodes are built by `lunaModel::load_var()` as blank nodes
+   in the UI render namespace `ui:` (`https://jeromev.github.io/LunarSystem/render#`);
+   they drive the XSLT chrome only and never reach the published RDF graph.
+2. If `output_format != html`, call `lunaModel::dump($format)` ([luna.php:573](../luna/luna.php#L573)),
+   which serialises and exits. `dump()` first builds the clean, published graph
+   via `build_schema_index()` — slug IRIs (`/id/{slug}`), schema.org classes
+   (`schema:WebPage`/`schema:Article`) and predicates — then emits RDF/XML, RDF/JSON,
+   or N-Triples through **ARC2**; `jsonld` routes through `to_jsonld()` for the
+   same schema.org shape.
 3. Otherwise pick an XSLT stylesheet by a **cascading file lookup** keyed on the
-   page `lid` and output format ([luna.php:584-620](../luna/luna.php#L584)):
+   page `lid` and output format ([luna.php:616-641](../luna/luna.php#L616)):
    domain override → built-in, page-specific → `default`.
-4. Call `lunaModel::transform($XSLfile)`, which serialises the model to RDF/XML
-   via ARC2 and runs PHP's `XSLTProcessor`. The result is cached (lunaCache, the
-   native file cache) keyed on a hash of the model.
+4. Call `lunaModel::transform($XSLfile)`, which first re-keys the working
+   (nid-keyed) in-memory model to slug identity and schema.org via
+   `project_to_schema()` — `/node/{nid}` subjects become `/id/{slug}`,
+   `luna:page`/`luna:text` become `schema:WebPage`/`schema:Article`, and
+   `luna:nid`/`rdfs:label`/`luna:page` map to `schema:identifier`/`schema:name`/`schema:isPartOf`
+   — then serialises that graph to RDF/XML via ARC2 and runs PHP's
+   `XSLTProcessor`, so the stylesheets render from the same schema.org/`/id/{slug}`
+   graph as the triplestore. The result is cached (lunaCache, the native file
+   cache) keyed on a hash of the model.
 
 The returned string is the HTTP response. See [templating.md](templating.md) for
-the stylesheet lookup order and the RDF/XML the templates expect.
+the stylesheet lookup order and the schema.org/`/id/{slug}` RDF/XML (plus the
+`ui:` render-model nodes) the templates expect.
 
 > **Semantic-web layer:** the model additionally exposes a JSON-LD projection — `?output=jsonld` routes through
 > `lunaModel::to_jsonld()`, and the HTML `<head>` carries an embedded

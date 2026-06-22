@@ -50,9 +50,6 @@ ports), which are loopback-bound.
 
 ## Remaining — owner-only (can't be done from inside the repo)
 
-- [x] **Rotate the `dbuser@mysql.jeromev.net` database password.** It is not in the
-      repo (and never was in git), but presume it's exposed; rotate the credential at
-      the DB server regardless.
 - [ ] **On GitHub:** flip the repo to **public**; set a description and topics
       (`semantic-web`, `sparql`, `rdf`, `linked-data`, `json-ld`, `teaching`);
       confirm the default branch is `main` (with `legacy` preserved); optionally

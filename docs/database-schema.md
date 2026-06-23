@@ -18,7 +18,7 @@ The central table. One row per user, group, level, page, mod, or text.
 | Column | Type | Meaning |
 |---|---|---|
 | `nid` | `int unsigned` PK, auto-inc | Node ID (the graph vertex identity) |
-| `lid` | `varchar(255)` | *Literal identifier* — unique human-readable slug (`admin`, `root`, `login`) |
+| `lid` | `varchar(191)` | *Literal identifier* — unique human-readable slug (`admin`, `root`, `login`); 191 so the UNIQUE key fits MyISAM's 1000-byte limit under utf8mb4 |
 | `tid` | `int unsigned` | Type — FK into `luna_types.id` |
 | `parent_nid` | `int unsigned` | Hierarchical parent (page tree); maps to `schema:isPartOf` |
 | `is_active` | `tinyint(1)` | Soft on/off flag |
@@ -46,7 +46,7 @@ Defines the handful of node types.
 | Column | Type | Meaning |
 |---|---|---|
 | `id` | `int unsigned` PK | Type ID (referenced by `luna_nodes.tid`) |
-| `lid` | `varchar(255)` | Type slug: `user`, `group`, `level`, `text`, `page`, `mod` |
+| `lid` | `varchar(191)` | Type slug: `user`, `group`, `level`, `text`, `page`, `mod` (191 for the utf8mb4 UNIQUE-key limit) |
 | `page_nid` | `int unsigned` | The admin page that manages this type |
 
 ## Content
@@ -116,7 +116,7 @@ Read at bootstrap by `lunaTools::load_config()` and editable from the admin UI.
 | Column | Type | Meaning |
 |---|---|---|
 | `id` | `int unsigned` PK | — |
-| `name` | `varchar(255)` | Key |
+| `name` | `varchar(191)` | Key (191 for the utf8mb4 index limit) |
 | `value` | `varchar(255)` | Value |
 
 Seeded keys include: `sitename`, `site_desc`, `author`, `general_email`,

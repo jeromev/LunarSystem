@@ -54,21 +54,34 @@ they're done by materialisation / external tooling.
 - If native reasoning/SHACL becomes a hard requirement, swapping Oxigraph for **Jena
   Fuseki** or **GraphDB** is an *endpoint swap*, not a rewrite (the app only speaks SPARQL).
 
-## P4 — Data-first server
+## P4 — Data-first server *(partly done)*
 
-Turn the server into a pure, content-negotiated **data** surface emitting the RDF/XML
-`lunaModel::transform()` already builds — HTML becomes one representation among
-JSON-LD / Turtle / N-Triples. Nothing visible changes for users.
+Turn the server into a pure, content-negotiated **data** surface — HTML becomes one
+representation among JSON-LD / Turtle / RDF-XML / N-Triples. Nothing visible changes for
+users.
 
-- Add real **HTTP `Accept` content negotiation** in `set_output_format` (today it only keys
-  on path / `?output=`); expose canonical `/id/{slug}` (identity) and `/data/{slug}`
-  (RDF/XML) URIs, keeping `?output=` as debug aliases.
-- Back the RDF/XML representation with a SPARQL `CONSTRUCT` / `DESCRIBE` so PHP shrinks to
-  *negotiate + construct + serialise*.
+**Done (0.8.54):** real **HTTP `Accept` content negotiation** in `set_output_format`
+(`negotiate_output_format()`), so the same canonical URL serves HTML to a browser and RDF
+to a Linked Data client; dereferenceable **`/id/{slug}`** (identity, `303`s to the negotiated
+document) and **`/data/{slug}`** (the RDF document, Turtle by default) via
+`luna::route_linked_data()`, resolved against the ACL-filtered graph; **Turtle** output;
+`Vary: Accept` and `Link` (`canonical`/`alternate`/`describedby`) headers. The server-side
+`XSLTProcessor` render stays the one canonical renderer. See [linked-data.md](linked-data.md)
+and the [CHANGELOG](../CHANGELOG.md).
+
+**Remaining:**
+
+- **Back the RDF representation with a SPARQL `CONSTRUCT` / `DESCRIBE`** instead of the PHP
+  `build_schema_index()` projection, so PHP shrinks to *negotiate + construct + serialise*.
+  **Blocked** on a `schema:name` overload (decision 9): `rdf_sync_node()` writes a page's
+  `schema:name` as the **raw slug** (the SPARQL router reads `schema:name` *as* the slug),
+  while `build_schema_index()` emits it as the **humanised `rdfs:label`** — so swapping the
+  serialiser to a `CONSTRUCT` would regress published page names from "Admin Journal" to
+  "admin_journal". Split the routing key from the display name first (then reseed).
+- **Dereference text/`Article` resources too** — today `/id` and `/data` cover pages; a text
+  slug (`/id/welcome`) `404`s and is described only inside its page's `/data` document.
 - Serve `luna/luna.xsl/` as **static, long-cached, same-origin** assets under a stable
   `/xsl/`; the server tells the client which stylesheet won the cascade.
-- **The server-side XSLTProcessor render stays canonical** — for crawlers, no-JS clients,
-  and any failure path.
 
 **Risks:** mis-keying the XML cache serves stale graphs; `xsl:include` resolution differs
 server (filesystem) vs. any client (URL); errors / 404 / redirect / auth must be
@@ -90,6 +103,7 @@ expressible as a `ui:message` RDF graph a stylesheet can render.
 | 4 | **Fate of `nid`** — drop the `/node/{nid}` identity entirely, or keep `nid` as a non-identifying `schema:identifier`? | P2 |
 | 5 | **Triplestore for P3** — stay on Oxigraph + external SHACL/inference, or swap to Jena Fuseki / GraphDB for native support? | P3 |
 | 8 | **Draft/version model (P3)** — per-resource named graphs promoted on publish; PROV-O audit in the default graph or a dedicated audit graph? | P3 |
+| 9 | **`schema:name` overload** — a page's `schema:name` is the routing slug in the triplestore but the humanised display name in the PHP projection. Split them (routing key vs. display name) before the RDF representation can be `CONSTRUCT`-backed. | P4 |
 
 *Resolved: slugs are immutable (rename = create-new + delete-old); client-side XSLT (P5) is dropped.*
 
@@ -97,6 +111,7 @@ expressible as a `ui:message` RDF graph a stylesheet can render.
 
 The spine is the **rest of P2** — retiring the MySQL content write so the triplestore is the
 single source of truth and dual-write drift disappears (a deliberate migration:
-must-succeed writes + outbox, then the atomic cutover). **P3** is optional polish. **P4** is
-low-risk and valuable on its own. **Recommended next:** the P2 write-retirement when you're
-ready to commit to it; P4 whenever a clean RDF / data API is wanted.
+must-succeed writes + outbox, then the atomic cutover). **P3** is optional polish. **P4**
+landed its high-leverage half (0.8.54 — content negotiation + dereferenceable `/id` and
+`/data` URIs + Turtle); what's left is the `CONSTRUCT`-backing, blocked on decision 9.
+**Recommended next:** the P2 write-retirement when you're ready to commit to it.

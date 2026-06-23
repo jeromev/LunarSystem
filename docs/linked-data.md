@@ -41,12 +41,53 @@ Invariant rules:
 - The **slug** (`luna_nodes.lid`) is the stable local name, *not* the numeric `nid`.
 - `/id/{slug}` is the thing's identity everywhere in the graph (subject/object of
   triples), never the `nid`.
-- Content negotiation, not `?output=`, is the long-term mechanism (the `?output=`
-  query param stays as a convenience/debug alias).
+- Content negotiation (HTTP `Accept`) is the mechanism (the `?output=` query
+  param stays as a convenience/debug alias).
 
 `/id/{slug}` is the identity everywhere a consumer sees — rendered, published, and
 in the triplestore. The integer `nid` survives only as the `schema:identifier`
 property and as the loaders' internal DB key.
+
+### Dereferencing & content negotiation
+
+The URI policy above is **live** ([`luna::route_linked_data()`](../luna/luna.php),
+[`lunaTools::set_output_format()`](../luna/luna.classes/luna.tools.class.php)). The
+same canonical URL is HTML for a browser and RDF for a Linked Data client, chosen
+by the HTTP `Accept` header:
+
+```bash
+curl -H 'Accept: text/html'         https://site/         # the HTML page
+curl -H 'Accept: text/turtle'       https://site/         # the SAME page as Turtle
+curl -H 'Accept: application/ld+json' https://site/        # …as schema.org JSON-LD
+```
+
+`Accept` is the lowest-precedence signal: an explicit `?output=` / path suffix
+(debug aliases) wins over it, and a bare `*/*` or a missing header keeps HTML, so
+nothing a browser sends is ever surprised into RDF. Only `GET`/`HEAD` negotiate,
+never an XHR. Every response carries `Vary: Accept` so caches key on it.
+
+The `/id` and `/data` URIs implement the Cool-URIs `303` split:
+
+```bash
+curl -i -H 'Accept: text/html'   https://site/id/root   # 303 -> https://site/         (HTML doc)
+curl -i -H 'Accept: text/turtle' https://site/id/root   # 303 -> https://site/data/root (RDF doc)
+curl -i                          https://site/data/root # 200  text/turtle (defaults to Turtle)
+```
+
+- **`/id/{slug}`** returns no content of its own — it `303 See Other`s to the
+  concrete document for the negotiated format (the HTML page, or the RDF
+  `/data/{slug}`).
+- **`/data/{slug}`** is the RDF document — Turtle / JSON-LD / RDF/XML / … by
+  negotiation, **never** HTML; with no RDF preference it defaults to Turtle.
+- Both resolve the slug against the **ACL-filtered** graph, so a resource the
+  current user can't see is a `404` here exactly as in the HTML view (a guest's
+  `/data/admin` is `404`; an admin's is `200`).
+- Each response advertises the others with `Link` headers
+  (`rel="canonical"` → the identity, `rel="alternate"` → the RDF/HTML twin,
+  `rel="describedby"`), so a consumer can follow its nose between representations.
+
+Today `/id` and `/data` cover **pages**; a text/`Article` slug is described inside
+its page's `/data` document (standalone text dereferencing is a follow-up).
 
 ## Decision 2 — Vocabulary mapping (reuse, don't invent)
 
@@ -95,7 +136,7 @@ representation being correct, standards-based Linked Data:
 - The same block is embedded as `<script type="application/ld+json">` in every
   HTML page's `<head>` — the part of the Semantic Web that actually *won*
   (Google/Bing rich results, knowledge-graph ingestion).
-- `?output=xml/n3/json` serve the **same clean projection**
+- `?output=xml/turtle/n3/json` serve the **same clean projection**
   ([`lunaModel::build_schema_index()`](../luna/luna.classes/luna.model.class.php)) — slug
   IRIs, `schema:WebPage`/`Article`, the `luna:` terms — so the whole public RDF
   surface matches the triplestore. There is effectively **one model**: the loaders

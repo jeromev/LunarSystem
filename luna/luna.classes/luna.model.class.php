@@ -346,6 +346,48 @@ class lunaModel {
 		return $node[$this->conf['ns']['luna'].'lid'][0]['value'];
 	}
 	// }}}
+	// {{{ get_node_from_slug()
+	/**
+	 * Resolve a slug (luna:lid) to its node in the *loaded* model. The model index is
+	 * already scoped to the levels the current user holds, so this inherits the page
+	 * tree's access control: a slug the user can't see resolves to false (a 404),
+	 * exactly as the HTML route 404s. Backs the Linked Data /id/{slug} and /data/{slug}
+	 * URIs, whose local name is the slug, not the breadcrumb alias.
+	 *
+	 * @access public
+	 * @param string $slug
+	 * @param string $type a luna: type to require (e.g. 'page'); '' to accept any
+	 * @return mixed the node, or false
+	 */
+	public function get_node_from_slug($slug = '', $type = 'page') {
+		if ($slug === '' || $slug === false) { return false; }
+		$lid   = $this->conf['ns']['luna'].'lid';
+		$rtype = $this->conf['ns']['rdf'].'type';
+		$want  = $this->conf['ns']['luna'].$type;
+		foreach ($this->index as $node) {
+			if (!isset($node[$lid][0]['value']) || $node[$lid][0]['value'] !== "$slug") { continue; }
+			if (!empty($type) && (!isset($node[$rtype][0]['value']) || $node[$rtype][0]['value'] !== $want)) { continue; }
+			return $node;
+		}
+		return false;
+	}
+	// }}}
+	// {{{ get_alias()
+	/**
+	 * The node's canonical clean-URL alias (the breadcrumb path calculate_aliases()
+	 * derived) — '' for the root page. Used to point the /id/{slug} 303 at the HTML
+	 * document and to re-enter the normal pipeline for /data/{slug}.
+	 *
+	 * @access public
+	 * @param array $node
+	 * @return mixed the alias string (possibly ''), or false if the node carries none
+	 */
+	public function get_alias($node = false) {
+		if (empty($node) || !is_array($node)) { return false; }
+		if (!isset($node[$this->conf['ns']['luna'].'alias'][0]['value'])) { return false; }
+		return $node[$this->conf['ns']['luna'].'alias'][0]['value'];
+	}
+	// }}}
 	// {{{ set_property()
 	/**
 	 * @access public
@@ -475,6 +517,13 @@ class lunaModel {
 				die($doc);
 			case 'jsonld':
 				return $this->to_jsonld($return);
+			case 'turtle':
+				$ser = ARC2::getTurtleSerializer($this->conf);
+				$doc = $ser->getSerializedIndex($index);
+				if ($return) { return $doc; }
+				// Turtle is the canonical RDF text form a Linked Data client expects from /data/{slug}.
+				header('Content-Type: text/turtle; charset=utf-8');
+				die($doc);
 			case 'xml':
 			default:
 				$ser = ARC2::getRDFXMLSerializer($this->conf);

@@ -592,6 +592,22 @@ class lunaModel {
 				$parts[] = $part;
 			}
 			if (count($parts)) { $doc['hasPart'] = $parts; }
+			// Outbound links to the wider web of data (sameAs / about / seeAlso / …):
+			// schema.org predicates compact to their bare term under the @context; any
+			// other vocabulary keeps its full IRI as the key (still valid JSON-LD).
+			$out = $this->outbound_index();
+			if (isset($doc['@id'], $out[$doc['@id']])) {
+				$schemans = 'https://schema.org/';
+				$add = array();
+				foreach ($out[$doc['@id']] as $pred => $vals) {
+					$key = (strpos($pred, $schemans) === 0)? substr($pred, strlen($schemans)) : $pred;
+					foreach ($vals as $v) {
+						if (!isset($v['value'])) { continue; }
+						$add[$key][] = (isset($v['type']) && $v['type'] === 'uri')? array('@id' => $v['value']) : $v['value'];
+					}
+				}
+				foreach ($add as $key => $list) { $doc[$key] = (count($list) === 1)? $list[0] : $list; }
+			}
 		} else {
 			// no content page (e.g. an admin screen) -> a minimal WebSite node
 			$doc['@type'] = 'WebSite';
@@ -679,6 +695,18 @@ class lunaModel {
 			}
 			$index[$turi][$schema.'isPartOf'][] = array('value'=>$puri, 'type'=>'uri');
 			$index[$puri][$schema.'hasPart'][] = array('value'=>$turi, 'type'=>'uri');
+		}
+		// Merge the operator-curated outbound links for every resource this document
+		// describes (the page and its articles), so ?output=* and /data/{slug} reach
+		// beyond the site instead of describing an island.
+		$out = $this->outbound_index();
+		if (!empty($out)) {
+			foreach ($index as $uri => $node) {
+				if (!isset($out[$uri])) { continue; }
+				foreach ($out[$uri] as $pred => $vals) {
+					foreach ($vals as $v) { $index[$uri][$pred][] = $v; }
+				}
+			}
 		}
 		return $index;
 	}
@@ -987,7 +1015,65 @@ class lunaModel {
 		if ($res) { while ($row = $res->fetchRow()) { $nids[] = intval($row->nid); } $res->free(); }
 		$n = 0;
 		foreach ($nids as $nid) { if ($this->rdf_sync_node($nid)) { $n++; } }
+		// Load the operator-curated outbound links (semantic/links.ttl) so the
+		// triplestore matches the published /data + JSON-LD projections.
+		$this->rdf_load_links();
 		return $n;
+	}
+	// }}}
+	// {{{ outbound_index()
+	/**
+	 * Operator-curated *outbound* links — the statements that connect this site's
+	 * resources to the wider web of data (owl:sameAs / schema:sameAs to an external
+	 * entity, rdfs:seeAlso / schema:about to a related resource). Without them the
+	 * graph is an island: well-formed RDF that links to nothing. They live in
+	 * semantic/links.ttl as Turtle with *relative* /id/ subjects (e.g. <root>), so the
+	 * file is deployment-independent; here they resolve against the live {site}/id/
+	 * base. Parsed once per request. A missing or unparseable file is an empty no-op.
+	 *
+	 * @access public
+	 * @return array an ARC2 index keyed by absolute /id/{slug} IRIs
+	 */
+	public function outbound_index() {
+		static $cache = null;
+		if ($cache !== null) { return $cache; }
+		$cache = array();
+		if (!defined('LUNAPATH')) { return $cache; }
+		$file = dirname(rtrim(LUNAPATH, '/')).'/semantic/links.ttl';
+		if (!is_readable($file)) { return $cache; }
+		$ttl = @file_get_contents($file);
+		if ($ttl === false || trim($ttl) === '') { return $cache; }
+		require_once('arc/ARC2.php');
+		$conf = (isset($this->conf) && is_array($this->conf))? $this->conf : array();
+		// resolve the file's relative <slug> subjects against {site}/id/
+		$base = rtrim(luna::$site_uri, '/').'/id/';
+		$parser = ARC2::getTurtleParser($conf);
+		$parser->parse($base, $ttl);
+		$index = $parser->getSimpleIndex(0);
+		$cache = is_array($index)? $index : array();
+		return $cache;
+	}
+	// }}}
+	// {{{ rdf_load_links()
+	/**
+	 * Mirror the curated outbound links (outbound_index()) into the triplestore via a
+	 * SPARQL `INSERT DATA`, so a direct SPARQL query sees the same owl:sameAs /
+	 * rdfs:seeAlso / … the /data + JSON-LD projections carry. Idempotent (RDF set
+	 * semantics), best-effort. Called at the end of rdf_resync_all().
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function rdf_load_links() {
+		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
+		$out = $this->outbound_index();
+		if (empty($out)) { return false; }
+		require_once('arc/ARC2.php');
+		$conf = (isset($this->conf) && is_array($this->conf))? $this->conf : array();
+		$ser = ARC2::getNtriplesSerializer($conf);
+		$nt = $ser->getSerializedIndex($out);
+		if (trim($nt) === '') { return false; }
+		return $this->sparql_update('INSERT DATA { '.$nt.' }');
 	}
 	// }}}
 	// {{{ rdf_prefixes()

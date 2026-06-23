@@ -1,0 +1,35 @@
+# LunarSystem — outbound links (the "stop being an island" file).
+#
+# Operator-curated statements that connect THIS site's resources to the wider web of
+# data. Without them the graph is well-formed RDF that links to nothing; with them a
+# consumer — or an agent — can follow its nose from a LunarSystem page out to an
+# external entity, and external datasets can point back in via owl:sameAs.
+#
+# Subjects are RELATIVE /id/ IRIs — <root>, <journal>, … — i.e. a content slug. They
+# resolve against the live {site}/id/ base when projected, so this file is
+# deployment-independent: the same statements work on localhost and in production.
+#
+# Each statement is merged into every published representation of its resource:
+# ?output=turtle/xml/json, the embedded + ?output=jsonld JSON-LD, the dereferenceable
+# /data/{slug} document, and — after `make resync-triplestore` — the triplestore, so
+# SPARQL sees them too. A missing or empty file is a silent no-op.
+#
+# Curate honestly. owl:sameAs / schema:sameAs assert IDENTITY (the object *is* this
+# thing — its Wikidata/ORCID/official URL); rdfs:seeAlso / schema:about are the weaker
+# "related to" / "is about". Patterns to copy:
+#
+#   <a-concept-page>  owl:sameAs    <https://www.wikidata.org/entity/Q42> .
+#   <a-person-page>   schema:sameAs <https://orcid.org/0000-0002-1825-0097> .
+
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+
+# The home page's canonical reference is the project repository; the welcome article
+# is about the project. (Seed examples — replace with your own.)
+<root>
+    schema:sameAs <https://github.com/jeromev/LunarSystem> ;
+    rdfs:seeAlso  <https://github.com/jeromev/LunarSystem> .
+
+<welcome>
+    schema:about <https://github.com/jeromev/LunarSystem> .

@@ -12,6 +12,12 @@ A PHP/MySQL CMS that models all content as **RDF triples** and renders pages thr
 > services off the host entirely); **do not change that or otherwise expose `8080` /
 > `3307` to a public or untrusted network.** It is not hardened for any networked or
 > production deployment. See [docs/security.md](docs/security.md).
+>
+> **Deploying for real?** That warning is about the *full Docker stack* (triplestore
+> included), which stays on `localhost`. The **publishing surface** — the HTML +
+> content-negotiated RDF/JSON-LD pages, served from MySQL with no triplestore — *is* built
+> to go on a public domain (e.g. DreamHost shared); follow the hardening runbook in
+> **[docs/going-public.md](docs/going-public.md)**.
 
 > **An RDF-native Semantic Web CMS.** Beyond the archival CMS core, it is a *real* Semantic Web CMS: a frozen URI policy and a vocabulary mapping onto schema.org / Dublin Core / SIOC / FOAF / PROV-O, a JSON-LD projection, and a **triplestore-backed read/write loop**. Every content write mirrors into **Oxigraph** via SPARQL `UPDATE` (a generic write-through in the model's CRUD), and the read path (routing, access control, texts) is served **from the triplestore by default**, with MySQL as the system of record and an automatic SQL fallback (`?sparql=0` to bypass). The same SPARQL can also be served by **Ontop** (a virtual endpoint over the unchanged MySQL) with no app change. The untouched archival CMS is preserved on the **`legacy`** branch. See **[docs/linked-data.md](docs/linked-data.md)** for the full design and **[docs/roadmap.md](docs/roadmap.md)** for what remains.
 
@@ -48,9 +54,14 @@ The CMS detects the active domain by walking `$_SERVER['HTTP_HOST']` and looking
 
 To add a site-specific config: create `luna/luna.domains/<hostname>/ini/luna.ini` and `db.ini`.
 
-## Output formats
+## Output formats & Linked Data
 
-Append `?output=xml`, `?output=json`, `?output=n3`, or `?output=jsonld` to any page URL to receive the raw RDF model instead of HTML. (A JSON-LD block is also embedded in every HTML page's `<head>`; see [docs/linked-data.md](docs/linked-data.md).)
+The same URL serves HTML to a browser and RDF to a machine by **HTTP `Accept`** content
+negotiation (`text/turtle`, `application/ld+json`, `application/rdf+xml`, …). Every resource
+also has a dereferenceable identity URI — `/id/{slug}` (303s to the right document) and
+`/data/{slug}` (the RDF document). `?output=xml|turtle|json|n3|jsonld` forces a format without
+an `Accept` header, a JSON-LD block is embedded in every page `<head>`, and `/sitemap.xml` +
+`/robots.txt` are served for crawlers. See [docs/linked-data.md](docs/linked-data.md).
 
 ## Project structure
 

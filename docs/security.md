@@ -1,9 +1,12 @@
 # Security & Known Issues
 
 LunarSystem is **alpha-grade software originally from 2006–2010**, revived for study. It
-reflects the security practices of its era. Treat it as a historical artifact: safe to
-study and run locally, **not** safe to expose on the public internet without significant
-hardening. Every host port binds to `127.0.0.1` — keep it that way.
+reflects the security practices of its era. The **full Docker stack** (triplestore included)
+is for local study only — its host ports bind to `127.0.0.1`, keep it that way. The
+**publishing surface** (HTML + content-negotiated RDF, served from MySQL with no triplestore)
+*can* be deployed to a public domain by following [going-public.md](going-public.md); the
+controls below are what make that defensible. It is still alpha software — deploy it with eyes
+open, not as a hardened product.
 
 ## Current posture
 
@@ -40,7 +43,11 @@ all host ports loopback-bound). Controls in place:
 - **HTTP headers** — strict CSP on HTML pages (`script-src`/`style-src 'self'`, no
   `unsafe-inline`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`,
   `Referrer-Policy`, COOP; no `X-Powered-By`. (The machine-readable `?output=` responses send
-  a relaxed, data-appropriate CSP so the browser's built-in XML/JSON viewer renders.)
+  a relaxed, data-appropriate CSP so the browser's built-in XML/JSON viewer renders.) Over
+  HTTPS the app adds **HSTS** (`Strict-Transport-Security`, 1 year + `includeSubDomains`) and
+  `upgrade-insecure-requests`, and marks cookies `Secure` — HTTPS is detected from
+  `$_SERVER['HTTPS']` / port 443, or `X-Forwarded-Proto` when `TRUST_PROXY=1` (a proxy header
+  ignored by default so it can't be spoofed on a direct host).
 - **Source / secret disclosure** — `.htaccess` 403s `/.git`, `*.ini`/`*.sql`, the docker
   files, and `docs/`/`scss/`/`semantic/`/`examples/` (case-insensitively); `DEBUG=0` by
   default.
@@ -108,6 +115,11 @@ network, and no host port.
 
   Keep the host bindings on `127.0.0.1`, change `SPARQL_AUTH_PASS` from its demo default (via
   `.env`) for any real use, and never publish Oxigraph or the proxy.
+- **Public deploy — turn the SPARQL surface off entirely.** `SPARQL_ENABLED=0` (e.g.
+  `SetEnv SPARQL_ENABLED 0` in `.htaccess`) disables the whole triplestore layer — both the
+  read path and the write-through — so a public publishing-surface deploy has **no SPARQL
+  surface at all** and serves entirely from MySQL. The triplestore stack stays local (or on a
+  separate VPS). See [going-public.md](going-public.md).
 - **Hand-rolled SPARQL string assembly — injection-safe.** The write-through (`rdf_sync_node`
   / `rdf_delete_node` / `rdf_resync_all`) and the read builders (`load_nodes_sparql` /
   `load_texts_sparql`) assemble SPARQL by interpolation, but every user-controlled value
@@ -128,15 +140,17 @@ network, and no host port.
 | `.DS_Store` files | Not tracked; already ignored. |
 | Cache directories | `luna.domains/*/cache/` must be writable but its *contents* are not committed (only `.gitkeep` is tracked). |
 
-## If you must deploy it
+## Deploying the publishing surface
 
-This is strongly discouraged, but if a live instance is unavoidable:
+The supported public deployment is the **publishing surface** — app + MySQL, no triplestore —
+following the runbook in [going-public.md](going-public.md). The security essentials:
 
-1. Put it behind authentication at the web-server level (HTTP basic auth / VPN).
-2. Serve over HTTPS only.
-3. Keep cookie-only sessions (the defaults already enforce this).
-4. Change the admin password and rotate all DB credentials.
-5. Restrict the MySQL user to the minimum required grants.
-6. Keep `DEBUG = 0` in any production `luna.ini` so errors aren't displayed.
-7. Firewall the database and the triplestore; never expose MySQL (3306/3307) or the SPARQL
-   services publicly.
+1. **Run `php bin/preflight.php`** on the host first (PHP 8.1+, required extensions).
+2. **Serve over HTTPS only** — uncomment the force-HTTPS block in [`.htaccess`](../.htaccess);
+   HSTS and secure cookies then apply automatically.
+3. **`SPARQL_ENABLED=0`** so there is no triplestore / SPARQL surface; the stack stays local.
+4. **Change the admin password and email**, and rotate all DB credentials, before announcing
+   the URL (the seed `admin@lunarsystem.local` / `luna` is public knowledge).
+5. Restrict the MySQL user to the minimum required grants; never expose MySQL publicly.
+6. Keep `DEBUG = 0` so errors aren't displayed, and keep `db.ini` out of git.
+7. Keep cookie-only sessions (the defaults already enforce this).

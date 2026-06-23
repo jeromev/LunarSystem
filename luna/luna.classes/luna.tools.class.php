@@ -36,10 +36,16 @@ class lunaTools {
 		// content negotiation (see set_output_format), so caches must key on Accept or they
 		// would hand an RDF client the cached HTML, and vice versa.
 		header('Vary: Accept');
+		// On HTTPS (a public deploy), pin the site to HTTPS for a year and auto-upgrade any
+		// stray http subresource. Never emit HSTS over plain http (it would be ignored, and
+		// could wrongly stick if a proxy mislabels the scheme).
+		$https = function_exists('luna_is_https') && luna_is_https();
+		if ($https) { header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); }
 		header("Content-Security-Policy: default-src 'self'; "
 			."script-src 'self'; style-src 'self'; "
 			."img-src 'self' data:; font-src 'self'; connect-src 'self'; "
-			."object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+			."object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+			.($https ? "; upgrade-insecure-requests" : ""));
 	}
 	// }}}
 	// {{{ password helpers (bcrypt, with legacy-md5 upgrade-on-login)
@@ -75,7 +81,7 @@ class lunaTools {
 			'path'     => luna::$site_relative_url ?: '/',
 			'httponly' => true,
 			'samesite' => 'Lax',
-			'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+			'secure'   => (function_exists('luna_is_https') && luna_is_https()),
 		))) { return false; }
 		return true;
 	}

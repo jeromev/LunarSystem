@@ -89,6 +89,40 @@ curl -i                          https://site/data/root # 200  text/turtle (defa
 Today `/id` and `/data` cover **pages**; a text/`Article` slug is described inside
 its page's `/data` document (standalone text dereferencing is a follow-up).
 
+### Linking out — the web of data
+
+Dereferenceable URIs make the graph *readable*; **outbound links** make it part of
+the *web of data*. Without them the published graph is well-formed RDF that links to
+nothing — an island. [`semantic/links.ttl`](../semantic/links.ttl) is the operator's
+curated set of statements that point this site's resources at external entities and
+related resources:
+
+```turtle
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix schema: <https://schema.org/> .
+
+<root>             schema:sameAs <https://github.com/jeromev/LunarSystem> .
+<a-concept-page>   owl:sameAs    <https://www.wikidata.org/entity/Q42> .
+```
+
+Subjects are **relative `/id/` IRIs** — a content slug — so the file is
+deployment-independent: they resolve against the live `{site}/id/` base when
+projected ([`lunaModel::outbound_index()`](../luna/luna.classes/luna.model.class.php),
+parsed once per request; a missing or unparseable file is a silent no-op). Each
+statement is merged into **every** representation of its resource:
+
+- `?output=turtle/xml/json` and the `/data/{slug}` document (via `build_schema_index()`);
+- the embedded + `?output=jsonld` JSON-LD (via `to_jsonld()` — schema.org predicates
+  compact to bare terms like `sameAs`, other vocabularies keep their full IRI key);
+- the **triplestore**, after `make resync-triplestore`
+  ([`rdf_load_links()`](../luna/luna.classes/luna.model.class.php) does a SPARQL
+  `INSERT DATA`), so a direct SPARQL query sees the same links.
+
+Curate honestly: `owl:sameAs` / `schema:sameAs` assert **identity** (the object *is*
+this thing — its Wikidata / ORCID / official URL); `rdfs:seeAlso` / `schema:about` are
+the weaker *related to* / *is about*. This is what lets a consumer — or an agent —
+follow its nose out of LunarSystem, and lets external data point back in.
+
 ## Decision 2 — Vocabulary mapping (reuse, don't invent)
 
 The whole point of the Semantic Web is **shared** vocabularies, so the content

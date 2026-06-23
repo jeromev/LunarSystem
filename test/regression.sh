@@ -57,6 +57,22 @@ echo "$H" | grep -qi "X-Frame-Options: *DENY" && pass "X-Frame-Options: DENY" ||
 echo "$H" | grep -qi "X-Content-Type-Options: *nosniff" && pass "X-Content-Type-Options: nosniff" || fail "X-Content-Type-Options missing"
 echo "$H" | grep -qi "X-Powered-By:" && fail "X-Powered-By leaks the PHP version" || pass "no X-Powered-By"
 
+echo "== Linked Data: content negotiation, dereferenceable URIs, outbound links =="
+ct() { curl -s -o /dev/null -w '%{content_type}' -H "Accept: $2" "$BASE$1"; }
+ct / 'text/html'   | grep -qi 'text/html'   && pass "GET / (Accept: text/html) -> text/html"   || fail "GET / not text/html"
+ct / 'text/turtle' | grep -qi 'text/turtle' && pass "GET / (Accept: text/turtle) -> text/turtle (negotiated)" || fail "GET / not negotiated to turtle"
+curl -s -D - -o /dev/null "$BASE/" | grep -qi '^Vary:.*Accept' && pass "Vary: Accept present" || fail "Vary: Accept missing"
+S=$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/html' "$BASE/id/root")
+L=$(curl -s -o /dev/null -D - -H 'Accept: text/html' "$BASE/id/root" | awk 'tolower($1)=="location:"{print $2}' | tr -d "\r")
+{ [ "$S" = 303 ] && echo "$L" | grep -qE '/$'; } && pass "/id/root (html) -> 303 to HTML doc" || fail "/id/root -> $S loc=$L (expected 303 to /)"
+Sr=$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/turtle' "$BASE/id/root")
+Lr=$(curl -s -o /dev/null -D - -H 'Accept: text/turtle' "$BASE/id/root" | awk 'tolower($1)=="location:"{print $2}' | tr -d "\r")
+{ [ "$Sr" = 303 ] && echo "$Lr" | grep -qE '/data/root$'; } && pass "/id/root (turtle) -> 303 to /data/root" || fail "/id/root rdf -> $Sr loc=$Lr"
+c=$(code "/data/root"); [ "$c" = 200 ] && pass "/data/root -> 200 (RDF document)" || fail "/data/root -> $c"
+c=$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/turtle' "$BASE/data/admin"); [ "$c" = 404 ] && pass "/data/admin (guest) -> 404 (ACL preserved)" || fail "/data/admin guest -> $c (expected 404)"
+curl -s -H 'Accept: text/turtle' "$BASE/data/root" | grep -qi 'sameAs' && pass "/data/root carries an outbound sameAs link" || fail "/data/root missing outbound link"
+body "/?output=jsonld" | grep -qi '"sameAs"' && pass "JSON-LD carries sameAs" || fail "JSON-LD missing sameAs"
+
 echo "== authentication =="
 JAR=$(mktemp); PAGE=$(mktemp)
 curl -s -c "$JAR" "$BASE/login" -o "$PAGE"; T=$(tokfrom "$PAGE")

@@ -52,7 +52,10 @@ Defines the handful of node types.
 ## Content
 
 ### `luna_texts` — content blocks (per language)
-The actual editable content, one row per language per text node.
+The actual editable content, one row per language per text node. The seed ships a
+single demo row: a Markdown **"Welcome to LunarSystem"** block linked to the home
+page (text node `nid 33`), so a fresh install is not blank. Remove that block from
+`luna.mysql.sql` for a content-free install.
 
 | Column | Type | Meaning |
 |---|---|---|

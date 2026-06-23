@@ -1,3 +1,9 @@
+-- Import this file as UTF-8. The mysql client (incl. the Docker
+-- docker-entrypoint-initdb.d importer) defaults to a latin1 connection, which would
+-- double-encode any multibyte content (e.g. the em-dashes in the seeded welcome text)
+-- into mojibake. SET NAMES pins the session charset so the bytes are read as UTF-8.
+SET NAMES utf8mb4;
+
 DROP TABLE IF EXISTS `luna_actions`;
 CREATE TABLE `luna_actions` (
   `id` int(11) unsigned NOT NULL auto_increment,
@@ -127,7 +133,7 @@ CREATE TABLE `luna_nodes_seq` (
   PRIMARY KEY  (`sequence`)
 ) ENGINE=MyISAM;
 
-INSERT INTO `luna_config` (`name`, `value`) VALUES 
+INSERT INTO `luna_config` (`name`, `value`) VALUES
 ('disable', '0'),
 ('keywords', ''),
 ('session_length', '604800'),
@@ -143,7 +149,7 @@ INSERT INTO `luna_config` (`name`, `value`) VALUES
 ('site_desc', 'This is the description of my lunar website.'),
 ('timezone', '1');
 
-INSERT INTO `luna_nodes` (`nid`, `lid`, `tid`, `parent_nid`, `is_active`) VALUES 
+INSERT INTO `luna_nodes` (`nid`, `lid`, `tid`, `parent_nid`, `is_active`) VALUES
 (1, 'admin@lunarsystem.local', 1, NULL, 1),
 (2, 'guest', 1, NULL, 0),
 (3, 'group_default', 2, NULL, 1),
@@ -177,10 +183,10 @@ INSERT INTO `luna_nodes` (`nid`, `lid`, `tid`, `parent_nid`, `is_active`) VALUES
 (31, 'mod_node', 6, NULL, 1),
 (32, 'node', 5, 9, 1);
 
-INSERT INTO `luna_nodes_seq` (`sequence`) VALUES 
+INSERT INTO `luna_nodes_seq` (`sequence`) VALUES
 (33);
 
-INSERT INTO `luna_nodes_map` (`nid1`, `nid2`) VALUES 
+INSERT INTO `luna_nodes_map` (`nid1`, `nid2`) VALUES
 (1, 3), (3, 1),
 (1, 4), (4, 1),
 (1, 5), (5, 1),
@@ -231,7 +237,7 @@ INSERT INTO `luna_nodes_map` (`nid1`, `nid2`) VALUES
 (31, 6), (6, 31),
 (6, 32), (32, 6);
 
-INSERT INTO `luna_actions` (`nid`, `unid`, `ntime`) VALUES 
+INSERT INTO `luna_actions` (`nid`, `unid`, `ntime`) VALUES
 (1, 1, 0),
 (2, 1, 0),
 (3, 1, 0),
@@ -265,7 +271,7 @@ INSERT INTO `luna_actions` (`nid`, `unid`, `ntime`) VALUES
 (31, 1, 0),
 (32, 1, 0);
 
-INSERT INTO `luna_types` (`id`, `lid`, `page_nid`) VALUES 
+INSERT INTO `luna_types` (`id`, `lid`, `page_nid`) VALUES
 (1, 'user', 15),
 (2, 'group', 11),
 (3, 'level', 12),
@@ -273,8 +279,32 @@ INSERT INTO `luna_types` (`id`, `lid`, `page_nid`) VALUES
 (5, 'page', 14),
 (6, 'mod', 13);
 
-INSERT INTO `luna_users` (`id`, `nid`, `firstname`, `lastname`, `password`, `regis_time`, `last_time`, `last_url`, `newpasswd`, `login_attempts`, `lang`) VALUES 
+INSERT INTO `luna_users` (`id`, `nid`, `firstname`, `lastname`, `password`, `regis_time`, `last_time`, `last_url`, `newpasswd`, `login_attempts`, `lang`) VALUES
 (1, 1, 'Admin', 'Luna', 'ba8a48b0e34226a2992d871c65600a7c', 0, 0, NULL, '', 0, ''),
 (2, 2, 'guest', '', '8ff953dd97c4405234a04291dee39e0b', 0, 0, NULL, '', 0, '');
+
+-- Demo content: a single Markdown welcome text on the home page — the only seeded
+-- text block, so a fresh install is not blank. Remove this block for a content-free
+-- install. It uses nid 33, the free slot before luna_nodes_seq (which already
+-- allocates the next node id as 34). The page link, author/timestamp action and the
+-- text row mirror exactly what mod_edit_texts writes when a text is created in the UI.
+INSERT INTO `luna_nodes` (`nid`, `lid`, `tid`, `parent_nid`, `is_active`) VALUES
+(33, 'welcome', 4, NULL, 1);
+INSERT INTO `luna_nodes_map` (`nid1`, `nid2`) VALUES
+(33, 9), (9, 33);
+INSERT INTO `luna_actions` (`nid`, `unid`, `ntime`) VALUES
+(33, 1, 0);
+INSERT INTO `luna_texts` (`nid`, `title`, `lang`, `content`) VALUES
+(33, 'Welcome to LunarSystem', 'en', '**LunarSystem** is a compact, RDF-native CMS. Every page is modelled as RDF triples and rendered through XSLT.
+
+### A few things that make it unusual
+
+- **One graph for everything.** Users, groups, pages, access levels—and this very text—are all nodes in a single RDF graph.
+- **Every page is also data.** Append `?output=jsonld`, `?output=xml`, `?output=n3` or `?output=json` to any URL to read the same page as machine-readable RDF.
+- **Written in Markdown.** This block is authored in Markdown and rendered to HTML on the fly; the Markdown source is what travels in the published graph.
+
+### Make it your own
+
+Sign in as an administrator, then open **Edition → Edit texts** to change this text or write your own. The full story lives in the [project documentation](https://github.com/jeromev/LunarSystem).');
 
 OPTIMIZE TABLE `luna_actions` , `luna_config` , `luna_logs` , `luna_nodes` , `luna_nodes_map` , `luna_nodes_seq` , `luna_sessions` , `luna_texts` , `luna_types` , `luna_users`;

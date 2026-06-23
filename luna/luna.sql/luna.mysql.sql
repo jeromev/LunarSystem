@@ -13,7 +13,7 @@ CREATE TABLE `luna_actions` (
 DROP TABLE IF EXISTS `luna_config`;
 CREATE TABLE `luna_config` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) default NULL,
+  `name` varchar(191) default NULL, -- 191 (not 255) so the KEY fits MyISAM's 1000-byte limit under utf8mb4 (191*4=764)
   `value` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
@@ -40,7 +40,7 @@ CREATE TABLE `luna_login_throttle` (
 DROP TABLE IF EXISTS `luna_nodes`;
 CREATE TABLE `luna_nodes` (
   `nid` int(11) unsigned NOT NULL auto_increment,
-  `lid` varchar(255) default '',
+  `lid` varchar(191) default '', -- 191 (not 255) so the UNIQUE key fits MyISAM's 1000-byte limit under utf8mb4 (191*4=764)
   `tid` int(11) unsigned NOT NULL default '0',
   `parent_nid` int(11) unsigned default NULL,
   `is_active` tinyint(1) NOT NULL default '1',
@@ -95,7 +95,7 @@ CREATE TABLE `luna_texts` (
 DROP TABLE IF EXISTS `luna_types`;
 CREATE TABLE `luna_types` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `lid` varchar(255) default NULL,
+  `lid` varchar(191) default NULL, -- 191 (not 255) so the UNIQUE key fits MyISAM's 1000-byte limit under utf8mb4 (191*4=764)
   `page_nid` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `lid` (`lid`),

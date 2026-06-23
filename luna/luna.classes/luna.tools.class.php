@@ -32,6 +32,10 @@ class lunaTools {
 		header('X-Frame-Options: DENY');
 		header('Referrer-Policy: strict-origin-when-cross-origin');
 		header('Cross-Origin-Opener-Policy: same-origin');
+		// The same URL is served as HTML or RDF (Turtle/JSON-LD/RDF-XML/…) by HTTP Accept
+		// content negotiation (see set_output_format), so caches must key on Accept or they
+		// would hand an RDF client the cached HTML, and vice versa.
+		header('Vary: Accept');
 		header("Content-Security-Policy: default-src 'self'; "
 			."script-src 'self'; style-src 'self'; "
 			."img-src 'self' data:; font-src 'self'; connect-src 'self'; "
@@ -199,13 +203,11 @@ class lunaTools {
 	 */
 	public static function set_output_format() {
 		$output = false;
-		if (empty(luna::$path)) { $output = luna::$output_formats[0]; }
+		// 1. an explicit format as the whole path (/xml) or a trailing path segment (/root/xml).
 		if (in_array(luna::$path, luna::$output_formats)) {
 			$output = luna::$path;
 			luna::$path = '';
-		} else if (strpos(luna::$path, '/') === false) {
-			$output = false;
-		} else {
+		} else if (!empty(luna::$path) && strpos(luna::$path, '/') !== false) {
 			$patharray = explode('/', luna::$path);
 			foreach ($patharray as $k => $v) { if (empty($v)) { unset($patharray[$k]); } }
 			$subdir = array_pop($patharray);
@@ -214,11 +216,135 @@ class lunaTools {
 				$output = "$subdir";
 			}
 		}
+		// 2. the ?output= query param — an explicit debug alias that wins over the path.
 		$request = self::request('output');
 		if (!empty($request) && in_array("$request", luna::$output_formats)) { $output = "$request"; }
-		if (empty($output)) { $output = $output = luna::$output_formats[0]; }
+		// 3. otherwise honour the HTTP Accept header (real content negotiation, P4).
+		if (empty($output)) { $output = self::negotiate_output_format(); }
+		// 4. final fallback: HTML.
+		if (empty($output)) { $output = luna::$output_formats[0]; }
 		// die($output);
 		return $output;
+	}
+	// }}}
+	// {{{ negotiate_output_format()
+	/**
+	 * Pick an output format from the request's HTTP `Accept` header — real content
+	 * negotiation, so the same canonical URL serves HTML to a browser and RDF
+	 * (Turtle / JSON-LD / RDF-XML / …) to a Linked Data client. The lowest-precedence
+	 * signal: set_output_format consults it only when no explicit `?output=` / path
+	 * suffix was given. Returns '' when nothing is preferred (the caller defaults to
+	 * HTML), so a bare wildcard Accept or a missing header keeps the HTML view.
+	 *
+	 * Only GET/HEAD reads negotiate, and never an XHR — admin AJAX injects HTML
+	 * fragments and must not be handed RDF.
+	 *
+	 * @access public
+	 * @return string a key of luna::$output_formats, or ''
+	 */
+	public static function negotiate_output_format() {
+		$method = isset($_SERVER['REQUEST_METHOD'])? $_SERVER['REQUEST_METHOD'] : 'GET';
+		if ($method !== 'GET' && $method !== 'HEAD') { return ''; }
+		if (defined('AJAX') && AJAX) { return ''; }
+		$accept = isset($_SERVER['HTTP_ACCEPT'])? trim($_SERVER['HTTP_ACCEPT']) : '';
+		if ($accept === '') { return ''; }
+		// the representations we serve, HTML first so it wins `*/*`, `text/*` and q-ties.
+		// (application/xml is deliberately NOT offered — browsers send it at q=0.9 and we
+		// must not hand them RDF; RDF/XML is offered as application/rdf+xml only.)
+		$offered = array(
+			array('text/html', 'html'),
+			array('application/xhtml+xml', 'html'),
+			array('application/ld+json', 'jsonld'),
+			array('text/turtle', 'turtle'),
+			array('application/x-turtle', 'turtle'),
+			array('application/rdf+xml', 'xml'),
+			array('application/n-triples', 'n3'),
+			array('application/rdf+n3', 'n3'),
+			array('text/n3', 'n3'),
+			array('application/rdf+json', 'json'),
+			array('application/json', 'jsonld'),
+		);
+		// parse the Accept header into [media, q, order], dropping q=0 ("not acceptable").
+		$accepted = array();
+		$order = 0;
+		foreach (explode(',', $accept) as $part) {
+			$bits = explode(';', trim($part));
+			$media = strtolower(trim($bits[0]));
+			if ($media === '' || strpos($media, '/') === false) { continue; }
+			$q = 1.0;
+			for ($i = 1; $i < count($bits); $i++) {
+				$p = trim($bits[$i]);
+				if (stripos($p, 'q=') === 0) { $q = (float) substr($p, 2); }
+			}
+			if ($q <= 0) { continue; }
+			$accepted[] = array('media' => $media, 'q' => $q, 'order' => $order++);
+		}
+		if (empty($accepted)) { return ''; }
+		// most-preferred first; keep client order for equal q (stable).
+		usort($accepted, function($a, $b) {
+			if ($a['q'] == $b['q']) { return $a['order'] - $b['order']; }
+			return ($a['q'] < $b['q'])? 1 : -1;
+		});
+		foreach ($accepted as $acc) {
+			list($t, $s) = explode('/', $acc['media'], 2);
+			foreach ($offered as $off) {
+				$ot = substr($off[0], 0, strpos($off[0], '/'));
+				if ($acc['media'] === $off[0]            // exact type/subtype
+					|| $t === '*'                         // */*
+					|| ($s === '*' && $t === $ot)) {      // type/*
+					return $off[1];
+				}
+			}
+		}
+		return '';
+	}
+	// }}}
+	// {{{ redirect()
+	/**
+	 * Send an HTTP redirect and stop. Defaults to 303 See Other — the correct status
+	 * for the Linked Data /id/{slug} identity URI, which points a client at the
+	 * concrete document (HTML page or RDF /data/{slug}) describing the resource.
+	 *
+	 * @access public
+	 * @param string $url
+	 * @param integer $code 301 | 302 | 303 | 307
+	 * @return void
+	 */
+	public static function redirect($url = '', $code = 303) {
+		if (empty($url) || headers_sent()) { return; }
+		static $status = array(301 => '301 Moved Permanently', 302 => '302 Found', 303 => '303 See Other', 307 => '307 Temporary Redirect');
+		$line = isset($status[$code])? $status[$code] : '303 See Other';
+		header('HTTP/1.1 '.$line, true, isset($status[$code])? $code : 303);
+		header('Location: '.$url);
+		exit;
+	}
+	// }}}
+	// {{{ send_alternate_links()
+	/**
+	 * Advertise the resource's other representations with HTTP `Link` headers — the
+	 * Linked Data trail a consumer follows from any document back to the identity and
+	 * across to the RDF / HTML alternates (P4). Emitted for every routed page once the
+	 * slug (PAGELID) and negotiated format are known.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public static function send_alternate_links() {
+		if (headers_sent() || !defined('PAGELID') || !PAGELID) { return; }
+		$base = rtrim(luna::$site_uri, '/');
+		$slug = rawurlencode(PAGELID);
+		$id   = $base.'/id/'.$slug;     // the resource identity
+		$data = $base.'/data/'.$slug;   // the RDF document
+		$html = self::link(luna::$path, true);
+		$links = array('<'.$id.'>; rel="canonical"');
+		if (luna::$output_format === 'html') {
+			$links[] = '<'.$data.'>; rel="alternate"; type="text/turtle"';
+			$links[] = '<'.$data.'>; rel="alternate"; type="application/ld+json"';
+		} else {
+			$links[] = '<'.$html.'>; rel="alternate"; type="text/html"';
+			$links[] = '<'.$id.'>; rel="describedby"';
+		}
+		header('Link: '.implode(', ', $links));
 	}
 	// }}}
 	// {{{ format_date()

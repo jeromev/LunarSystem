@@ -68,7 +68,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.53-alpha';
+	public static $lunaVersion = '0.8.54-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -201,7 +201,7 @@ class luna {
 	 * @access	public
 	 * @var		array
 	 */
-	public static $output_formats = array('html', 'xml', 'json', 'n3', 'jsonld'); // 'html', 'xml', 'json', 'n3', 'turtle', 'jsonld'
+	public static $output_formats = array('html', 'xml', 'turtle', 'json', 'n3', 'jsonld');
 	/**
 	 * mods
 	 * @access	public
@@ -266,6 +266,11 @@ class luna {
 			if (!self::$output_format = lunaTools::set_output_format()) { throw new lunaException(_('Error: cannot set output format.'), PEAR_LOG_CRIT); }
 			// build RDF model
 			if (!self::$model = lunaModel::singleton()) { throw new lunaException(_('Error: cannot create RDF object.'), PEAR_LOG_CRIT); }
+			// Linked Data resource routing (P4): /id/{slug} is the resource identity —
+			// 303 See Other to a concrete document by the negotiated format; /data/{slug}
+			// is the RDF document describing it. Both resolve the slug against the
+			// ACL-filtered graph, so they inherit the HTML view's access control.
+			$this->route_linked_data();
 			// if user is admin, disable cache
 			if (lunaTools::user_can_access_level(self::$session->user, 'level_admin')) {
 				self::$cache = false;
@@ -284,6 +289,8 @@ class luna {
 			// Check privileges. If user is unauthorized, send him to login
 			if (!lunaTools::check_privileges()) { lunaTools::go('login'); }
 			if (!in_array(self::$output_format, self::$output_formats)) { self::$output_format = isset(self::$output_formats[0])? self::$output_formats[0] : 'html'; }
+			// Advertise the resource's identity + alternate representations (Linked Data trail).
+			lunaTools::send_alternate_links();
 			// Load texts associated with the page — from the graph by default,
 			// falling back to SQL if the SPARQL path is off or yields nothing.
 			$texts = false;
@@ -339,6 +346,55 @@ class luna {
 		// set requested path
 		self::$path = preg_replace('@^\/*(.*?)\/*$@', '$1', lunaTools::request('path'));
 		return true;
+	}
+	// }}}
+	// {{{ route_linked_data()
+	/**
+	 * Linked Data resource routing (P4 — see docs/linked-data.md). Two reserved path
+	 * prefixes turn the canonical /id/{slug} into dereferenceable Linked Data:
+	 *
+	 *  - /id/{slug}    the resource *identity*. Per the httpRange-14 / Cool URIs
+	 *                  pattern it never returns content itself: it 303 See Others to a
+	 *                  concrete document — the HTML page for a browser, the RDF
+	 *                  /data/{slug} for a Linked Data client — by the negotiated format.
+	 *  - /data/{slug}  the RDF *document* describing the resource. Served as Turtle /
+	 *                  JSON-LD / RDF-XML / … by content negotiation, never as HTML; it
+	 *                  re-enters the normal pipeline against the resource's alias so its
+	 *                  texts load and dump() emits the same graph as ?output=.
+	 *
+	 * The slug resolves against the ACL-filtered graph the model just built, so a
+	 * resource the current user can't see 404s here exactly as the HTML view does.
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function route_linked_data() {
+		$path  = self::$path;
+		$is_id = (strpos($path, 'id/') === 0);
+		$is_dt = (strpos($path, 'data/') === 0);
+		if (!$is_id && !$is_dt) { return; }
+		$slug = $is_id? substr($path, 3) : substr($path, 5);
+		// a single path segment names the resource; anything deeper is not an /id|/data URI
+		if ($slug === '' || strpos($slug, '/') !== false) { lunaTools::raise_error_page('404', $path); }
+		if (!$node = self::$model->get_node_from_slug($slug, 'page')) { lunaTools::raise_error_page('404', $path); }
+		$base = rtrim(self::$site_uri, '/');
+		if ($is_id) {
+			// 303 to the concrete document chosen by the already-negotiated format.
+			if (self::$output_format === 'html') {
+				$target = lunaTools::link((string) self::$model->get_alias($node), true);
+			} else {
+				$target = $base.'/data/'.rawurlencode($slug);
+				$req = lunaTools::request('output');
+				if (!empty($req) && in_array("$req", self::$output_formats)) { $target .= '?output='.rawurlencode($req); }
+			}
+			lunaTools::redirect($target, 303);
+		}
+		// /data/{slug}: a data document — never HTML. Default to Turtle (the canonical
+		// RDF text form) when content negotiation didn't pick an RDF flavour.
+		if (self::$output_format === 'html') { self::$output_format = 'turtle'; }
+		// Re-enter the normal pipeline against the resource's canonical alias, so texts
+		// load and the page node resolves exactly as for the HTML view.
+		self::$path = (string) self::$model->get_alias($node);
 	}
 	// }}}
 	// {{{ set_site_path()

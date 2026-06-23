@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.50-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek.
+A PHP/MySQL CMS (v0.8.51-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning. It has bcrypt passwords, CSRF tokens,
@@ -36,7 +36,7 @@ Log in as **`admin@lunarsystem.local`** with password **`luna`**. (These are dem
 Requirements: Apache 2 + `mod_rewrite`, **PHP 8.3** (the tested stack), MySQL 8.0, PHP extensions: `pdo_mysql`, `xsl`, `mbstring`, `gettext`.
 
 1. Copy `luna/luna.domains/luna.default/ini/db.example.ini` → `db.ini` and fill in your credentials.  
-   *(The file at `luna/luna.domains/luna.default/ini/db.ini` already contains Docker defaults.)*
+   *(Docker users can skip this — the stack passes `DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASS` to the app, so no `db.ini` is needed.)*
 2. Import `luna/luna.sql/luna.mysql.sql` into your MySQL database.
 3. Ensure the `luna/luna.domains/<your-domain>/cache/` directory is writable by the web server.
 4. The root `.htaccess` handles clean URL rewriting — confirm `AllowOverride All` is set in Apache.

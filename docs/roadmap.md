@@ -47,7 +47,7 @@ This reshapes Part 2 (P4–P5) below, and raises a genuine open question: **is m
 
 - **Done:** `SPARQL_ENDPOINT` defaults to **Oxigraph** — reached through the authenticating `sparql-proxy` (`http://sparql-proxy:7878/query`; Oxigraph is internal-only and fronted by the proxy, see security.md); Ontop is the opt-in override for reading live over MySQL.
 - **Done:** the model constructor (routing) and the `luna.php` text load read from SPARQL by default, gated by `lunaModel::sparql_reads()` (constant `SPARQL_READS`, default on; `?sparql=0` forces SQL for one request). Both keep an **automatic SQL fallback** when the SPARQL path is off or returns nothing — a routing safety net.
-- **Verified:** an Oxigraph-only sentinel rendered by default and vanished under `?sparql=0` (proving the source); routing (`/`, `/about`, `/login`), guest ACL (`/admin`→404), and admin multi-level ACL all resolve from the graph.
+- **Verified:** an Oxigraph-only sentinel rendered by default and vanished under `?sparql=0` (proving the source); routing (`/`, `/node`, `/login`), guest ACL (`/admin`→404), and admin multi-level ACL all resolve from the graph.
 - **Deliberate deviation:** the SQL page/text readers were **kept** (as the fallback), not deleted — MySQL is still the system of record until P2. (Gotcha found & documented: `sanitize_inputs()` turns `'0'`→`false`, so the opt-out is read straight from `$_GET` with a `(bool)` cast, not via `lunaTools::request()`.)
 
 **Risks (carried):** a *partial* mirror gap (some-but-not-all triples) is **not** caught by the empty-result fallback — run `rdf_resync_all()` after out-of-band changes; the dual-write is still best-effort, so reads can serve a stale mirror until the next successful sync (eliminated only by P2).

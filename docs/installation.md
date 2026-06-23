@@ -9,7 +9,7 @@
 | Component | Version / notes |
 |---|---|
 | PHP | **8.3** |
-| PHP extensions | `pdo_mysql`, `xsl`, `mbstring`, `gettext` |
+| PHP extensions | `pdo_mysql`, `xsl`, `mbstring`, `gettext`, `json`, `libxml` (run `php bin/preflight.php` to check a host) |
 | Web server | Apache 2 with `mod_rewrite` and `AllowOverride All` |
 | Database | MySQL 8.0 (run with `sql_mode=""` for the legacy MyISAM column defaults; the Docker stack sets this) |
 | Bundled libs | semsol/arc2 (locally PHP-8/UTF-8 patched) — vendored in `luna/luna.lib/arc/` |
@@ -91,6 +91,15 @@ docker-compose up --build -d
 6. Open the site. It resolves the active domain from `HTTP_HOST`; if no matching
    `luna.domains/<host>/` exists it uses `luna.default/`.
 
+## Option C — Public shared hosting (the publishing surface)
+
+To put LunarSystem on a real domain (e.g. DreamHost shared), deploy the **publishing
+surface** — app + MySQL, no triplestore. It's Option B plus three things: run
+`php bin/preflight.php` to confirm the host (notably the `xsl` extension), set
+`SetEnv SPARQL_ENABLED 0` in `.htaccess` so the app serves entirely from MySQL, and turn on
+HTTPS + change the demo admin password. The full step-by-step is in
+**[going-public.md](going-public.md)**.
+
 ## Adding a site-specific domain
 
 To serve a real hostname with its own settings, create:
@@ -108,9 +117,11 @@ directory matching the host is what selects it. See
 
 ## Output formats
 
-Any page URL also serves the raw model: append `?output=jsonld`, `?output=xml`,
-`?output=json`, or `?output=n3` to receive schema.org JSON-LD, RDF/XML, RDF/JSON, or
-N-Triples instead of HTML. See [templating.md](templating.md#non-html-output).
+Any page URL also serves the raw model — by HTTP `Accept` content negotiation, or by
+appending `?output=jsonld`, `?output=turtle`, `?output=xml`, `?output=json`, or `?output=n3`
+to receive schema.org JSON-LD, Turtle, RDF/XML, RDF/JSON, or N-Triples instead of HTML.
+Resources are dereferenceable at `/id/{slug}` and `/data/{slug}`. See
+[linked-data.md](linked-data.md) and [templating.md](templating.md#non-html-output).
 
 ## First steps after install
 

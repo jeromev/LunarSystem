@@ -7,6 +7,18 @@ DirectoryIndex index.php
 RewriteEngine On
 RewriteBase /
 
+# --- Public deploy: force HTTPS (uncomment on a real domain that has a TLS cert) ---------
+# Local Docker serves plain http on localhost, so this stays OFF by default. On a public
+# host (e.g. DreamHost shared with a free Let's Encrypt cert) uncomment to redirect every
+# request to https. The X-Forwarded-Proto check covers hosts that terminate TLS at a proxy.
+# RewriteCond %{HTTPS} off
+# RewriteCond %{HTTP:X-Forwarded-Proto} !https
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+#
+# Optional canonical host — pick ONE www/non-www form (example forces the bare domain):
+# RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+# RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
 # Deny direct access to VCS, config, build, and source-doc files (defense-in-depth;
 # in production the DocumentRoot should not be the repository root at all).
 RewriteRule (^|/)\.(git|svn|hg)(/|$) - [F,NC]

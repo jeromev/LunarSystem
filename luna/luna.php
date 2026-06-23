@@ -38,22 +38,54 @@ ini_set('arg_separator.output','&amp;');
 // code targets PHP 5.2/5.3 idioms (`=& new`, static-call style) that PHP 5.6
 // flags but which are harmless here.
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+// --- deployment config helpers -------------------------------------------------------------
+// Read a setting from the real environment OR an Apache `SetEnv` ($_SERVER), so a shared host
+// with no Docker / shell env control can still configure the app from .htaccess.
+if (!function_exists('luna_env')) {
+	function luna_env($key, $default = '') {
+		$v = getenv($key);
+		if (($v === false || $v === '') && isset($_SERVER[$key]) && $_SERVER[$key] !== '') { $v = $_SERVER[$key]; }
+		return ($v === false || $v === '') ? $default : $v;
+	}
+}
+// Trust X-Forwarded-* headers (set only behind a known reverse proxy / load balancer).
+if (!defined('TRUST_PROXY')) { define('TRUST_PROXY', luna_env('TRUST_PROXY', '0') === '1'); }
+// Whether the current request is HTTPS — honoured for the canonical scheme, secure cookies and
+// HSTS. A front proxy's X-Forwarded-Proto is trusted only when TRUST_PROXY is on (so the header
+// can't be spoofed on a directly-served host like DreamHost shared, where $_SERVER['HTTPS'] is set).
+if (!function_exists('luna_is_https')) {
+	function luna_is_https() {
+		if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') { return true; }
+		if (!empty($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) { return true; }
+		if (defined('TRUST_PROXY') && TRUST_PROXY) {
+			if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'])[0])) === 'https') { return true; }
+			if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') { return true; }
+		}
+		return false;
+	}
+}
+// Master switch for the triplestore layer (SPARQL read + write-through). On by default for the
+// Docker stack; set SPARQL_ENABLED=0 (e.g. `SetEnv SPARQL_ENABLED 0` in .htaccess) for a pure
+// PHP/MySQL deploy with no triplestore — the publishing surface (HTML + content-negotiated
+// RDF/JSON-LD + /id + /data + sitemap) runs entirely from MySQL, so nothing reaches for an
+// endpoint that isn't there. See docs/going-public.md.
+if (!defined('SPARQL_ENABLED')) { define('SPARQL_ENABLED', luna_env('SPARQL_ENABLED', '1') !== '0'); }
 // SPARQL endpoint for the read path. Default = the authenticating reverse proxy (Caddy, HTTP
 // basic auth) in front of Oxigraph (the materialised, dual-write-synced triplestore — RDF-native).
 // Override to Ontop (virtual SPARQL over MySQL) to read live from the relational store instead:
 // SPARQL_ENDPOINT=http://ontop:8080/sparql. See docs/linked-data.md.
-if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', getenv('SPARQL_ENDPOINT') ?: 'http://sparql-proxy:7878/query'); }
+if (!defined('SPARQL_ENDPOINT')) { define('SPARQL_ENDPOINT', luna_env('SPARQL_ENDPOINT', 'http://sparql-proxy:7878/query')); }
 // SPARQL UPDATE endpoint for content write-through to the triplestore (via the proxy). Best-effort.
-if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', getenv('SPARQL_UPDATE_ENDPOINT') ?: 'http://sparql-proxy:7878/update'); }
+if (!defined('SPARQL_UPDATE_ENDPOINT')) { define('SPARQL_UPDATE_ENDPOINT', luna_env('SPARQL_UPDATE_ENDPOINT', 'http://sparql-proxy:7878/update')); }
 // Basic-auth credentials the app presents to the SPARQL proxy. The proxy authenticates every
 // request before forwarding to Oxigraph, so the triplestore's unauthenticated /update + /store are
 // never reachable without these (Oxigraph is also isolated on an internal-only compose network).
 // Demo defaults — set SPARQL_AUTH_PASS via .env / the environment for any real use.
-if (!defined('SPARQL_AUTH_USER')) { define('SPARQL_AUTH_USER', getenv('SPARQL_AUTH_USER') ?: 'luna'); }
-if (!defined('SPARQL_AUTH_PASS')) { define('SPARQL_AUTH_PASS', getenv('SPARQL_AUTH_PASS') ?: 'luna-sparql-dev'); }
+if (!defined('SPARQL_AUTH_USER')) { define('SPARQL_AUTH_USER', luna_env('SPARQL_AUTH_USER', 'luna')); }
+if (!defined('SPARQL_AUTH_PASS')) { define('SPARQL_AUTH_PASS', luna_env('SPARQL_AUTH_PASS', 'luna-sparql-dev')); }
 // Read routing / ACL / texts through SPARQL by default (the triplestore is authoritative for the
 // read path; MySQL stays the system of record and a fallback). Set SPARQL_READS=0 to read from SQL.
-if (!defined('SPARQL_READS')) { define('SPARQL_READS', getenv('SPARQL_READS') === '0' ? false : true); }
+if (!defined('SPARQL_READS')) { define('SPARQL_READS', luna_env('SPARQL_READS', '1') === '0' ? false : true); }
 // Composer autoloader — brings in HTMLPurifier (the input sanitiser; see
 // lunaTools::sanitize()). Hard require: the app is a security boundary and must not run
 // without its sanitiser, so fail loudly if the vendored tree is missing.
@@ -68,7 +100,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.56-alpha';
+	public static $lunaVersion = '0.8.57-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -271,6 +303,11 @@ class luna {
 			// is the RDF document describing it. Both resolve the slug against the
 			// ACL-filtered graph, so they inherit the HTML view's access control.
 			$this->route_linked_data();
+			// Crawler-discovery endpoints (publishing surface): /sitemap.xml lists the
+			// public page tree (as the requester sees it — anonymous for a crawler) and
+			// /robots.txt points at it. Both emit and exit.
+			if (self::$path === 'sitemap.xml') { self::$model->emit_sitemap(); }
+			if (self::$path === 'robots.txt')  { self::$model->emit_robots(); }
 			// if user is admin, disable cache
 			if (lunaTools::user_can_access_level(self::$session->user, 'level_admin')) {
 				self::$cache = false;
@@ -448,8 +485,8 @@ class luna {
 		if ($sitefound == false) { $site_path = "$site_path/luna.default/"; }
 		self::$site_path = $site_path;
 		//  {{{ Copied from Drupal 5.1 function conf_init() (file: bootstrap.inc, line: 235, license: GPL 2)
-			$base_root = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-			$base_url = $base_root .= '://'. $_SERVER['HTTP_HOST'];
+			$base_root = luna_is_https() ? 'https' : 'http';
+			$base_url = $base_root.'://'.$_SERVER['HTTP_HOST'];
 			if ($dir = trim(dirname($_SERVER['PHP_SELF']), '\,/')) {
 				$base_path = "/$dir";
 			} else {

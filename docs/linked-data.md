@@ -89,6 +89,12 @@ curl -i                          https://site/data/root # 200  text/turtle (defa
 Today `/id` and `/data` cover **pages**; a text/`Article` slug is described inside
 its page's `/data` document (standalone text dereferencing is a follow-up).
 
+`/sitemap.xml` (the public page tree, as the anonymous crawler sees it) and `/robots.txt`
+round out the crawler-facing surface. All of this — HTML, the negotiated RDF, `/id`, `/data`,
+the embedded JSON-LD, the sitemap — is projected from MySQL in PHP, so the **publishing
+surface needs no triplestore**: a public PHP/MySQL deploy sets `SPARQL_ENABLED=0` and serves
+it all from the relational store. See [going-public.md](going-public.md).
+
 ### Linking out — the web of data
 
 Dereferenceable URIs make the graph *readable*; **outbound links** make it part of

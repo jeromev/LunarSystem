@@ -82,7 +82,7 @@ class lunaSession implements \SessionHandlerInterface, \SessionUpdateTimestampHa
 			'path'     => luna::$site_relative_url ?: '/',
 			'httponly' => true,
 			'samesite' => 'Lax',
-			'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+			'secure'   => (function_exists('luna_is_https') && luna_is_https()),
 		));
 		ini_set('session.gc_maxlifetime', SID_IN? self::$time_out : self::$min_time_out);
 		define('SESSION_READY_TO_START', true);

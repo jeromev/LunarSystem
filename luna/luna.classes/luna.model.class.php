@@ -388,6 +388,56 @@ class lunaModel {
 		return $node[$this->conf['ns']['luna'].'alias'][0]['value'];
 	}
 	// }}}
+	// {{{ emit_sitemap()
+	/**
+	 * Emit an XML sitemap of the page tree and exit. Lists every active page the
+	 * *current* requester can see — which, for the anonymous crawler this is meant for,
+	 * is exactly the public set — as canonical HTML URLs (those pages carry the JSON-LD
+	 * and the Link headers that lead on to /id and /data). Part of the publishing
+	 * surface; needs no triplestore. See docs/going-public.md.
+	 *
+	 * @access public
+	 * @return void  (sends the response and exits)
+	 */
+	public function emit_sitemap() {
+		$luna = $this->conf['ns']['luna'];
+		$rdf  = $this->conf['ns']['rdf'];
+		$pagetype = $luna.'page';
+		// utility pages that aren't indexable content
+		$skip = array('login' => 1, 'logout' => 1);
+		$urls = array();
+		foreach ($this->index as $node) {
+			if (!isset($node[$rdf.'type'][0]['value']) || $node[$rdf.'type'][0]['value'] !== $pagetype) { continue; }
+			if (isset($node[$luna.'isActive'][0]['value']) && (string) $node[$luna.'isActive'][0]['value'] === '0') { continue; }
+			if (!isset($node[$luna.'alias'][0]['value'])) { continue; }
+			if (isset($node[$luna.'lid'][0]['value'], $skip[$node[$luna.'lid'][0]['value']])) { continue; }
+			$alias = $node[$luna.'alias'][0]['value'];
+			$urls[$alias] = lunaTools::link($alias, true);
+		}
+		ksort($urls);
+		$xml  = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+		foreach ($urls as $u) { $xml .= '  <url><loc>'.htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8').'</loc></url>'."\n"; }
+		$xml .= '</urlset>'."\n";
+		if (!headers_sent()) { header('Content-Type: application/xml; charset=utf-8'); }
+		die($xml);
+	}
+	// }}}
+	// {{{ emit_robots()
+	/**
+	 * Emit a robots.txt that allows crawling and points at the sitemap with an absolute
+	 * URL (correct on any host). Exits.
+	 *
+	 * @access public
+	 * @return void  (sends the response and exits)
+	 */
+	public function emit_robots() {
+		$base = rtrim(luna::$site_uri, '/');
+		$txt  = "User-agent: *\nAllow: /\nSitemap: ".$base."/sitemap.xml\n";
+		if (!headers_sent()) { header('Content-Type: text/plain; charset=utf-8'); }
+		die($txt);
+	}
+	// }}}
 	// {{{ set_property()
 	/**
 	 * @access public
@@ -736,6 +786,7 @@ class lunaModel {
 		return '';
 	}
 	public function sparql_select($query) {
+		if (defined('SPARQL_ENABLED') && !SPARQL_ENABLED) { return array(); }
 		if (!defined('SPARQL_ENDPOINT')) { return array(); }
 		$url = SPARQL_ENDPOINT.'?query='.rawurlencode($query);
 		$ctx = stream_context_create(array('http' => array(
@@ -848,6 +899,7 @@ class lunaModel {
 	 * @return boolean true on a 2xx response
 	 */
 	public function sparql_update($update) {
+		if (defined('SPARQL_ENABLED') && !SPARQL_ENABLED) { return false; }
 		if (!defined('SPARQL_UPDATE_ENDPOINT') || !SPARQL_UPDATE_ENDPOINT) { return false; }
 		$ctx = stream_context_create(array('http' => array(
 			'method'        => 'POST',
@@ -1103,6 +1155,7 @@ class lunaModel {
 		// ?sparql=0 forces SQL. The (bool) cast copes both with the raw '0' string
 		// and with the boolean false that sanitize_inputs() turns '0' into (PHP's
 		// empty('0') is true, so lunaTools::request() can't see the opt-out at all).
+		if (defined('SPARQL_ENABLED') && !SPARQL_ENABLED) { return false; }
 		if (isset($_GET['sparql'])) { return (bool) $_GET['sparql']; }
 		return defined('SPARQL_READS') ? (bool) SPARQL_READS : false;
 	}

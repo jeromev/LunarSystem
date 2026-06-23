@@ -13,12 +13,12 @@
 	--chrome:       var(--ink);
 	--muted:        color-mix(in srgb, var(--chrome) 66%, transparent);
 	--muted-2:      color-mix(in srgb, var(--chrome) 50%, transparent);
-	--link:         #be006f; /* darkened slightly from #cc007a for AA contrast on table stripes */
+	--link:         #be006f;
 	--link-hover:   #ff6099;
-	--accent:       #0066cc;         /* content header + nav hover */
-	--accent-bright:#09f;            /* pagination hover border */
-	--ok:           #007b5e;         /* submit hover / "okay" message */
-	--warn:         #a60045;         /* warning button / message */
+	--accent:       var(--link);
+	--accent-bright: var(--link-hover);
+	--ok:           #007b5e;
+	--warn:         #a60045;
 	--field-border: var(--muted);
 	--field-focus:  #938379;
 	--field-overlay: color-mix(in srgb, var(--chrome) 15%, transparent);

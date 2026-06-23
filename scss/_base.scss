@@ -322,7 +322,8 @@ h4,
 h5,
 h6 {
   color: #000;
-  font-weight: normal;
+  font-weight: bold;
+  font-family: scales.$family-title;
 }
 h1 {
   @include bg.scale(

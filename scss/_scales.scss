@@ -23,9 +23,10 @@
 
 /// Font families
 $family: verdana, sans-serif;
+$family-title: tahoma, verdana, sans-serif;
 
 /// Optical width adjustment multiplier
-$width-optical-adjustment: 1.08;
+$width-optical-adjustment: 1.05;
 
 /// Typography scale names (for indexing)
 $size-names-scale: 'note', 'labeur', 'title-s', 'title-m', 'title-l', 'title-xl', 'title-ul';
@@ -74,7 +75,7 @@ $min-width-scale: 0, 375px, 560px, 768px, 1024px, 1440px, 2004px;
 $max-frame-width-scale: 49, 51, 54, 56, 58, 64, 84;
 
 /// Maximum content widths (in baseline units)
-$max-content-width-scale: 39, 41, 44, 48, 50, 56, 62;
+$max-content-width-scale: 39, 43, 50, 50, 53, 56, 62;
 
 /// Column widths (in baseline units)
 $column-width-scale: 11, 12, 16, 20, 16, 16, 20;

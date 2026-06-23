@@ -64,6 +64,7 @@ SESSIONS  = "luna_sessions"
 ACTIONS   = "luna_actions"
 TEXTS     = "luna_texts"
 USERS     = "luna_users"
+THROTTLE  = "luna_login_throttle"
 
 [Constantes]
 ANONYMOUS  = "guest"   ; lid of the anonymous user
@@ -71,28 +72,37 @@ PERPAGE    = "20"      ; default pagination size
 CACHE      = 0         ; 1 = enable the native file cache (lunaCache) output cache
 INCLUDEPATH = ""       ; extra PHP include path(s)
 CLEAN_URLS = 1         ; 1 = /path style, 0 = ?path= query style
-DEBUG      = 1         ; 1 = display errors + dump logs to admins
+DEBUG      = 0         ; 1 = display errors + dump logs to admins
 ```
 
 The `[DBtables]` indirection is why the code never hard-codes table names — it
 calls `luna::get_ini('DBtables', 'NODES')` etc. You could repoint the CMS at
 differently-named tables without touching code.
 
-## `db.ini`
+## `db.ini` (database credentials)
 
-Read by `lunaDB::prepare()` ([luna.db.class.php](../luna/luna.classes/luna.db.class.php))
-to build a PDO DSN. Copy `db.example.ini` to `db.ini` and fill in:
+`lunaDB::prepare()` ([luna.db.class.php](../luna/luna.classes/luna.db.class.php))
+resolves the DB credentials and builds the PDO DSN with two sources, in order of
+precedence:
 
-```ini
-driver   = "mysql"
-username = "username"
-password = "password"
-host     = "localhost"
-database = "database"
-```
+1. **`db.ini`** in the domain's `ini/` directory — if present, it wins. Copy
+   `db.example.ini` to `db.ini` and fill in:
 
-The `luna.default/ini/db.ini` checked into the repo holds **Docker defaults**
-(`host = db`, user/pass/db = `luna`/`luna`/`lunadb`).
+   ```ini
+   driver   = "mysql"
+   username = "username"
+   password = "password"
+   host     = "localhost"
+   database = "database"
+   ```
+
+2. **Environment variables** `DB_HOST` / `DB_NAME` / `DB_USER` / `DB_PASS` — used
+   when no `db.ini` exists. The Docker stack passes these through
+   `docker-compose.yml`, so a clone-and-run install connects with no `db.ini` to
+   provision. `host` defaults to `localhost` if empty.
+
+`db.ini` is gitignored and never shipped; if neither source supplies a database
+and username, `prepare()` throws. The connection charset is always `utf8mb4`.
 
 ## `SPARQL_ENDPOINT` (semantic-web layer, optional)
 
@@ -133,6 +143,6 @@ timezone, languages, session length, cache timeout) as opposed to the
 | Domain selection | directory name under `luna.domains/` | filesystem |
 | Paths & table mapping | `luna.ini` `[Paths]` / `[DBtables]` | hand-edit |
 | Behaviour flags (cache, debug, clean URLs) | `luna.ini` `[Constantes]` | hand-edit |
-| DB credentials | `db.ini` | hand-edit |
+| DB credentials | `db.ini`, else `DB_*` env vars | hand-edit / environment |
 | Site name, languages, timezone, etc. | `luna_config` table | admin UI |
 | Theme | `luna.domains/<domain>/xsl/` or built-in `luna.xsl/` | XSLT files |

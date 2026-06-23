@@ -14,7 +14,7 @@ must match it by hand and are **not** auto-derived:
 
 1. the 15 `xmlns:luna="…"` declarations in `luna/luna.xsl/luna.html.xsl/*.xsl`
    (one per stylesheet; they must equal the model's RDF output exactly, or the XSLT
-   templates stop matching). Each of those files now also declares the sibling
+   templates stop matching). Each of those files also declares the sibling
    `xmlns:ui="https://jeromev.github.io/LunarSystem/render#"` render namespace
    (`lunaModel::LUNA_RENDER_NS`), which drives the XSLT chrome and is *not* part of
    this content vocabulary;

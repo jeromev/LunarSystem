@@ -99,6 +99,7 @@ Written by `lunaSession` via a custom `session_set_save_handler`.
 | `session_logged_in` | `tinyint(1)` | Authenticated flag |
 | `session_lang` | `varchar(5)` | Session language |
 | `session_useragent` | `varchar(255)` | UA string (hijack check) |
+| `csrf_token` | `varchar(64)` | Per-session CSRF token |
 
 ### `luna_actions` — audit trail
 Who touched which node, when. Joined by the model to attach author/timestamp
@@ -110,6 +111,15 @@ metadata to content.
 | `nid` | `int unsigned` | The affected node |
 | `unid` | `int unsigned` | The acting user node |
 | `ntime` | `int unsigned` | Timestamp |
+
+### `luna_login_throttle` — per-IP login throttle
+Rate-limits failed logins by client IP (see [security.md](security.md)).
+
+| Column | Type | Meaning |
+|---|---|---|
+| `ip` | `varchar(32)` PK | Client IP |
+| `attempts` | `int` | Failed-login count for this IP |
+| `last_time` | `int` | Timestamp of the last attempt |
 
 ## Configuration & logging
 
@@ -176,5 +186,6 @@ The dump ships a working site:
    (profile)    (content)    (audit: nid + unid + ntime)
 
    luna_sessions ── session_user_nid ──► (user node)
-   luna_config   (k/v)     luna_logs (errors)   luna_nodes_seq (counter)
+   luna_config (k/v)  luna_logs (errors)  luna_nodes_seq (counter)
+   luna_login_throttle (per-IP login rate limit)
 ```

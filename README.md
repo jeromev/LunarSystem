@@ -1,6 +1,6 @@
 # LunarSystem
 
-A PHP/MySQL CMS (v0.8.52-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek.
+A PHP/MySQL CMS (v0.8.53-alpha, circa 2006–2010) that models all content as **RDF triples** and renders pages through **XSLT transformations**. Originally developed by Odradek.
 
 > ⚠️ **Study / experiment artifact — run it on `localhost` only.** This is alpha-grade
 > 2006–2010 code revived for learning. It has bcrypt passwords, CSRF tokens,
@@ -73,7 +73,7 @@ luna/
     luna.default/              Fallback site config + per-domain data (ini, cache, locale)
       locale/                  gettext catalogs (en_US, fr_FR): engine 'luna' + 'local' overrides
   luna.sql/luna.mysql.sql      Database schema + seed data
-vendor/                        Composer dependencies (HTMLPurifier — the input sanitiser); committed for clone-and-run
+vendor/                        Composer dependencies (HTMLPurifier sanitiser + league/commonmark Markdown renderer); committed for clone-and-run
 css/                           Stylesheets
 js/                            luna.js (admin UI behaviours; dependency-free vanilla JS)
 semantic/                      Semantic-web layer (Ontop virtual SPARQL + Oxigraph triplestore)
@@ -112,7 +112,7 @@ Full technical documentation lives in [docs/](docs/):
 - [Linked Data](docs/linked-data.md) — the Semantic Web layer (URI policy, vocabularies, JSON-LD, SPARQL via Ontop & Oxigraph)
 - [Why RDF](docs/why-rdf.md) — what going RDF-native unlocks, in plain English (and what's still roadmap)
 - [Roadmap](docs/roadmap.md) — what's next: single source of truth, semantics, a data-first server
-- [Going public](docs/going-public.md) — readiness checklist for opening the repo
+- [Going public](docs/going-public.md) — safety posture and deliberate scope for the public repo
 
 ## Changelog
 

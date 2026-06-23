@@ -26,15 +26,15 @@ serialised directly by ARC2 rather than via XSLT — see below).
 
 `luna::transform()` ([luna.php:546](../luna/luna.php#L546)) picks a stylesheet by
 trying paths in order, first hit wins (the cascade itself is
-[luna.php:615-643](../luna/luna.php#L615)). Roughly, for output format `html` and a
+[luna.php:615-650](../luna/luna.php#L615)). Roughly, for output format `html` and a
 page whose `lid` is `$lid`:
 
 1. `SITEPATH/xsl/html.xsl/<lid>.html.xsl` — domain, page-specific
 2. `SITEPATH/xsl/html.xsl/default.html.xsl` — domain, default
-3. `SITEPATH/xsl/<lid>.xsl` — domain, legacy flat
-4. `SITEPATH/xsl/default.xsl` — domain, legacy default
+3. `SITEPATH/xsl/<lid>.xsl` — domain, flat (no format subdir), page-specific
+4. `SITEPATH/xsl/default.xsl` — domain, flat, default
 5. `XSL_PATH/luna.html.xsl/luna.<lid>.html.xsl` — built-in, page-specific
-6. `XSL_PATH/luna.<lid>.xsl` — built-in, legacy flat
+6. `XSL_PATH/luna.<lid>.xsl` — built-in, flat, page-specific
 7. `XSL_PATH/luna.html.xsl/luna.default.html.xsl` — built-in, default
 
 This is why most pages need no stylesheet of their own: they fall through to
@@ -61,7 +61,7 @@ that mod merges into the model.
 ## The input XML
 
 Templates consume the RDF/XML serialisation of the model. The serialiser is fed
-`lunaModel::project_to_schema($this->index)` ([luna.model.class.php:2657](../luna/luna.classes/luna.model.class.php#L2657)),
+`lunaModel::project_to_schema($this->index)` ([luna.model.class.php:2619](../luna/luna.classes/luna.model.class.php#L2619)),
 so the XSLT renders from the **schema.org + `/id/{slug}`** graph: content nodes are
 `<schema:WebPage>` (pages) / `<schema:Article>` (text blocks) / `<foaf:Person>` (users),
 the app-specific UI render-model is in the `ui:` namespace
@@ -125,7 +125,7 @@ content type. Both `dump()` and the HTML `transform()` serialise the
 schema.org + `/id/{slug}` projection of the model, so any page is also a
 machine-readable RDF endpoint over the same clean graph. See [rdf-model.md](rdf-model.md).
 
-> **Linked Data (Phase 0):** a fifth format `?output=jsonld`
+> **Linked Data:** a fifth format `?output=jsonld`
 > is registered in `luna::$output_formats` and serialised by
 > `lunaModel::to_jsonld()` (a schema.org JSON-LD projection), *not* by ARC2. The
 > same JSON-LD is also embedded in every HTML page: after the XSLT transform,

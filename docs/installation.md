@@ -57,8 +57,8 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
 
 No database config editing is required: the stack passes `DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASS`
 (defaulting to the `db` service / `lunadb` / `luna`) to the app, and the app uses them when no
-`db.ini` is present. Drop a `db.ini` into `luna.default/ini/` (or override the `DB_*` vars in a
-gitignored `.env`) to point elsewhere.
+`db.ini` is present. Drop a `db.ini` into `luna/luna.domains/luna.default/ini/` (or override the
+`DB_*` vars in a gitignored `.env`) to point elsewhere.
 
 ### Reset the database
 
@@ -108,9 +108,9 @@ directory matching the host is what selects it. See
 
 ## Output formats
 
-Any page URL also serves the raw model: append `?output=xml`, `?output=json`, or
-`?output=n3` to receive RDF/XML, RDF/JSON, or N-Triples instead of HTML. See
-[templating.md](templating.md#non-html-output).
+Any page URL also serves the raw model: append `?output=jsonld`, `?output=xml`,
+`?output=json`, or `?output=n3` to receive schema.org JSON-LD, RDF/XML, RDF/JSON, or
+N-Triples instead of HTML. See [templating.md](templating.md#non-html-output).
 
 ## First steps after install
 

@@ -1,35 +1,33 @@
 # Why RDF — what going RDF-native unlocks
 
-This is the "so what?" document: what you can *do* with LunarSystem now that you
-could **not** do with the old-fashioned PHP/MySQL, RDF-as-an-output-format version
-— and, honestly, what is not done yet.
+This is the "so what?" document: what you can *do* with an RDF-native CMS that you
+could **not** do with an ordinary PHP/MySQL, RDF-as-an-output-format app — and,
+honestly, what is not done yet.
 
-> **How to read the tags.** Each capability is marked **live** (works today on
-> `main`, 0.8.47-alpha), **one step away** (a tiny wiring step on top of what
-> exists), or **roadmap** (real work — see [roadmap.md](roadmap.md)). The concrete
-> numbers and queries below were run against the live Docker stack, not assumed.
+> **How to read the tags.** Each capability is marked **live** (works today),
+> **one step away** (a tiny wiring step on top of what exists), or **roadmap**
+> (real work — see [roadmap.md](roadmap.md)).
 
 ## The shift in one sentence
 
-The old app **stored** its content in MySQL and could **print** it as RDF on the
-way out. The new app **keeps its content as a live knowledge graph and runs itself
-on top of that graph** — so the things the Semantic Web is actually *for*
-(querying, sharing, linking, swapping engines) stopped being "someday" and became
-"right now."
+A vanilla PHP/MySQL CMS **stores** its content in SQL and can **print** it as RDF
+on the way out. LunarSystem **keeps its content as a live knowledge graph and runs
+itself on top of that graph** — so the things the Semantic Web is actually *for*
+(querying, sharing, linking, swapping engines) are "right now," not "someday."
 
-A useful image: before, RDF was the *receipt* the app printed after doing
-everything in SQL. Now RDF is the *till* — the thing the app rings everything
-through. The design seam is **SPARQL**: the application above it no longer knows or
-cares whether a query is answered by a triplestore or by MySQL.
+A useful image: in the vanilla design, RDF is the *receipt* the app prints after
+doing everything in SQL. Here RDF is the *till* — the thing the app rings
+everything through. The design seam is **SPARQL**: the application above it does
+not know or care whether a query is answered by a triplestore or by MySQL.
 
 ## 1. Ask the content questions — not just fetch rows · **live**
 
 A vanilla PHP/MySQL app can only answer questions a programmer pre-baked into a SQL
-query buried in PHP. The content is now a graph in a real triplestore (Oxigraph),
+query buried in PHP. Here the content is a graph in a real triplestore (Oxigraph),
 queryable with **SPARQL**, the standard graph query language, with no new code.
 
 - **One question across every content type at once.** A single query censuses the
-  whole site — live it returns `WebPage = 14`, `Article = 2`, `Person = 2` from one
+  whole site — it returns `WebPage = 13`, `Article = 1`, `Person = 2` from one
   triple pattern (`?s a ?type`):
 
   ```sparql
@@ -42,12 +40,12 @@ queryable with **SPARQL**, the standard graph query language, with no new code.
   the same answer needs a hand-written per-table `UNION`; adding a new content type
   means editing that SQL. In the graph a new type just *appears*.
 - **Walk relationships without naming a join column.** "Which pages share the same
-  access level as `admin`?" → live it returns **6** siblings (`admin_groups`,
+  access level as `admin`?" → it returns **6** siblings (`admin_groups`,
   `admin_levels`, `admin_mods`, `admin_pages`, `admin_users`, `journal`) by binding
   one shared `?level` node. In SQL that's a self-join with a subselect, written by
   hand for each such question.
 - **Whole-tree traversal in one clause.** `?page schema:isPartOf+ ?ancestor` returns
-  every page's full ancestry at any depth. The old app did this in
+  every page's full ancestry at any depth. The SQL path does this in
   `lunaModel::calculate_aliases()` — a recursive ~48-line PHP function that re-queries
   the DB at each level. The `+` (a SPARQL property path) replaces all of it.
 - **Booleans and reshaping are built in.** `ASK { … }` answers yes/no directly;
@@ -78,11 +76,11 @@ already understands** — schema.org and FOAF.
   document, version and authenticate before a third party can read the data.
   Off-the-shelf RDF/JSON-LD tooling just works.
 - **Identity is stable and meaningful.** Each resource has a permanent URI
-  `…/id/{slug}` that is *independent of the database row id* and now **immutable**
-  (`lunaModel::update()` refuses and logs any slug change). The old app's identity was
-  literally the autoincrement `nid` (`/node/35`), so re-parenting or restructuring
-  content broke references. Now the name *is* the identity — in the JSON-LD `@id`, as
-  the subject of every triple, and across both backends.
+  `…/id/{slug}` that is *independent of the database row id* and **immutable**
+  (`lunaModel::update()` refuses and logs any slug change). A vanilla app whose
+  identity is the autoincrement row id (`/node/35`) breaks references whenever
+  content is re-parented or restructured. Here the name *is* the identity — in the
+  JSON-LD `@id`, as the subject of every triple, and across both backends.
 - **The same standard terms come out of both backends.** `schema:WebPage` /
   `schema:Article` / `foaf:Person` (with `name` / `headline` / `articleBody` /
   `isPartOf` / `hasPart` / `inLanguage` / `identifier`) are served identically whether
@@ -95,8 +93,8 @@ endpoint is now a configuration choice.
 
 - **Swap the whole backing store with one environment variable, zero code change.**
   `SPARQL_ENDPOINT` points at Oxigraph (the materialised triplestore) by default;
-  point it at **Ontop** and the *same queries* run live over the unchanged MySQL.
-  Verified: one identical query returns byte-identical rows from both engines.
+  point it at **Ontop** and the *same queries* run live over the unchanged MySQL —
+  one identical query returns byte-identical rows from both engines.
 - **A SQL safety valve per request.** `?sparql=0` (or `SPARQL_READS=0`) flips a
   request back to the hand-written SQL path, and the loaders fall back to SQL
   automatically if the graph is empty/unreachable — so the graph can be authoritative
@@ -156,8 +154,8 @@ application.
 
 ## Where to go next
 
-- **[linked-data.md](linked-data.md)** — the design and phase-by-phase history (URI
-  policy, vocabulary mapping, the read/write loop, the Ontop→Oxigraph swap).
+- **[linked-data.md](linked-data.md)** — the design (URI policy, vocabulary
+  mapping, the read/write loop, the Ontop/Oxigraph engines).
 - **[roadmap.md](roadmap.md)** — what remains: P2 (single source of truth), P3
   (semantics), P4 (data-first server); and why client-side XSLT (P5) was dropped.
 - **[architecture.md](architecture.md)** — how a request flows through routing, ACL,

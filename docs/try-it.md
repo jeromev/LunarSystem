@@ -1,8 +1,9 @@
-# Try it — the Semantic Web in ~10 minutes
+# Try it
 
-A guided tour of what makes LunarSystem unusual: the same content served as a
-web page, as JSON-LD, and as a **queryable RDF graph** — with the storage engine
-swappable underneath. No prior RDF/SPARQL experience needed.
+A guided tour of what makes LunarSystem unusual: the same content served as a web
+page, as machine-readable **data under content negotiation**, and as a **queryable
+RDF graph** — with the storage engine swappable underneath. No prior RDF/SPARQL
+experience needed.
 
 > Everything here runs on `localhost` only (the stack binds its ports to
 > `127.0.0.1`). It's a study artifact — see [security.md](security.md).
@@ -16,44 +17,72 @@ docker-compose up --build -d
 This starts five services: the **app** (`8080`), **MySQL** (`3307`), **Ontop**
 (virtual SPARQL over MySQL), **Oxigraph** (the triplestore) and **sparql-proxy**
 (a Caddy reverse proxy that adds the HTTP basic auth Oxigraph lacks). The
-semantic-web services have no host port — Oxigraph sits on an internal-only
-network reachable solely through `sparql-proxy`, which the app talks to with
-credentials (`SPARQL_AUTH_USER` / `SPARQL_AUTH_PASS`, demo defaults
-`luna` / `luna-sparql-dev`). Query them via `docker-compose exec -T app`.
+semantic-web services have no host port — Oxigraph is reachable only through
+`sparql-proxy`, which the app talks to with credentials (`SPARQL_AUTH_USER` /
+`SPARQL_AUTH_PASS`, demo defaults `luna` / `luna-sparql-dev`). Query them via
+`docker-compose exec -T app`.
 
 Open **http://localhost:8080** — the home page. Log in (top of the site) as
 `admin@lunarsystem.local` / `luna` to see the admin pages too.
 
-## 1. The same page, three ways
+## 1. One URL, many representations
 
-A normal CMS gives you HTML. Ask LunarSystem for the *data* instead:
+The same address serves HTML to a browser and RDF to a machine — the server picks
+the representation from the `Accept` header:
 
 ```bash
-# Human view:
-open http://localhost:8080/                      # (or just visit it)
-
-# The schema.org JSON-LD a search engine would read (also embedded in every <head>):
-curl -s 'http://localhost:8080/?output=jsonld'
-
-# The same model as RDF/XML and as N-Triples:
-curl -s 'http://localhost:8080/?output=xml'
-curl -s 'http://localhost:8080/?output=n3'
+curl -s -H 'Accept: text/html'           http://localhost:8080/   # the web page
+curl -s -H 'Accept: text/turtle'         http://localhost:8080/   # the same page as Turtle
+curl -s -H 'Accept: application/ld+json' http://localhost:8080/   # …as schema.org JSON-LD
+curl -s -H 'Accept: application/rdf+xml' http://localhost:8080/   # …as RDF/XML
 ```
 
-One model, many standard representations — the content describes itself with
-schema.org / FOAF terms, so any RDF-aware tool understands it with no bespoke API.
+The content describes itself with schema.org / FOAF terms, so any RDF-aware tool
+reads it with no bespoke API. (A `?output=turtle|jsonld|xml|n3|json` query param
+forces a format without an `Accept` header — handy in a browser address bar — and a
+JSON-LD block is embedded in every HTML page's `<head>`.)
 
-## 2. Query the content as a graph
+## 2. Dereferenceable resources: `/id` and `/data`
+
+Every resource has a stable identity URI a tool can look up. `/id/{slug}` is the
+*thing*; it `303`-redirects to a concrete document by what you ask for:
+
+```bash
+curl -sI -H 'Accept: text/html'   http://localhost:8080/id/root   # 303 → /          (the web page)
+curl -sI -H 'Accept: text/turtle' http://localhost:8080/id/root   # 303 → /data/root (the RDF document)
+```
+
+`/data/{slug}` is the RDF document. It carries the resource, the things it contains
+(a page's `schema:Article` text blocks), and its **outbound links to the wider web**
+— curated in [`../semantic/links.ttl`](../semantic/links.ttl):
+
+```bash
+curl -s http://localhost:8080/data/root
+```
+
+```turtle
+# abbreviated
+<http://localhost:8080/id/root> a schema:WebPage ;
+    schema:name "Home" ;
+    schema:hasPart <http://localhost:8080/id/welcome> ;
+    schema:sameAs  <https://github.com/jeromev/LunarSystem> ;   # ← links out
+    rdfs:seeAlso   <https://github.com/jeromev/LunarSystem> .
+```
+
+`/data/{slug}` content-negotiates too (Turtle by default) and `404`s for a resource
+the current user can't see — a guest's `/data/admin` is denied exactly as `/admin` is.
+
+## 3. Query the content as a graph
 
 The whole site is in a triplestore you can ask arbitrary questions of. The seed
-content loads via SQL, so the graph starts empty — populate it from MySQL first
-(once):
+loads via SQL, so populate the graph from MySQL first (once); this also loads the
+outbound links:
 
 ```bash
-make resync-triplestore        # → bin/resync-triplestore.php; clears + re-projects every node
+make resync-triplestore
 ```
 
-Then try the census — every content type counted in one query:
+Census — every content type counted in one query:
 
 ```bash
 docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
@@ -62,28 +91,16 @@ http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'"
 ```
 
-→ `WebPage 13`, `Article 1`, `Person 2`. Now something a SQL app would hand-write
-a self-join for — "which pages share `admin`'s access level?":
-
-```bash
-docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
-http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
-'query=PREFIX schema: <https://schema.org/>
-PREFIX luna: <https://jeromev.github.io/LunarSystem/ontology#>
-SELECT ?sibling WHERE {
-  ?a schema:name \"admin\" ; luna:level ?l .
-  ?s luna:level ?l ; schema:name ?sibling . FILTER (?s != ?a) }'"
-```
-
-More to paste in [`../examples/queries.sparql`](../examples/queries.sparql):
+→ `WebPage 13`, `Article 1`, `Person 2`. More to paste in
+[`../examples/queries.sparql`](../examples/queries.sparql): shared-level siblings,
 transitive ancestry (`schema:isPartOf+`), `ASK`, `CONSTRUCT`, `DESCRIBE`, and
 cross-store federation.
 
-## 3. The app runs *on* the graph — prove it
+## 4. The app runs *on* the graph — prove it
 
 Routing and access control are answered by SPARQL by default, not SQL. Edit a text
-in the admin UI (Edition → edit a text block, e.g. the "welcome" text on the home
-page) and save. Then read it back **straight from the triplestore**:
+in the admin UI (Edition → edit the "welcome" block on the home page) and save, then
+read it back straight from the triplestore:
 
 ```bash
 docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
@@ -92,10 +109,10 @@ http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 SELECT ?body WHERE { <http://localhost:8080/id/welcome> schema:articleBody ?body }'"
 ```
 
-Your edit is there — the write went to MySQL **and** mirrored into the graph, and
-the home page is rendered from the graph.
+The write went to MySQL **and** mirrored into the graph, and the page renders from
+the graph.
 
-## 4. Swap the engine — no code change
+## 5. Swap the engine — no code change
 
 The app talks only to a SPARQL endpoint, so you can change what's behind it. Point
 the read path at **Ontop** (virtual SPARQL compiled to SQL over the *unchanged*
@@ -106,30 +123,16 @@ SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app
 ```
 
 Reload http://localhost:8080 — identical site, now served live from MySQL through
-SPARQL. Switch back by re-running `docker-compose up -d app` with no override.
-
-You can also bypass SPARQL entirely for one request and read from the SQL joins:
-`http://localhost:8080/?sparql=0`.
-
-## 5. Federation — join the triplestore against live MySQL in one query
-
-```bash
-docker-compose exec -T app sh -c "curl -s -u \"\$SPARQL_AUTH_USER:\$SPARQL_AUTH_PASS\" \
-http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
-'query=PREFIX schema: <https://schema.org/>
-SELECT ?name ?nid WHERE {
-  ?p a schema:WebPage ; schema:name ?name .
-  SERVICE <http://ontop:8080/sparql> { ?p schema:identifier ?nid } }'"
-```
-
-Oxigraph supplies the names; Ontop supplies the live row ids from MySQL; they join
-on the shared `/id/{slug}` identity — no ETL, no shared schema.
+SPARQL. Re-run `docker-compose up -d app` with no override to switch back, or append
+`?sparql=0` to any URL to bypass SPARQL for one request.
 
 ## Where to go next
 
 - **[why-rdf.md](why-rdf.md)** — what all this *unlocks* vs a plain PHP/MySQL app.
-- **[linked-data.md](linked-data.md)** — the design: URI policy, vocabulary, the
-  read/write loop, the Ontop→Oxigraph swap.
+- **[linked-data.md](linked-data.md)** — the design: URI policy, vocabularies,
+  content negotiation, outbound links, the read/write loop, the Ontop→Oxigraph swap.
+- **[../examples/queries.sparql](../examples/queries.sparql)** — more SPARQL,
+  including federation joining the triplestore against live MySQL via Ontop.
 - **[architecture.md](architecture.md)** — how a request flows end to end.
 
 ## Tear down

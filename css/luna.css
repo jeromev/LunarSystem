@@ -357,7 +357,6 @@ table.zebra tbody td {
 
 form {
   display: block;
-  background: transparent;
 }
 form fieldset {
   border: none;
@@ -452,11 +451,8 @@ a:hover {
   color: var(--link-hover);
 }
 
-/* In-text links must be distinguishable without relying on colour (WCAG). */
-p a,
-dd a,
-#Bottom a {
-  text-decoration: underline;
+small {
+  font-size: 0.5625rem;
 }
 
 img {
@@ -494,7 +490,6 @@ dt {
 
 dl.analyse {
   margin: calc(1 * var(--base-unit)) 0;
-  background: transparent;
 }
 dl.analyse dt {
   color: var(--muted-2);
@@ -859,7 +854,6 @@ h6:after {
   margin: 0 auto;
   width: 100%;
   padding-bottom: calc(4.5 * var(--base-unit)); /* clear the fixed bottom toolbar (#Nav) */
-  background: transparent;
   position: relative;
 }
 #Page #Top {
@@ -996,12 +990,24 @@ h6:after {
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
 }
+#Page #Content #Content-main {
+  /* In-text links must be distinguishable without relying on colour (WCAG). */
+}
+#Page #Content #Content-main p a,
+#Page #Content #Content-main dd a,
+#Page #Content #Content-main li a,
+#Page #Content #Content-main #Bottom a {
+  text-decoration: underline;
+}
 #Page #Content #Content-main li:before, #Page #Content #Content-main li:after {
   height: var(--base-line-height);
   content: "";
 }
 #Page #Content #Content-main li:after {
   vertical-align: calc(var(--base-line-height) * -1);
+}
+#Page #Content #Content-main li {
+  list-style: disc;
 }
 #Page #Content #Content-main div.box.text {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
@@ -1028,8 +1034,13 @@ h6:after {
 #Page #Content #Content-main div.onecol label {
   clear: both;
 }
-#Page #Content #Content-main form fieldset {
-  background: transparent;
+#Page #Content #Content-main form fieldset label.big input,
+#Page #Content #Content-main form fieldset label.big span.label {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
+}
+#Page #Content #Content-main form fieldset label.big textarea {
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
+  height: calc(18 * var(--base-unit));
 }
 #Page #Content #Content-main form fieldset div.box-content {
   padding-bottom: calc(1 * var(--base-unit));
@@ -1050,26 +1061,18 @@ h6:after {
 #Page #Content #Content-main form fieldset div.box-content div.col label.large span.label {
   width: calc(35 * var(--base-unit) * var(--width-optical-adjustment));
 }
-#Page #Content-main form fieldset label.big input,
-#Page #Content-main form fieldset label.big span.label {
-  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
-}
-#Page #Content-main form fieldset label.big textarea {
-  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
-  height: calc(18 * var(--base-unit));
-}
-#Page #Content #Content-main div.fields,
-#Page #Content #Content-main div.submit {
+#Page #Content #Content-main form fieldset div.fields,
+#Page #Content #Content-main form fieldset div.submit {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(20 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   background-color: var(--field-overlay);
   gap: calc(1 * var(--base-unit));
 }
-#Page #Content #Content-main div.text div.col {
+#Page #Content #Content-main form fieldset div.text div.col {
   width: 100%;
 }
-#Page #Content #Content-main div.submit {
+#Page #Content #Content-main form fieldset div.submit {
   background-color: var(--field-overlay-2);
 }
 #Page #AnalyseLog {
@@ -1085,10 +1088,6 @@ h6:after {
   font-weight: bold;
   max-width: 100%;
 }
-#Page div.message {
-  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
-}
 #Page #Messages p.warning {
   background: var(--warn);
 }
@@ -1097,6 +1096,10 @@ h6:after {
 }
 #Page #Messages p.okay {
   background: var(--ok);
+}
+#Page div.message {
+  padding: calc(0.5 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(51 * var(--base-unit) * var(--width-optical-adjustment));
 }
 #Page {
   /* Fixed bottom toolbar: hamburger-revealed sitemap + language / format switches */
@@ -1115,7 +1118,6 @@ h6:after {
 }
 #Page #Nav #SiteMap {
   position: relative;
-  background: transparent;
   /* the box-handle <h2> is the hamburger button */
 }
 #Page #Nav #SiteMap h2.box-handle {

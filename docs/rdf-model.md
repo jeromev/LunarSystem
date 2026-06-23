@@ -50,7 +50,7 @@ custom namespace:
 | Prefix | URI | Used for |
 |---|---|---|
 | `rdf` | `http://www.w3.org/1999/02/22-rdf-syntax-ns#` | `rdf:type`, descriptions |
-| `rdfs` | `http://www.w3.org/2000/01/rdf-schema#` | (legacy `rdfs:label`, projected to `schema:name`) |
+| `rdfs` | `http://www.w3.org/2000/01/rdf-schema#` | internal `rdfs:label`, projected to `schema:name` |
 | `schema` | `https://schema.org/` | content classes/predicates: `schema:WebPage`, `schema:Article`, `schema:name`, `schema:identifier`, `schema:isPartOf`/`hasPart`, `schema:headline`, `schema:articleBody`, `schema:inLanguage` |
 | `foaf` | `http://xmlns.com/foaf/0.1/` | users → `foaf:Person`, `foaf:name`, `foaf:firstName`, `foaf:surName`, `foaf:mbox` |
 | `owl` | `http://www.w3.org/2002/07/owl#` | declared, but no `owl:` term is used by the content model |
@@ -145,10 +145,9 @@ Two output paths, both backed by the bundled **ARC2** RDF library
 
 ### `dump($flavor, $return, $node)` — raw output
 Serialises `$index` to one of:
-- **xml** → `ARC2::getRDFXMLSerializer()` (`application/rdf+xml`)
+- **xml** → `ARC2::getRDFXMLSerializer()` (served as `application/xml` so browsers render it inline)
 - **json** → `ARC2::getRDFJSONSerializer()` (`application/rdf+json`)
-- **n3** → `ARC2::getNtriplesSerializer()`
-- **turtle** → `ARC2::getTurtleSerializer()` (present in `dump()` but not registered as an output format)
+- **n3** → `ARC2::getNtriplesSerializer()` (`application/rdf+n3`)
 - **jsonld** → `to_jsonld()` (compact schema.org JSON-LD; see [linked-data.md](linked-data.md))
 
 Triggered by `?output=xml|json|n3|jsonld` on any URL. Sets the content-type header

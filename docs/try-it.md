@@ -62,7 +62,7 @@ http://sparql-proxy:7878/query -H 'Accept: text/csv' --data-urlencode \
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type } GROUP BY ?type'"
 ```
 
-→ `WebPage 14`, `Article 2`, `Person 2`. Now something a SQL app would hand-write
+→ `WebPage 13`, `Article 1`, `Person 2`. Now something a SQL app would hand-write
 a self-join for — "which pages share `admin`'s access level?":
 
 ```bash

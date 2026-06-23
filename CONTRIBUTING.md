@@ -22,10 +22,11 @@ safer to run locally, or better as a learning tool.
 - Turning it into production software, adding heavy frameworks, or large new deps.
   The value is that it's tiny and readable. New bundled libraries are unlikely to
   be accepted.
-- Reverting the runtime — the project was migrated to **PHP 8.3 / MySQL 8.0** (PDO) in
-  0.5.0-alpha; re-introducing the old `mysql_*` / PEAR MDB2 stack or a PHP-5-only port
-  would be a *different* project.
-- Reintroducing bulk (e.g. a WYSIWYG editor) that was removed to keep it minimal.
+- Reverting the runtime — the project targets **PHP 8.3 / MySQL 8.0** (PDO);
+  re-introducing the old `mysql_*` / PEAR MDB2 stack or a PHP-5-only port would be a
+  *different* project.
+- Adding bulk — e.g. a WYSIWYG editor. The editor is intentionally a plain Markdown
+  `<textarea>`; keep the project tiny and readable.
 
 ## Development setup
 

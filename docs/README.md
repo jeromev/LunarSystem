@@ -1,8 +1,6 @@
 # LunarSystem Documentation
 
-Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS
-(v0.8.55-alpha, circa 2006–2010) that models all content as **RDF triples** and
-renders pages through **XSLT transformations**.
+Developer and operator documentation for **LunarSystem**, a PHP/MySQL CMS that models all content as **RDF triples** and renders pages through **XSLT transformations**.
 
 This `docs/` folder is the canonical technical reference. The top-level
 [README.md](../README.md) is the quick-start; everything deeper lives here.

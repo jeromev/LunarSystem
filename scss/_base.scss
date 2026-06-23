@@ -173,7 +173,7 @@ table.zebra tbody {
 form {
   display: block;
 
-  background: transparent;
+
 
   fieldset {
     border: none;
@@ -278,16 +278,9 @@ a {
   }
 }
 
-/* In-text links must be distinguishable without relying on colour (WCAG). */
-p a,
-dd a,
-#Bottom a {
-  text-decoration: underline;
+small {
+	font-size: 0.5625rem;
 }
-// small {
-// 	font-size: 0.5625rem;
-// 	line-height: 0.8125rem;
-// }
 img {
   border: none;
   max-width: 100%;
@@ -310,7 +303,7 @@ dt {
 }
 dl.analyse {
   margin: bg.v() 0;
-  background: transparent;
+
 
   dt {
     color: var(--muted-2);

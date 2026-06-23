@@ -13,7 +13,7 @@
   margin: 0 auto;
   width: 100%;
   padding-bottom: bg.v(4.5); /* clear the fixed bottom toolbar (#Nav) */
-  background: transparent;
+
   position: relative;
 
   #Top {
@@ -91,8 +91,17 @@
       color: var(--muted);
     }
     #Content-main {
+      /* In-text links must be distinguishable without relying on colour (WCAG). */
+      p a,
+      dd a,
+      li a,
+      #Bottom a {
+        text-decoration: underline;
+      }
+
       li {
         @include bg.set();
+        list-style: disc;
       }
       div.box {
         &.text {
@@ -116,6 +125,7 @@
           padding-left: bg.h();
         }
       }
+
       div.onecol {
         padding: bg.v() bg.h();
         width: 100%;
@@ -124,7 +134,14 @@
         }
       }
       form fieldset {
-        background: transparent;
+        label.big input,
+        label.big span.label {
+          width: bg.h(51);
+        }
+        label.big textarea {
+          width: bg.h(51);
+          height: bg.v(18);
+        }
 
         div.box-content {
           padding-bottom: bg.v();
@@ -146,36 +163,22 @@
             width: bg.h(35);
           }
         }
+        div.fields,
+        div.submit {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(bg.h(20), 1fr));
+          padding: bg.v() bg.h();
+          background-color: var(--field-overlay);
+          gap: bg.v();
+        }
+        div.text div.col {
+          width: 100%;
+        }
+        div.submit {
+          background-color: var(--field-overlay-2);
+          // padding: bg.v() bg.h();
+        }
       }
-    }
-  }
-
-  #Content-main form fieldset {
-    label.big input,
-    label.big span.label {
-      width: bg.h(51);
-    }
-    label.big textarea {
-      width: bg.h(51);
-      height: bg.v(18);
-    }
-  }
-
-  #Content #Content-main {
-    div.fields,
-    div.submit {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(bg.h(20), 1fr));
-      padding: bg.v() bg.h();
-      background-color: var(--field-overlay);
-      gap: bg.v();
-    }
-    div.text div.col {
-      width: 100%;
-    }
-    div.submit {
-      background-color: var(--field-overlay-2);
-      // padding: bg.v() bg.h();
     }
   }
 
@@ -192,19 +195,19 @@
     // margin-bottom: bg.v(-1);
     font-weight: bold;
     max-width: 100%;
+    &.warning {
+      background: var(--warn);
+    }
+    &.notice {
+      background: #c99;
+    }
+    &.okay {
+      background: var(--ok);
+    }
   }
   div.message {
     padding: bg.v(0.5) bg.h();
     width: bg.h(51);
-  }
-  #Messages p.warning {
-    background: var(--warn);
-  }
-  #Messages p.notice {
-    background: #c99;
-  }
-  #Messages p.okay {
-    background: var(--ok);
   }
 
   /* Fixed bottom toolbar: hamburger-revealed sitemap + language / format switches */
@@ -222,7 +225,7 @@
 
     #SiteMap {
       position: relative;
-      background: transparent;
+
 
       /* the box-handle <h2> is the hamburger button */
       h2.box-handle {

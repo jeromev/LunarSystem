@@ -245,9 +245,9 @@ class mod_admin_pages {
 				lunaLog::log($message, PEAR_LOG_NOTICE);
 			}
 			if ($inerror) { return false; }
-			// look for hierarchical problems: the modified page cannot be the child of any of her own children.
-			$children = luna::$model->get_children_nids($item_node);
-			if (isset($children[$_POST['modify_parent_nid']])) {
+			// look for hierarchical problems: the modified page cannot become a descendant of
+			// itself at ANY depth (the old get_children_nids() test only caught direct children).
+			if (luna::$model->would_create_cycle($_POST['modify_item_nid'], $_POST['modify_parent_nid'])) {
 				$inerror++;
 				$message = _("The hierarchy is incorrect.");
 				luna::$messages['warning'][] = $message;

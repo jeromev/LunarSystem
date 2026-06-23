@@ -2409,6 +2409,39 @@ class lunaModel {
 		return $nodes;
 	}
 	// }}}
+	// {{{ would_create_cycle()
+	/**
+	 * Would setting node $nid's parent to $parent_nid make the page tree cyclic — i.e. is
+	 * $parent_nid the node itself, or one of its descendants? Walks the parent chain up
+	 * from the proposed parent; reaching $nid means the new edge closes a loop. The walk
+	 * carries a visited set, so it terminates — and reports a cycle — even if the stored
+	 * data already contains one. A cyclic parent_nid makes the tree walk in
+	 * calculate_aliases() / get_children_nodes() non-terminating, so it must never be
+	 * written; this is the test both update() and the admin pages form gate on.
+	 *
+	 * @access public
+	 * @param integer $nid        the node being re-parented
+	 * @param integer $parent_nid the proposed new parent
+	 * @return boolean true if the move would create a cycle
+	 */
+	public function would_create_cycle($nid = 0, $parent_nid = 0) {
+		$nid = intval($nid);
+		$parent_nid = intval($parent_nid);
+		if (!$nid || !$parent_nid) { return false; }
+		$seen = array();
+		$p = $parent_nid;
+		while ($p) {
+			if ($p === $nid) { return true; }       // nid is the proposed parent or one of its ancestors → loop
+			if (isset($seen[$p])) { return true; }  // pre-existing loop in the stored tree → cyclic (and stop walking)
+			$seen[$p] = true;
+			$res = lunaDB::query('SELECT parent_nid FROM '.luna::get_ini('DBtables', 'NODES').' WHERE nid = '.lunaDB::quote($p).' LIMIT 1');
+			$row = ($res)? $res->fetchRow() : false;
+			if ($res) { $res->free(); }
+			$p = ($row && !empty($row->parent_nid))? intval($row->parent_nid) : 0;
+		}
+		return false;
+	}
+	// }}}
 	// {{{ insert()
 	/**
 	 * @access public
@@ -2481,6 +2514,14 @@ class lunaModel {
 		$is_active = ($is_active == true)? true : false;
 		$parent_nid = intval($parent_nid);
 		if (empty($parent_nid)) { $parent_nid = false; }
+		// Page-tree integrity: refuse a re-parent that would make the node its own
+		// ancestor (a cycle). A cyclic parent_nid makes the parent-chain walk in
+		// calculate_aliases() non-terminating, so the model never writes one — this is
+		// the choke point for every caller (the admin form also checks, for a message).
+		if ($parent_nid && $this->would_create_cycle($nid, $parent_nid)) {
+			lunaLog::log('Refused cyclic re-parent on node '.intval($nid).': proposed parent #'.intval($parent_nid).' is the node itself or one of its descendants.', PEAR_LOG_WARNING);
+			return false;
+		}
 		$res = lunaDB::query('
 			UPDATE
 				'.luna::get_ini('DBtables', 'NODES').'

@@ -39,7 +39,7 @@ docker exec "$DB_CONTAINER" mysql -uroot -proot lunadb \
   || note "skipped throttle reset (no DB access; fine on a fresh stack)"
 
 echo "== smoke: public pages render =="
-for p in / /about /login; do
+for p in / /node /login; do
   c=$(code "$p"); [ "$c" = 200 ] && pass "GET $p -> 200" || fail "GET $p -> $c (expected 200)"
 done
 body / | grep -q "lunarSystem" && pass "home shows the site footer" || fail "home missing expected content"

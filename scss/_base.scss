@@ -295,8 +295,6 @@ img {
 }
 p {
   @include bg.set(); /* align body text to the baseline grid */
-  // clear: both;
-  // max-width: bg.h(55);
 }
 blockquote {
   margin: bg.v() 0 0 bg.h();

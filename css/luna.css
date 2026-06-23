@@ -996,6 +996,13 @@ h6:after {
   background: rgba(255, 255, 255, 0.1);
   color: var(--muted);
 }
+#Page #Content #Content-main li:before, #Page #Content #Content-main li:after {
+  height: var(--base-line-height);
+  content: "";
+}
+#Page #Content #Content-main li:after {
+  vertical-align: calc(var(--base-line-height) * -1);
+}
 #Page #Content #Content-main div.box.text {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }

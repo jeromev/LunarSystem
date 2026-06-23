@@ -91,7 +91,9 @@
       color: var(--muted);
     }
     #Content-main {
-
+      li {
+        @include bg.set();
+      }
       div.box {
         &.text {
           padding: bg.v() bg.h();
@@ -121,21 +123,6 @@
           clear: both;
         }
       }
-      // div.col {
-      //   padding: bg.v() 0 bg.v() bg.h();
-      //   width: bg.h(17);
-
-      //   &.autowidth input,
-      //   &.autowidth textarea,
-      //   &.autowidth label span.label {
-      //     width: auto !important;
-      //   }
-      //   label.big input,
-      //   label.big textarea,
-      //   label.big span.label {
-      //     width: bg.h(51);
-      //   }
-      // }
       form fieldset {
         background: transparent;
 

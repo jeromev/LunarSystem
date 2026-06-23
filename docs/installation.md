@@ -55,8 +55,10 @@ What the stack does (see [docker-compose.yml](../docker-compose.yml) and
 > `docker-compose up -d app db`. See [linked-data.md](linked-data.md) for what the
 > extra services do and how to use them.
 
-The default domain's `luna.default/ini/db.ini` already points at the Docker
-`db` host, so no config editing is required.
+No database config editing is required: the stack passes `DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASS`
+(defaulting to the `db` service / `lunadb` / `luna`) to the app, and the app uses them when no
+`db.ini` is present. Drop a `db.ini` into `luna.default/ini/` (or override the `DB_*` vars in a
+gitignored `.env`) to point elsewhere.
 
 ### Reset the database
 

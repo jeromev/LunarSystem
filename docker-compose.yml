@@ -12,6 +12,13 @@ services:
     #   SPARQL_ENDPOINT=http://ontop:8080/sparql docker-compose up -d app
     # or set SPARQL_READS=0 to bypass SPARQL entirely and read from SQL.
     environment:
+      # Database connection — passed to the app so a fresh clone runs with no db.ini to
+      # provision (db.class.php falls back to these when db.ini is absent). Matches the db
+      # service below; override via .env for a different host/credentials.
+      DB_HOST: "${DB_HOST:-db}"
+      DB_NAME: "${DB_NAME:-lunadb}"
+      DB_USER: "${DB_USER:-luna}"
+      DB_PASS: "${DB_PASS:-luna}"
       SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://sparql-proxy:7878/query}"
       SPARQL_UPDATE_ENDPOINT: "${SPARQL_UPDATE_ENDPOINT:-http://sparql-proxy:7878/update}"
       # Credentials presented to the proxy (demo defaults; override SPARQL_AUTH_PASS via .env).

@@ -38,15 +38,29 @@ class lunaDB {
 	private static $pass = '';
 	// {{{ prepare()
 	/**
-	 * Read db.ini and build the PDO DSN. Defines DSN so the boot-order guards
-	 * (`if (!defined('DSN'))`) elsewhere keep their contract.
+	 * Resolve the DB credentials and build the PDO DSN. Defines DSN so the boot-order
+	 * guards (`if (!defined('DSN'))`) elsewhere keep their contract.
+	 *
+	 * Precedence: an explicit `db.ini` (manual installs, or a per-domain override) wins;
+	 * otherwise fall back to the environment (`DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASS`), so
+	 * the Docker stack — and any clone-and-run — connects with no `db.ini` to provision,
+	 * mirroring the `SPARQL_*` env defaults in luna.php. Only fail if neither is present.
 	 * @access public
 	 * @return boolean
 	 */
 	public static function prepare() {
-		if (!file_exists(INI_PATH.'db.ini')) { throw new lunaException(_('Error: cannot find the database configuration file.'), PEAR_LOG_CRIT); }
-		$c = parse_ini_file(INI_PATH.'db.ini');
-		$host = isset($c['host']) ? $c['host'] : 'localhost';
+		if (file_exists(INI_PATH.'db.ini')) {
+			$c = parse_ini_file(INI_PATH.'db.ini');
+		} else {
+			$c = array(
+				'host'     => getenv('DB_HOST') ?: '',
+				'database' => getenv('DB_NAME') ?: '',
+				'username' => getenv('DB_USER') ?: '',
+				'password' => getenv('DB_PASS') ?: '',
+			);
+			if ($c['database'] === '' && $c['username'] === '') { throw new lunaException(_('Error: no database configuration — create db.ini or set DB_HOST/DB_NAME/DB_USER/DB_PASS.'), PEAR_LOG_CRIT); }
+		}
+		$host = (isset($c['host']) && $c['host'] !== '') ? $c['host'] : 'localhost';
 		$name = isset($c['database']) ? $c['database'] : '';
 		self::$user = isset($c['username']) ? $c['username'] : '';
 		self::$pass = isset($c['password']) ? $c['password'] : '';

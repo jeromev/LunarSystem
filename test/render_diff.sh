@@ -39,14 +39,13 @@ norm(){ sed -E \
 PAGES="
 admin|admin|/admin
 home|guest|/
-about|guest|/about
 node|guest|/node
 login|guest|/login
 notfound|guest|/no-such-page-xyz
-out_xml|guest|/about?output=xml
-out_n3|guest|/about?output=n3
-out_json|guest|/about?output=json
-out_jsonld|guest|/about?output=jsonld
+out_xml|guest|/?output=xml
+out_n3|guest|/?output=n3
+out_json|guest|/?output=json
+out_jsonld|guest|/?output=jsonld
 admin_users|admin|/admin/admin_users
 admin_groups|admin|/admin/admin_groups
 admin_levels|admin|/admin/admin_levels
@@ -55,7 +54,7 @@ admin_mods|admin|/admin/admin_mods
 journal_analyse|admin|/admin/journal?log_id=999
 edit_texts|admin|/edition/edit_texts
 home_admin|admin|/
-about_admin|admin|/about
+node_admin|admin|/node
 "
 
 mkdir -p "$DIR"

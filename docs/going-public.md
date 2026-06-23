@@ -46,14 +46,6 @@ ports), which are loopback-bound.
       project code, `docker compose config`, and a guard that every published port
       stays `127.0.0.1`-bound).
 
-## Remaining — owner-only (can't be done from inside the repo)
-
-- [ ] **On GitHub:** flip the repo to **public**; set a description and topics
-      (`semantic-web`, `sparql`, `rdf`, `linked-data`, `json-ld`, `teaching`);
-      confirm the default branch is `main` (with `legacy` preserved); optionally
-      enable branch protection on `main`.
-- [ ] **After the first push:** confirm the CI workflow runs green.
-
 ## Deliberately *not* done (and why)
 
 - **Production-grade hardening.** The app has CSRF tokens, bcrypt passwords,

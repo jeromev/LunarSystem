@@ -29,3 +29,7 @@ test/render-baseline/
 # Per-domain: each luna.domains/<domain>/locale/<lang>/LC_MESSAGES/local.* is local data.
 luna/luna.domains/*/locale/*/LC_MESSAGES/local.po
 luna/luna.domains/*/locale/*/LC_MESSAGES/local.mo
+
+# Internal working records (analysis reports, plans, session notes) — kept LOCAL and
+# uncommitted on purpose. Not project documentation; not for the committed/public repo.
+docs/internal/

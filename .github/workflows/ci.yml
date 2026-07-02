@@ -46,12 +46,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Boot the stack (SQL reads; no triplestore needed)
         run: SPARQL_READS=0 docker compose up -d app db
-      - name: Wait for the app to render
+      - name: Wait for the app to render seeded content
         run: |
+          # Gate on real seeded content (the site footer), not just HTTP 200: the app answers a
+          # degraded 200 while MySQL is still importing the seed. Combined with the db healthcheck +
+          # `depends_on: service_healthy` in docker-compose.yml, this closes the readiness race.
           for i in $(seq 1 90); do
-            [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/ || true)" = 200 ] && exit 0
+            curl -s http://localhost:8080/ 2>/dev/null | grep -q "lunarSystem" && exit 0
             sleep 2
           done
-          echo "::error::app did not become ready"; docker compose logs --tail=80; exit 1
+          echo "::error::app did not render seeded content"; docker compose logs --tail=80; exit 1
       - name: Run the smoke + security-regression suite
         run: BASE=http://localhost:8080 DB_CONTAINER="$(docker compose ps -q db)" bash test/regression.sh

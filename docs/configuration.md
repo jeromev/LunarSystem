@@ -104,11 +104,26 @@ precedence:
 `db.ini` is gitignored and never shipped; if neither source supplies a database
 and username, `prepare()` throws. The connection charset is always `utf8mb4`.
 
-## `SPARQL_ENDPOINT` (semantic-web layer, optional)
+## Deployment settings (environment / `SetEnv`)
 
-The app reads five extra settings, all defined as constants in
-[luna.php](../luna/luna.php) (via `getenv()`) and wired through `docker-compose.yml`:
+The app reads these deployment settings as constants in [luna.php](../luna/luna.php), each via
+`luna_env()` — which checks the real environment **and** `$_SERVER` (so a shared host with no shell/env
+control can still set them from `.htaccess` with `SetEnv`) — and wired through `docker-compose.yml`:
 
+- **`SITE_URI`** — the canonical identity base (e.g. `https://example.org`, or with a subdirectory
+  `https://example.org/luna`). When set it pins the absolute URIs the app mints — RDF `/id/{slug}` IRIs,
+  JSON-LD `@id`, `canonical`/`Link` headers, the sitemap — so identity does **not** depend on the request
+  `Host` header (the "freeze the URIs" rule; see [roadmap.md](roadmap.md)). Leave empty on localhost /
+  single-host dev to derive it from the request. **Set this before any triplestore-backed public deploy**,
+  and keep it matching `bin/resync-triplestore.php`'s `SITE_URI` or the graph's URIs will diverge.
+- **`SPARQL_ENABLED`** — the master switch for the whole triplestore layer (read path *and*
+  write-through). Default `1`; set `SPARQL_ENABLED=0` for a pure PHP/MySQL deploy with no triplestore —
+  the publishing surface (HTML + content-negotiated RDF/JSON-LD + `/id` + `/data` + sitemap) then runs
+  entirely from MySQL and nothing reaches for an endpoint that isn't there. This is the profile
+  [going-public.md](going-public.md) deploys.
+- **`TRUST_PROXY`** — set to `1` only behind a known reverse proxy, so `X-Forwarded-Proto` is honoured
+  for the HTTPS/HSTS/secure-cookie decisions; off by default so the header can't be spoofed on a
+  directly-served host.
 - **`SPARQL_ENDPOINT`** — the read endpoint, defaulting to the Oxigraph
   triplestore fronted by the authenticating proxy
   (`http://sparql-proxy:7878/query`); set it to `http://ontop:8080/sparql`

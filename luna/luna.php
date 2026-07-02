@@ -86,6 +86,13 @@ if (!defined('SPARQL_AUTH_PASS')) { define('SPARQL_AUTH_PASS', luna_env('SPARQL_
 // Read routing / ACL / texts through SPARQL by default (the triplestore is authoritative for the
 // read path; MySQL stays the system of record and a fallback). Set SPARQL_READS=0 to read from SQL.
 if (!defined('SPARQL_READS')) { define('SPARQL_READS', luna_env('SPARQL_READS', '1') === '0' ? false : true); }
+// Canonical base URI for the site's identity. The cardinal rule is "freeze the URIs": /id/{slug} is
+// stable identity, and it (plus JSON-LD @id, canonical/Link headers, the sitemap, and the triplestore
+// write IRIs) must NOT depend on the request's Host header — otherwise serving under a second hostname
+// silently forks the graph's identity. Set SITE_URI (e.g. `SetEnv SITE_URI https://example.org` in
+// .htaccess, or the env) to pin it. Leave empty to derive from the request Host (fine on localhost /
+// single-host dev). Include a base path if the app lives in a subdirectory, e.g. https://example.org/luna.
+if (!defined('SITE_URI')) { define('SITE_URI', rtrim(luna_env('SITE_URI', ''), '/')); }
 // Composer autoloader — brings in HTMLPurifier (the input sanitiser; see
 // lunaTools::sanitize()). Hard require: the app is a security boundary and must not run
 // without its sanitiser, so fail loudly if the vendored tree is missing.
@@ -100,7 +107,7 @@ class luna {
 	 * @access	public
 	 * @var		string
 	 */
-	public static $lunaVersion = '0.8.58-alpha';
+	public static $lunaVersion = '0.8.59-alpha';
 	/**
 	 * instance
 	 * @var object
@@ -493,7 +500,11 @@ class luna {
 				$base_path = '';
 			}
 		// }}} end drupal
-		self::$site_uri = $base_url.$base_path;
+		// Absolute identity base. A configured SITE_URI wins over the Host-derived value (see the
+		// SITE_URI define near the top of this file and the "freeze the URIs" rule) so RDF IRIs /
+		// JSON-LD @id / canonical links / the sitemap stay stable regardless of the request Host. The
+		// relative base path (used only for building in-app links) stays request-derived either way.
+		self::$site_uri = (defined('SITE_URI') && SITE_URI !== '') ? SITE_URI : $base_url.$base_path;
 		self::$site_relative_url = $base_path.'/';
 		if (!defined('SITEPATH')) { define('SITEPATH', self::$site_path); }
 		return true;

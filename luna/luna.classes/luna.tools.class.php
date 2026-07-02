@@ -859,8 +859,17 @@ class lunaTools {
 		// behind a trusted reverse proxy, resolve the real client IP there.
 		$ip = (!empty($_SERVER['REMOTE_ADDR']))? $_SERVER['REMOTE_ADDR'] : getenv('REMOTE_ADDR');
 		$ip_sep = explode('.', $ip);
-		if (count($ip_sep) != 4) { return '00000000'; }
-		return sprintf('%02x%02x%02x%02x', $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
+		if (count($ip_sep) == 4) {
+			// IPv4: pack to 8 hex chars (decode_ip() reverses this for display).
+			return sprintf('%02x%02x%02x%02x', $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
+		}
+		// IPv6 (or anything non-dotted-quad): all such addresses used to collapse to the constant
+		// '00000000', so every IPv6 client shared one throttle bucket and one session-IP binding — a
+		// login-DoS and a session-hijack widening on any dual-stack host. Derive a stable, distinct
+		// 8-hex token instead. It fits the session_ip varchar(8) column (no schema change) and gives
+		// ~2^32 buckets — ample for throttling and for the "same client?" session check. decode_ip()
+		// will render such a token as a meaningless dotted-quad (admin journal display only).
+		return substr(hash('sha256', (string) $ip), 0, 8);
 	}
 	// }}}
 	// {{{ decode_ip()

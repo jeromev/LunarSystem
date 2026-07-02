@@ -2586,13 +2586,19 @@ class lunaModel {
 	 * @return boolean
 	 */
 	public function link($nodeid1 = false, $nodeid2 = false) {
-		if (empty($nodeid1) || !is_integer(intval($nodeid1))) { return false; }
+		// Force both endpoints numeric before they reach the SQL: link() is called with raw $_POST
+		// arrays from the admin/editor mods, and the id gets interpolated into INSERT ... VALUES
+		// below. The old `is_integer(intval($x))` guard was a no-op (intval() always returns an int),
+		// so a crafted string endpoint was an authenticated SQL-injection vector. Cast, don't check.
+		$nodeid1 = intval($nodeid1);
+		if (empty($nodeid1)) { return false; }
 		if (empty($nodeid2)) { return false; }
 		if (isset($nodeid2) && !empty($nodeid2)) {
 			$sql = '';
 			if (is_array($nodeid2)) {
 				foreach ($nodeid2 as $nid) {
-					if (empty($nid) || !is_integer(intval($nid))) { return false; }
+					$nid = intval($nid);
+					if (empty($nid)) { return false; }
 					$sql .= '('.$nid.', '.$nodeid1.'), ('.$nodeid1.', '.$nid.'),';
 				}
 				$sql = substr($sql, 0, -1);

@@ -19,7 +19,7 @@ all host ports loopback-bound). Controls in place:
   observable from timing.
 - **CSRF** — a per-session synchronizer token is embedded in every state-changing form and
   verified centrally (POST-only `hash_equals`) in the dispatch ([luna.php](../luna/luna.php))
-  before any handler runs; `?purge` is POST-only too.
+  before any handler runs.
 - **Sessions** — cookie-only (`use_trans_sid=0`, `use_only_cookies=1`, `use_strict_mode=1`);
   `session_regenerate_id()` on login; a DB-backed handler implementing `validateId()` that
   rejects and reissues a forged session id; and a mandatory User-Agent + IP binding in
@@ -54,8 +54,11 @@ all host ports loopback-bound). Controls in place:
 - **Triplestore** — an authenticating proxy fronts the internal-only Oxigraph; see
   [Triplestore / SPARQL surface](#triplestore--sparql-surface).
 
-This remains an archival app on PHP 8.3 with a flat group→level authz model. Keep it behind
-web-server auth / a VPN and **off the public internet**.
+This remains an archival app on PHP 8.3 with a flat group→level authz model. Two-tier posture: keep
+the **full Docker stack** (triplestore included) on `localhost` — behind web-server auth / a VPN and
+**off the public internet**. Only the **publishing surface** (app + MySQL, `SPARQL_ENABLED=0`) is
+intended for a public domain, and only by following the hardening runbook in
+[going-public.md](going-public.md).
 
 ## Residual (documented, not exploitable as shipped)
 
@@ -65,7 +68,10 @@ web-server auth / a VPN and **off the public internet**.
   account-enumeration timing leak.
 - **Session hijack guard is weak** — it is bound to the client-controlled `User-Agent` (a
   fixed binding) and breaks users behind rotating IPs. It uses `REMOTE_ADDR` (not
-  `X-Forwarded-For`), so it cannot be IP-spoofed.
+  `X-Forwarded-For`), so it cannot be IP-spoofed. The IP is packed via `encode_ip()`, which now maps
+  IPv6 (and any non-IPv4) address to a distinct, stable token; previously all IPv6 clients collapsed to
+  one value, so on a dual-stack host they shared a single throttle bucket and a single session-IP
+  binding (a login-DoS and a hijack-widening). Fixed in the ship-gate pass.
 - **Legacy MD5 password hashes** — any surviving `luna_users.password` MD5 row is trivially
   crackable until its owner next logs in, which upgrades it to bcrypt
   (`password_is_legacy()` / `password_needs_rehash()`). Log every legacy admin in once to

@@ -19,15 +19,24 @@ services:
       DB_NAME: "${DB_NAME:-lunadb}"
       DB_USER: "${DB_USER:-luna}"
       DB_PASS: "${DB_PASS:-luna}"
+      # Canonical identity base — pins the /id/{slug} IRIs, JSON-LD @id, canonical links and sitemap so
+      # they don't depend on the request Host ("freeze the URIs"). Empty = derive from the request
+      # (fine on localhost). Set for any real/triplestore-backed deploy. See docs/configuration.md.
+      SITE_URI: "${SITE_URI:-}"
       SPARQL_ENDPOINT: "${SPARQL_ENDPOINT:-http://sparql-proxy:7878/query}"
       SPARQL_UPDATE_ENDPOINT: "${SPARQL_UPDATE_ENDPOINT:-http://sparql-proxy:7878/update}"
       # Credentials presented to the proxy (demo defaults; override SPARQL_AUTH_PASS via .env).
       SPARQL_AUTH_USER: "${SPARQL_AUTH_USER:-luna}"
       SPARQL_AUTH_PASS: "${SPARQL_AUTH_PASS:-luna-sparql-dev}"
       SPARQL_READS: "${SPARQL_READS:-1}"
+    # Wait for the DB to be *seeded and serving*, not merely started — otherwise the app comes up
+    # and answers a degraded HTTP 200 while MySQL is still importing the seed (this is exactly the
+    # readiness race that kept CI red). sparql-proxy only needs to have started.
     depends_on:
-      - db
-      - sparql-proxy
+      db:
+        condition: service_healthy
+      sparql-proxy:
+        condition: service_started
 
   db:
     image: mysql:8.0
@@ -39,6 +48,16 @@ services:
       MYSQL_DATABASE: lunadb
       MYSQL_USER: luna
       MYSQL_PASSWORD: luna
+    # Healthy only once the seed import has created the content tables AND the real server accepts
+    # TCP connections. Querying luna_nodes (a seeded table) proves the import finished — a plain
+    # `mysqladmin ping` would pass against the entrypoint's temporary init server, before seeding.
+    # `$$VAR` escapes compose interpolation so the container's own MYSQL_* env is used.
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -u\"$$MYSQL_USER\" -p\"$$MYSQL_PASSWORD\" \"$$MYSQL_DATABASE\" -e 'SELECT 1 FROM luna_nodes LIMIT 1' >/dev/null 2>&1 || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
     ports:
       - "127.0.0.1:3307:3306"
     volumes:
